@@ -1,0 +1,7 @@
+global: {}
+jaeger-operator:
+  clusterType: "ocp4"
+  ocpCatalog:
+    source: redhat-operators
+    channel: stable
+    name: jaeger-product

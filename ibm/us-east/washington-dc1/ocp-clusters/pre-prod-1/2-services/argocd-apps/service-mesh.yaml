@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-mesh
+spec:
+  destination:
+    namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: 2-services/operators/service-mesh
+    repoURL: https://github.com/csantanapr-cn-toolkit-tests/gitops-03-18.git
+    targetRevision: main
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
