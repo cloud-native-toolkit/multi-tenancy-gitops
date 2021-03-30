@@ -1,0 +1,3 @@
+global: {}
+inventory-mgmt-ace-solution:
+  replicaCount: 1
