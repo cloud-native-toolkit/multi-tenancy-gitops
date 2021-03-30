@@ -5,7 +5,7 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-APEH-BY5CY7
+    license: L-APEH-BPUCJK
     use: CloudPakForIntegrationNonProduction
   pod:
     containers:
