@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: services
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 2-services/argocd-apps
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: demo1-ace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
