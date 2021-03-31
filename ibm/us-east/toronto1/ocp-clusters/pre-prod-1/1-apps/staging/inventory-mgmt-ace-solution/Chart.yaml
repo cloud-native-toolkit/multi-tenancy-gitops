@@ -1,0 +1,4 @@
+apiVersion: v2
+version: 0.1.0
+name: inventory-mgmt-ace-solution
+description: Chart to configure ArgoCD with the inventory-mgmt-ace-solution project and its applications

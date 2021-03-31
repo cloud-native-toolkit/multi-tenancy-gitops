@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ocp-projects
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/projects
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: demo1-ace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

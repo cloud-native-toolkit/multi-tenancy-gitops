@@ -1,0 +1,4 @@
+apiVersion: v2
+version: 0.1.0
+name: inventory-management-svc-solution
+description: Chart to configure ArgoCD with the inventory-management-svc-solution project and its applications
