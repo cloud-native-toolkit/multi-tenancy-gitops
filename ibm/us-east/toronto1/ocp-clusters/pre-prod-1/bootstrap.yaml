@@ -23,6 +23,27 @@ spec:
     - argocd-admins
 ---
 apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cluster-services
+spec:
+  sourceRepos:
+  - https://github.com/hollisc/multi-tenancy-gitops.git
+  destinations:
+  - namespace: qa
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  # roles:
+  # # A role which provides read-only access to all applications in the project
+  # - name: read-only
+  #   description: Read-only privileges to my-project
+  #   policies:
+  #   - p, proj:my-project:read-only, applications, get, my-project/*, allow
+  #   groups:
+  #   - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: services
