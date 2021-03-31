@@ -30,6 +30,8 @@ spec:
   sourceRepos:
   - https://github.com/hollisc/multi-tenancy-gitops.git
   destinations:
+  - namespace: dev-a
+    server: https://kubernetes.default.svc
   - namespace: qa
     server: https://kubernetes.default.svc
   - namespace: staging
@@ -37,6 +39,8 @@ spec:
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
+  - group: ""
+    kind: RoleBinding    
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only

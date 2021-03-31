@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: system:image-puller
+  name: system:image-puller-staging
   namespace: dev-a
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -10,4 +10,4 @@ roleRef:
 subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: Group
-  name: system:serviceaccounts:staging  
+  name: system:serviceaccounts:staging
