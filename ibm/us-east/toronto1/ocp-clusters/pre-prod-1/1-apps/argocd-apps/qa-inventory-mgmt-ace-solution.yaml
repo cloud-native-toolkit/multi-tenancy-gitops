@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ace-dashboard-instance
+  name: qa-inventory-mgmt-ace-solution
 spec:
   destination:
     namespace: qa
