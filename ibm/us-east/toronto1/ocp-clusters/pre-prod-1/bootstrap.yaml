@@ -34,6 +34,17 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: staging
     server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ""
+    kind: Namespace
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins    
   # roles:
   # # A role which provides read-only access to all applications in the project
   # - name: read-only
