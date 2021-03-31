@@ -56,6 +56,8 @@ spec:
   destinations:
   - namespace: qa
     server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
