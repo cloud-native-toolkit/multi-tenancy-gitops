@@ -44,7 +44,26 @@ spec:
     policies:
     - p, proj:my-project:read-only, applications, get, my-project/*, allow
     groups:
-    - argocd-admins    
+    - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: applications
+spec:
+  sourceRepos:
+  - https://github.com/hollisc/multi-tenancy-gitops.git
+  destinations:
+  - namespace: qa
+    server: https://kubernetes.default.svc
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -57,6 +76,24 @@ spec:
   project: default
   source:
     path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/argocd-apps
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: demo1-ace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: applications
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/1-apps/argocd-apps
     repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
     targetRevision: demo1-ace
   syncPolicy:
