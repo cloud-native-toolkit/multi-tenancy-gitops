@@ -74,6 +74,24 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  name: infra
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/3-infra/argocd-apps
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: demo2-mq
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
   name: services
 spec:
   destination:
