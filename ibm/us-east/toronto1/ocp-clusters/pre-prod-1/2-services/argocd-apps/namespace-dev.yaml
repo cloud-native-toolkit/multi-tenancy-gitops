@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: staging-inventory-mgmt-ace-solution
+  name: namespace-dev
 spec:
   destination:
-    namespace: staging
+    namespace: dev
     server: https://kubernetes.default.svc
-  project: applications
+  project: cluster-services
   source:
-    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/1-apps/staging/inventory-mgmt-ace-solution
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/namespaces/dev
     repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
-    targetRevision: demo1-ace
+    targetRevision: demo2-mq
   syncPolicy:
     automated:
       prune: true

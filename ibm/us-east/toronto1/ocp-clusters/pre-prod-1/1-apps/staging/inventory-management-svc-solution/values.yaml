@@ -1,3 +1,0 @@
-global: {}
-inventory-management-svc-solution:
-  replicaCount: 1
