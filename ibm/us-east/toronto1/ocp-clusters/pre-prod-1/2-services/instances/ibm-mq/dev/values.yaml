@@ -1,6 +1,6 @@
 global: {}
 
-name: queueManager-dev
+name: queuemanager-dev
 version: 9.2.0.0-r1
 web:
   enabled: true
