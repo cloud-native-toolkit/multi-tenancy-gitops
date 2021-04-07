@@ -6,5 +6,5 @@ version: 0.1.7
 appVersion: 1.16.0
 dependencies:
   - name: mq-spring-app
-    version: 0.1.7
+    version: 0.1.8
     repository: https://hollisc.github.io/gitops-testing/
