@@ -10,7 +10,7 @@ spec:
   source:
     path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/operators/ibm-catalogs
     repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
-    targetRevision: demo1-ace
+    targetRevision: demo2-mq
     helm:
       valueFiles:
       - values.yaml
