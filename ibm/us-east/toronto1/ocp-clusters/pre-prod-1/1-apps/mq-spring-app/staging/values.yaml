@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+name: mq-spring-app-staging
+
 image:
   repository: image-registry.openshift-image-registry.svc:5000/dev/mqspring@sha256
   tag: 751d02a4908e2eaceae4974c12ae03bccbaf86903b01198dd8c8d725483eab91
