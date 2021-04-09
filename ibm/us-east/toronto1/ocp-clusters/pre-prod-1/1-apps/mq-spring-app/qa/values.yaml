@@ -61,10 +61,10 @@ mq-spring-app:
     #      - chart-example.local
 
   configmap:
-    CHANNEL: DEV.APP.SVRCONN
-    CONNECTION_NAME: mq(1414)
-    QM: QM1
-    QUEUE_NAME: DEV.QUEUE.1
+    CHANNEL: QA.APP.SVRCONN
+    CONNECTION_NAME: queuemanager-qa-ibm-mq.qa.svc.cluster.local(1414)
+    QM: QUICKSTART
+    QUEUE_NAME: QA.QUEUE.1
     APP_NAME: SPRINGBOOT-APP
 
   secret:
