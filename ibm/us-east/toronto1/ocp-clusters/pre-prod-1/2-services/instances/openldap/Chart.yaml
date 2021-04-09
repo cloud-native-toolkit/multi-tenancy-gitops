@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 description: A OpenLDAP Chart for Kubernetes
 name: openldap
 version: 0.1.5
