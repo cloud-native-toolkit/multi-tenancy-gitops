@@ -1,5 +1,9 @@
 global: {}
 
+queuemanager-dev:
+  name: queuemanager-dev
+  version: 9.2.0.0-r2
+
 name: queuemanager-dev
 version: 9.2.0.0-r1
 web:
