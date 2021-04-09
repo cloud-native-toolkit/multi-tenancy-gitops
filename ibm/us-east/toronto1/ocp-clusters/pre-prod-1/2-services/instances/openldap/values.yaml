@@ -34,3 +34,6 @@ openldap:
 
     Cpu: "512m"
     Memory: "200Mi"
+
+route:
+  enabled: true
