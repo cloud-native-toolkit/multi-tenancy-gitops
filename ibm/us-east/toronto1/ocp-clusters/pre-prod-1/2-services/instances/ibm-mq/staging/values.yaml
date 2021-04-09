@@ -1,54 +1,52 @@
 global: {}
 
-name: queuemanager-staging
-version: 9.2.0.0-r1
-web:
-  enabled: true
-
-license:
-  accept: true
-  license: L-RJON-BN7PN3
-  metric: ProcessorValueUnit
-  use: NonProduction
-
-queuemanager:
-  availability:
-    type: SingleInstance
-  debug: false
-  imagePullPolicy: IfNotPresent
-  livenessProbe:
-    failureThreshold: 1
-    initialDelaySeconds: 90
-    periodSeconds: 10
-    successThreshold: 1
-    timeoutSeconds: 5
-  logFormat: Basic
-  metrics:
+ibm-mq:
+  name: queuemanager-staging
+  version: 9.2.0.0-r1
+  web:
     enabled: true
-  name: QUICKSTART
-  readinessProbe:
-    failureThreshold: 1
-    initialDelaySeconds: 10
-    periodSeconds: 5
-    successThreshold: 1
-    timeoutSeconds: 3
-  resources:
-    limits:
-      cpu: "1"
-      memory: 1Gi
-    requests:
-      cpu: "1"
-      memory: 1Gi
-  storage:
-    persistedData:
-      enabled: false
-    queueManager:
-      type: ephemeral
-    recoveryLogs:
-      enabled: false
 
-  securityContext:
-    initVolumeAsRoot: false
+  license:
+    accept: true
+    license: L-RJON-BN7PN3
+    metric: ProcessorValueUnit
+    use: NonProduction
+
+  queuemanager:
+    availability:
+      type: SingleInstance
+    debug: false
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 1
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    logFormat: Basic
+    metrics:
+      enabled: true
+    name: QUICKSTART
+    readinessProbe:
+      failureThreshold: 1
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    storage:
+      persistedData:
+        enabled: false
+      queueManager:
+        type: ephemeral
+      recoveryLogs:
+        enabled: false
 
   securityContext:
     initVolumeAsRoot: false
