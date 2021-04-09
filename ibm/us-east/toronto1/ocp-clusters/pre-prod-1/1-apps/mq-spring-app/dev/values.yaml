@@ -1,6 +1,7 @@
 # Default values for mq-spring-app.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
 mq-spring-app:
   name: mq-spring-app-dev
   replicaCount: 1
@@ -61,8 +62,8 @@ mq-spring-app:
 
   configmap:
     CHANNEL: DEV.APP.SVRCONN
-    CONNECTION_NAME: mq(1414)
-    QM: QM1
+    CONNECTION_NAME: queuemanager-dev-ibm-mq.dev.svc.cluster.local(1414)
+    QM: QUICKSTART
     QUEUE_NAME: DEV.QUEUE.1
     APP_NAME: SPRINGBOOT-APP
 
