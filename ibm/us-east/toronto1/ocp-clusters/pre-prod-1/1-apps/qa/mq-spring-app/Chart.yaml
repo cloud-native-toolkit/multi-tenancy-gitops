@@ -1,0 +1,4 @@
+apiVersion: v2
+version: 0.1.0
+name: mq-spring-app
+description: Chart to configure ArgoCD with the mq-spring-app project and its applications
