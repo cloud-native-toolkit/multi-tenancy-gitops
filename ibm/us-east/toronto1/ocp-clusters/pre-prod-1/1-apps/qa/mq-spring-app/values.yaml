@@ -1,3 +1,0 @@
-global: {}
-mq-spring-app:
-  replicaCount: 1
