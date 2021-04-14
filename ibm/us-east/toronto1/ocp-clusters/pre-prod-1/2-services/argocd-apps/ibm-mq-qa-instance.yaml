@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/qa/instances/mq-infra
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/instances/qa/mq-infra
     repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
     targetRevision: demo2-mq
     helm:
