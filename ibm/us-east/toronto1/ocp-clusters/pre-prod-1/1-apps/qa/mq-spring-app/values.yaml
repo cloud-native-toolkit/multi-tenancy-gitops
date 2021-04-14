@@ -8,7 +8,7 @@ mq-spring-app:
 
   configmap:
     CHANNEL: QA.APP.SVRCONN
-    CONNECTION_NAME: queuemanager-qa-ibm-mq.qa.svc.cluster.local(1414)
+    CONNECTION_NAME: qm-qa-ibm-mq.qa.svc.cluster.local(1414)
     QM: QUICKSTART
     QUEUE_NAME: QA.QUEUE.1
     APP_NAME: SPRINGBOOT-APP
