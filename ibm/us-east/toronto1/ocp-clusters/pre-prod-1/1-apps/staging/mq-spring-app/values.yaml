@@ -4,52 +4,7 @@
 global: {}
 mq-spring-app:
   name: mq-spring-app
-
   replicaCount: 1
-  logLevel: "debug"
-
-  image:
-    repository: replace
-    tag: replace
-    pullPolicy: IfNotPresent
-    port: 8080
-
-  nameOverride: ""
-  fullnameOverride: ""
-
-  service:
-    type: ClusterIP
-    port: 80
-
-  route:
-    enabled: true
-
-  ingress:
-    enabled: false
-    appid:
-      enabled: false
-      # web or app - https://cloud.ibm.com/docs/services/appid?topic=appid-kube-auth
-      requestType: web
-
-  #  host: hello
-    namespaceInHost: true
-    subdomain: containers.appdomain.cloud
-    path: "/"
-
-  #  tlsSecretName: ""
-
-  jaegerConfigName: jaeger-config
-  jaegerSecretName: jaeger-access
-
-  vcsInfo:
-    repoUrl: ""
-    branch: ""
-
-  partOf: inventory
-
-  connectsTo: ""
-
-  runtime: spring
 
   configmap:
     CHANNEL: STAGING.APP.SVRCONN
@@ -57,7 +12,3 @@ mq-spring-app:
     QM: QUICKSTART
     QUEUE_NAME: STAGING.QUEUE.1
     APP_NAME: SPRINGBOOT-APP
-
-  secret:
-    PASSWORD: cGFzc3cwcmQ=
-    USER: YXBw
