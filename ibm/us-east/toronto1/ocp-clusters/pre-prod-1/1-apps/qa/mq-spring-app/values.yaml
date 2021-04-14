@@ -2,62 +2,62 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 global: {}
+mq-spring-app:
+  name: mq-spring-app
 
-name: mq-spring-app
+  replicaCount: 1
+  logLevel: "debug"
 
-replicaCount: 1
-logLevel: "debug"
+  image:
+    repository: replace
+    tag: replace
+    pullPolicy: IfNotPresent
+    port: 8080
 
-image:
-  repository: replace
-  tag: replace
-  pullPolicy: IfNotPresent
-  port: 8080
+  nameOverride: ""
+  fullnameOverride: ""
 
-nameOverride: ""
-fullnameOverride: ""
+  service:
+    type: ClusterIP
+    port: 80
 
-service:
-  type: ClusterIP
-  port: 80
+  route:
+    enabled: true
 
-route:
-  enabled: true
-
-ingress:
-  enabled: false
-  appid:
+  ingress:
     enabled: false
-    # web or app - https://cloud.ibm.com/docs/services/appid?topic=appid-kube-auth
-    requestType: web
+    appid:
+      enabled: false
+      # web or app - https://cloud.ibm.com/docs/services/appid?topic=appid-kube-auth
+      requestType: web
 
-#  host: hello
-  namespaceInHost: true
-  subdomain: containers.appdomain.cloud
-  path: "/"
+  #  host: hello
+    namespaceInHost: true
+    subdomain: containers.appdomain.cloud
+    path: "/"
 
-#  tlsSecretName: ""
+  #  tlsSecretName: ""
 
-jaegerConfigName: jaeger-config
-jaegerSecretName: jaeger-access
+  jaegerConfigName: jaeger-config
+  jaegerSecretName: jaeger-access
 
-vcsInfo:
-  repoUrl: ""
-  branch: ""
+  vcsInfo:
+    repoUrl: ""
+    branch: ""
 
-partOf: inventory
+  partOf: inventory
 
-connectsTo: ""
+  connectsTo: ""
 
-runtime: spring
+  runtime: spring
 
-configmap:
-  CHANNEL: QA.APP.SVRCONN
-  CONNECTION_NAME: queuemanager-qa-ibm-mq.qa.svc.cluster.local(1414)
-  QM: QUICKSTART
-  QUEUE_NAME: QA.QUEUE.1
-  APP_NAME: SPRINGBOOT-APP
+  configmap:
+    CHANNEL: QA.APP.SVRCONN
+    CONNECTION_NAME: queuemanager-qa-ibm-mq.qa.svc.cluster.local(1414)
+    QM: QUICKSTART
+    QUEUE_NAME: QA.QUEUE.1
+    APP_NAME: SPRINGBOOT-APP
 
-secret:
-  PASSWORD: cGFzc3cwcmQ=
-  USER: YXBw
+  secret:
+    PASSWORD: cGFzc3cwcmQ=
+    USER: YXBw
