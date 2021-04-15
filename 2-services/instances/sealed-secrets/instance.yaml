@@ -1,7 +1,9 @@
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecretController
 metadata:
-  name: SealedSecretController
+  name: sealedsecretcontroller
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   image:
     repository: >-
