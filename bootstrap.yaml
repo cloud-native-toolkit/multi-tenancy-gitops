@@ -91,7 +91,7 @@ metadata:
   name: applications
 spec:
   destination:
-    namespace: tools
+    namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
@@ -109,7 +109,7 @@ metadata:
   name: services
 spec:
   destination:
-    namespace: tools
+    namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
@@ -127,7 +127,7 @@ metadata:
   name: infra
 spec:
   destination:
-    namespace: tools
+    namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
