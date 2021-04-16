@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-catalogs
+spec:
+  destination:
+    namespace: openshift-marketplace
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: 2-services/operators/ibm-catalogs
+    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    targetRevision: bringup
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
