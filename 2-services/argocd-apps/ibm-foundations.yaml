@@ -8,7 +8,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: 2-services/operators/ibm-common-services
+    path: 2-services/operators/ibm-foundations
     repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
     targetRevision: bringup
     helm:
