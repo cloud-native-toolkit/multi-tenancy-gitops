@@ -20,7 +20,9 @@ spec:
   - namespace: staging
     server: https://kubernetes.default.svc
   - namespace: openldap
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
+    server: https://kubernetes.default.svc        
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -45,6 +47,8 @@ spec:
   - namespace: staging
     server: https://kubernetes.default.svc
   - namespace: openldap
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
