@@ -5,7 +5,7 @@ metadata:
   name: applications
 spec:
   sourceRepos:
-  - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: dev
     server: https://kubernetes.default.svc
@@ -28,7 +28,7 @@ metadata:
   name: services
 spec:
   sourceRepos:
-  - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
@@ -61,7 +61,7 @@ metadata:
   name: infra
 spec:
   sourceRepos:
-  - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: dev
     server: https://kubernetes.default.svc
@@ -100,7 +100,7 @@ spec:
   project: default
   source:
     path: 1-apps/argocd-apps
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: bringup
   syncPolicy:
     automated:
@@ -118,7 +118,7 @@ spec:
   project: default
   source:
     path: 2-services/argocd-apps
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: bringup
   syncPolicy:
     automated:
@@ -136,7 +136,7 @@ spec:
   project: default
   source:
     path: 3-infra/argocd-apps
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: bringup
   syncPolicy:
     automated:

@@ -9,7 +9,7 @@ spec:
   project: infra
   source:
     path: 3-infra/namespaces/tools
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: bringup
   syncPolicy:
     automated:
