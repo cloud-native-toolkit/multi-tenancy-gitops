@@ -1,3 +1,4 @@
+
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -45,7 +46,7 @@ spec:
   - namespace: openldap
     server: https://kubernetes.default.svc
   - namespace: sealed-secrets
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -88,6 +89,24 @@ spec:
     - p, proj:my-project:read-only, applications, get, my-project/*, allow
     groups:
     - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: .
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: bringup
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
