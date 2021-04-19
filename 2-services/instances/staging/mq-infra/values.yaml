@@ -1,0 +1,4 @@
+global: {}
+mq-infra:
+  name: qm-staging
+  version: 9.2.0.0-r1

@@ -1,0 +1,41 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecretController
+metadata:
+  name: sealedsecretcontroller
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  image:
+    repository: >-
+      quay.io/bitnami/sealed-secrets-controller@sha256:8e9a37bb2e1a6f3a8bee949e3af0e9dab0d7dca618f1a63048dc541b5d554985
+    pullPolicy: IfNotPresent
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  controller:
+    create: true
+  serviceAccount:
+    create: true
+    name: ''
+  rbac:
+    create: true
+    pspEnabled: false
+  secretName: sealed-secrets-key
+  ingress:
+    enabled: false
+    annotations: {}
+    path: /v1/cert.pem
+    hosts:
+      - chart-example.local
+    tls: []
+  crd:
+    create: true
+    keep: true
+  networkPolicy: false
+  securityContext:
+    runAsUser: ''
+    fsGroup: ''
+  podAnnotations: {}
+  podLabels: {}
+  priorityClassName: ''
