@@ -1,0 +1,51 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: services
+spec:
+  sourceRepos:
+  - https://github.com/csantanapr/multi-tenancy-gitops.git
+  destinations:
+  - namespace: tools
+    server: https://kubernetes.default.svc
+  - namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  - namespace: openshift-marketplace
+    server: https://kubernetes.default.svc
+  - namespace: dev
+    server: https://kubernetes.default.svc
+  - namespace: qa
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  - namespace: openldap
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
+    server: https://kubernetes.default.svc    
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: services
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 2-services/argocd-apps
+    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    targetRevision: bringup
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
