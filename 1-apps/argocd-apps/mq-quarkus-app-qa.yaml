@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: applications
   source:
-    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/1-apps/qa/mq-quarkus-app
+    path: 1-apps/qa/mq-quarkus-app
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: demo-mq
     helm:
