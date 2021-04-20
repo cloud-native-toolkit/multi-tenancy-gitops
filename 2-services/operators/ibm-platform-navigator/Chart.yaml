@@ -7,4 +7,4 @@ appVersion: "1.0"
 dependencies:
   - name: ibm-platform-navigator
     version: 0.1.1
-    repository: https://hollisc.github.io/gitops-testing/
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
