@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-qa
+spec:
+  destination:
+    namespace: qa
+    server: https://kubernetes.default.svc
+  project: cluster-services
+  source:
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/3-infra/namespaces/qa
+    repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
+    targetRevision: demo-mq
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

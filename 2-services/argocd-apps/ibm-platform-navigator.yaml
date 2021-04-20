@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-platform-navigator
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: ibm/us-east/toronto1/ocp-clusters/pre-prod-1/2-services/operators/ibm-platform-navigator
+    repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
+    targetRevision: demo-mq
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy: {}
