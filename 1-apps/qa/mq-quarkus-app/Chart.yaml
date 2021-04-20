@@ -1,4 +1,0 @@
-apiVersion: v2
-version: 0.1.0
-name: mq-quarkus-app
-description: Chart to configure ArgoCD with the mq-quarkus-app project and its applications

@@ -1,3 +1,0 @@
-global: {}
-mq-quarkus-app:
-  replicaCount: 1
