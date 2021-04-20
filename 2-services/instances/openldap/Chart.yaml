@@ -7,4 +7,4 @@ home: https://www.openldap.ort
 dependencies:
   - name: openldap
     version: 0.1.6
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
