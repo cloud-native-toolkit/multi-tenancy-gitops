@@ -23,7 +23,7 @@ spec:
   - group: ""
     kind: Namespace
   - group: ""
-    kind: RoleBinding
+    kind: ClusterRoleBinding
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
