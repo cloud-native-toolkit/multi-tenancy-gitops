@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openshift-pipelines-operator
+spec:
+  destination:
+    namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: 2-services/operators/openshift-pipelines
+    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    targetRevision: bringup
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,4 @@
+openshift-pipelines:
+  clusterType: "ocp4"
+  ocpCatalog:
+    channel: stable
