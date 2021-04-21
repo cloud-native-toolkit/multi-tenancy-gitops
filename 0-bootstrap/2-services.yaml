@@ -26,6 +26,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: istio-system
     server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  # TODO: SCC needs to be moved to 3-infra, here for now for artifactory
+  - group: "security.openshift.io"
+    kind: SecurityContextConstraints
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
