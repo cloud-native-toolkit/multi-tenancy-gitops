@@ -1,19 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: artifactory
+  name: istio-system
 spec:
   destination:
-    namespace: tools
-    server: 'https://kubernetes.default.svc'
-  project: services
+    namespace: istio-system
+    server: https://kubernetes.default.svc
+  project: infra
   source:
-    path: 2-services/operators/artifactory
+    path: 3-infra/namespaces/istio-system
     repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
     targetRevision: bringup
-    helm:
-      valueFiles:
-      - values.yaml
   syncPolicy:
     automated:
       prune: true

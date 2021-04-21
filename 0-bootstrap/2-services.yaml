@@ -6,6 +6,7 @@ metadata:
 spec:
   sourceRepos:
   - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/IBM/ibm-garage-tekton-tasks.git
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
@@ -13,16 +14,18 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openshift-marketplace
     server: https://kubernetes.default.svc
+  - namespace: ci
+    server: https://kubernetes.default.svc
   - namespace: dev
     server: https://kubernetes.default.svc
   - namespace: qa
     server: https://kubernetes.default.svc
   - namespace: staging
     server: https://kubernetes.default.svc
-  - namespace: openldap
-    server: https://kubernetes.default.svc
   - namespace: sealed-secrets
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
+  - namespace: istio-system
+    server: https://kubernetes.default.svc
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
