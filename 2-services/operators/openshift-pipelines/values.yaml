@@ -1,4 +1,4 @@
-openshift-pipelines:
+tekton-operator:
   clusterType: "ocp4"
   ocpCatalog:
     channel: stable
