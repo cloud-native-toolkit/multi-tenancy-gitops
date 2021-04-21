@@ -52,6 +52,6 @@ job_config:
   serviceAccountName: artifactory-config
   command: setup-artifactory
   secret: 
-    name = "artifactory-access"
-    key  = "ARTIFACTORY_URL"
+    name: artifactory-access
+    key: ARTIFACTORY_URL
     
