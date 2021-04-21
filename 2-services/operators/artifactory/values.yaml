@@ -46,3 +46,12 @@ ocp-route:
   serviceName: artifactory-artifactory
   termination: edge
   insecurePolicy: Redirect
+
+job_config:
+  name: artifactory
+  serviceAccountName: artifactory-config
+  command: setup-artifactory
+  secret: 
+    name = "artifactory-access"
+    key  = "ARTIFACTORY_URL"
+    
