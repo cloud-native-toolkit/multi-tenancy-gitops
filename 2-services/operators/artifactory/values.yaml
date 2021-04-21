@@ -47,7 +47,7 @@ ocp-route:
   termination: edge
   insecurePolicy: Redirect
 
-job_config:
+setup-job:
   name: artifactory
   serviceAccountName: artifactory-config
   command: setup-artifactory
