@@ -11,9 +11,6 @@ spec:
     path: 2-services/operators/openshift-pipelines
     repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
     targetRevision: bringup
-    helm:
-      valueFiles:
-      - values.yaml
   syncPolicy:
     automated:
       prune: true
