@@ -1,4 +1,5 @@
 tekton-operator:
-  clusterType: "ocp4"
+  global:
+    clusterType: "ocp4"
   ocpCatalog:
     channel: stable
