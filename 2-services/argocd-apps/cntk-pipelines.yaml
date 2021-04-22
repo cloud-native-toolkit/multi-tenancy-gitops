@@ -4,7 +4,7 @@ metadata:
   name: pipelines
 spec:
   destination:
-    namespace: ci
+    namespace: tools
     server: https://kubernetes.default.svc
   project: services
   source:
