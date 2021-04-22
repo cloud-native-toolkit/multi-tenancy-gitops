@@ -4,7 +4,7 @@ metadata:
   name: ibm-platform-navigator-instance
 spec:
   destination:
-    namespace: tools
+    namespace: dev
     server: https://kubernetes.default.svc
   project: services
   source:
