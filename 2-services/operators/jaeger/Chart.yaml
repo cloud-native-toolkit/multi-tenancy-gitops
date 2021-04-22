@@ -7,4 +7,4 @@ appVersion: "1.0"
 dependencies:
   - name: jaeger-operator
     version: 0.10.0
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/

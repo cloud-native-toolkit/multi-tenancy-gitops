@@ -10,7 +10,7 @@ spec:
   source:
     path: 2-services/instances/ibm-platform-navigator
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: bringup
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true

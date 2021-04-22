@@ -1,0 +1,56 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infra
+spec:
+  sourceRepos:
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  destinations:
+  - namespace: ci
+    server: https://kubernetes.default.svc
+  - namespace: dev
+    server: https://kubernetes.default.svc
+  - namespace: qa
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
+    server: https://kubernetes.default.svc
+  - namespace: tools
+    server: https://kubernetes.default.svc
+  - namespace: istio-system
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ""
+    kind: Namespace
+  - group: ""
+    kind: ClusterRoleBinding
+  - group: "security.openshift.io"
+    kind: SecurityContextConstraints
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 3-infra/argocd-apps
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

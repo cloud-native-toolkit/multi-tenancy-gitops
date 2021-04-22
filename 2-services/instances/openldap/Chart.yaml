@@ -7,4 +7,4 @@ home: https://www.openldap.ort
 dependencies:
   - name: openldap
     version: 0.1.6
-    repository: https://hollisc.github.io/gitops-testing/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/

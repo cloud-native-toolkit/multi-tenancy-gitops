@@ -9,8 +9,8 @@ spec:
   project: services
   source:
     path: 2-services/operators/jaeger
-    repoURL: https://github.com/csantanapr-cn-toolkit-tests/gitops-03-18.git
-    targetRevision: main
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
     helm:
       valueFiles:
       - values.yaml
