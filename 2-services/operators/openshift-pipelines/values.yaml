@@ -1,4 +1,9 @@
+global: {}
 tekton-operator:
   clusterType: "ocp4"
   ocpCatalog:
     channel: stable
+    installPlanApproval: Automatic
+    name: openshift-pipelines-operator-rh
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
