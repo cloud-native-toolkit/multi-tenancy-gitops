@@ -10,6 +10,8 @@ spec:
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
+  - namespace: redhat-operators
+    server: https://kubernetes.default.svc
   - namespace: openshift-operators
     server: https://kubernetes.default.svc
   - namespace: openshift-marketplace
