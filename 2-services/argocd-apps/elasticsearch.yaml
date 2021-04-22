@@ -9,8 +9,8 @@ spec:
   project: services
   source:
     path: 2-services/operators/elasticsearch
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
-    targetRevision: bringup
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
     helm:
       valueFiles:
       - values.yaml
