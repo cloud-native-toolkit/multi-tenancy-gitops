@@ -21,6 +21,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: istio-system
     server: https://kubernetes.default.svc
+  - namespace: openldap
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
@@ -47,7 +49,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 3-infra/argocd-apps
+    path: 3-infra/argocd
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
