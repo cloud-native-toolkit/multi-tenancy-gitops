@@ -29,7 +29,7 @@ spec:
   - namespace: istio-system
     server: https://kubernetes.default.svc
   - namespace: openldap
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 3-infra, here for now for artifactory
   - group: "security.openshift.io"
@@ -53,7 +53,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 2-services/argocd-apps
+    path: 2-services/argocd
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
