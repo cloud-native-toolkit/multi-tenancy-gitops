@@ -1,0 +1,8 @@
+apiVersion: console.openshift.io/v1
+kind: ConsoleNotification
+metadata:
+  name: banner-env
+spec:
+  backgroundColor: teal
+  location: BannerTop
+  text: Cluster description

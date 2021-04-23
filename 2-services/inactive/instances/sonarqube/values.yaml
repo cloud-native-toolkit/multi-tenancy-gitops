@@ -1,0 +1,50 @@
+global: {}
+
+service-account:
+  name: sonarqube-sonarqube
+  create: false
+  sccs: ["anyuid", "privileged"]
+
+config-service-account:
+  name: sonarqube-config
+  roles:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - "*"
+
+sonarqube:
+  image:
+    pullPolicy: "Always"
+  persistence:
+    enabled: false
+  serviceAccount:
+    create: true
+    name: "sonarqube-sonarqube"
+  podLabels:
+    app.kubernetes.io/part-of : sonarqube
+  postgresql:
+    enabled: true
+    serviceAccount:
+      enabled: true
+      name: sonarqube-sonarqube
+    persistence:
+      enabled: false
+    volumePermissions:
+      enabled: false
+    master:
+      label:
+        app.kubernetes.io/part-of : sonarqube
+      podLabels:
+        app.kubernetes.io/part-of : sonarqube
+
+ocp-route:
+  nameOverride: "sonarqube"
+  targetPort: "http"
+  app: "sonarqube"
+  serviceName: "sonarqube-sonarqube"
+  termination: edge
+  insecurePolicy: Redirect
