@@ -30,6 +30,10 @@ spec:
     kind: ClusterRoleBinding
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
+  - group: "console.openshift.io"
+    kind: ConsoleNotification
+  - group: "console.openshift.io"
+    kind: ConsoleLink        
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
