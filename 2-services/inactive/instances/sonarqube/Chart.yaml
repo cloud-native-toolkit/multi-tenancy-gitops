@@ -1,0 +1,20 @@
+apiVersion: v2
+name: sonarqube
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: 1.16.0
+dependencies:
+  - name: service-account
+    version: 0.5.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+  - name: service-account
+    version: 0.5.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    alias: config-service-account
+  - name: sonarqube
+    version: 6.6.0
+    repository: https://oteemo.github.io/charts
+  - name: ocp-route
+    version: 0.3.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/

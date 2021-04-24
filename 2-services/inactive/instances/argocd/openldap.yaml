@@ -1,16 +1,17 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: openldap
 spec:
   destination:
-    namespace: tools
-    server: https://kubernetes.default.svc
-  project: default
+    namespace: openldap
+    server: 'https://kubernetes.default.svc'
+  project: services
   source:
-    path:
+    path: 2-services/instances/openldap
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
+    helm:
+      valueFiles:
+      - values.yaml
   syncPolicy: {}
----

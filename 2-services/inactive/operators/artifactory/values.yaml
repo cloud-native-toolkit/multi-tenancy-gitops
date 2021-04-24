@@ -1,0 +1,48 @@
+
+global: {}
+
+service-account:
+  name: artifactory-artifactory
+  create: false
+  sccs: ["anyuid", "privileged"]
+
+config-service-account:
+  name: artifactory-config
+  roles:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - "*"
+
+artifactory:
+  nameOverride: artifactory
+  artifactory:
+    image:
+      repository: docker.bintray.io/jfrog/artifactory-oss
+    adminAccess:
+      password: admin
+    persistence:
+      enabled: true
+      storageClassName: ''
+      size: 5Gi
+    uid: 0
+  ingress:
+    enabled: false
+  postgresql:
+    enabled: false
+  nginx:
+    enabled: false
+  serviceAccount:
+    create: true
+    name: artifactory-artifactory
+
+ocp-route:
+  nameOverride: artifactory
+  targetPort: router
+  app: artifactory
+  serviceName: artifactory-artifactory
+  termination: edge
+  insecurePolicy: Redirect

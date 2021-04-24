@@ -1,0 +1,6 @@
+
+swaggereditor:
+  clusterType: "ocp4"
+  ingress: 
+    enabled: true
+  

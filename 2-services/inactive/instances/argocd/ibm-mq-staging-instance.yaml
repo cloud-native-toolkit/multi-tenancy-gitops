@@ -1,16 +1,17 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: ibm-mq-staging-instance
 spec:
   destination:
-    namespace: tools
+    namespace: staging
     server: https://kubernetes.default.svc
-  project: default
+  project: services
   source:
-    path:
+    path: 2-services/instances/staging/mq-infra
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
+    helm:
+      valueFiles:
+      - values.yaml
   syncPolicy: {}
----

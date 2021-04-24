@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pact-broker
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: 2-services/instances/pact-broker
+    repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
+    targetRevision: <github-branch>
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

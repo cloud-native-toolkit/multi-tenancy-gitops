@@ -1,16 +1,17 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: mq-quarkus-app-qa
 spec:
   destination:
-    namespace: tools
+    namespace: qa
     server: https://kubernetes.default.svc
-  project: default
+  project: applications
   source:
-    path:
+    path: 1-apps/instances/qa/mq-quarkus-app
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
+    helm:
+      valueFiles:
+      - values.yaml
   syncPolicy: {}
----

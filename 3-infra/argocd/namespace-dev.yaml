@@ -1,16 +1,17 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: namespace-dev
 spec:
   destination:
-    namespace: tools
+    namespace: dev
     server: https://kubernetes.default.svc
-  project: default
+  project: infra
   source:
-    path:
+    path: 3-infra/namespaces/dev
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
-  syncPolicy: {}
----
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

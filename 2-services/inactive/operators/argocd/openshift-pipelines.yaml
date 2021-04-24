@@ -1,16 +1,17 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: openshift-pipelines-operator
 spec:
   destination:
-    namespace: tools
+    namespace: openshift-operators
     server: https://kubernetes.default.svc
-  project: default
+  project: services
   source:
-    path:
+    path: 2-services/operators/openshift-pipelines
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
-  syncPolicy: {}
----
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

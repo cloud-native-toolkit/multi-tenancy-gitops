@@ -1,0 +1,12 @@
+global: {}
+developer-dashboard:
+  clusterType: "ocp4"
+  ingressSubdomain: ""
+  tlsSecretName: ""
+  sso:
+    enabled: true
+  image:
+    repository: "quay.io/ibmgaragecloud/developer-dashboard"
+    tag: "v1.3.11"
+  ingress:
+    enabled: false

@@ -1,0 +1,13 @@
+global: {}
+pact-broker:
+  database:
+    type: sqlite
+    name: pactbroker.sqlite
+
+  route:
+    enabled: true
+    termination: edge
+    insecure: Redirect
+
+  ingress:
+    enabled: false
