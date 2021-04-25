@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-mq-qa-instance
+  name: ibm-mq-prod-instance
 spec:
   destination:
-    namespace: qa
+    namespace: prod
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/instances/qa/mq-infra
+    path: 2-services/instances/prod/mq-infra
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
     helm:

@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespace-qa
+  name: mq-spring-app-prod
 spec:
   destination:
-    namespace: qa
+    namespace: prod
     server: https://kubernetes.default.svc
-  project: infra
+  project: applications
   source:
-    path: 3-infra/namespaces/qa
+    path: 1-apps/instances/prod/mq-spring-app
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy: {}
