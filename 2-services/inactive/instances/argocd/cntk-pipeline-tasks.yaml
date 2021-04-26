@@ -8,9 +8,9 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/instances/cloud-native-toolkit
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
-    targetRevision: bringup
+    path: 2-services/active/instances/cloud-native-toolkit
+    repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
+    targetRevision: <github-branch>
   syncPolicy:
     automated:
       prune: true

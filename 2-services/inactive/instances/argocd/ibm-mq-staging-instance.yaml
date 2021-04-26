@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/instances/staging/mq-infra
+    path: 2-services/active/instances/staging/mq-infra
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
     helm:
