@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/operators/service-mesh
+    path: 2-services/active/operators/service-mesh
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
     helm:

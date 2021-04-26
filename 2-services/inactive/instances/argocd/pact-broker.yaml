@@ -8,7 +8,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: 2-services/instances/pact-broker
+    path: 2-services/active/instances/pact-broker
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
     helm:

@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tasks
+  name: cntk-pipelines-tasks
 spec:
   destination:
     namespace: tools
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: tasks
-    repoURL: https://github.com/IBM/ibm-garage-tekton-tasks.git
-    targetRevision: main
+    path: 2-services/active/instances/cloud-native-toolkit
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true
