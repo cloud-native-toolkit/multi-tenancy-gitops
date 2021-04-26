@@ -1,3 +1,0 @@
-global: {}
-mq-infra:
-  replicaCount: 1
