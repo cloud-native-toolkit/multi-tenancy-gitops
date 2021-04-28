@@ -17,3 +17,9 @@ dependencies:
   - name: ocp-route
     version: 0.3.0
     repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+  - name: tool-config
+    version: 0.9.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+  - name: setup-job
+    version: 0.3.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/    

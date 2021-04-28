@@ -46,3 +46,23 @@ ocp-route:
   serviceName: artifactory-artifactory
   termination: edge
   insecurePolicy: Redirect
+
+setup-job:
+  name: artifactory
+  serviceAccountName: artifactory-config
+  command: setup-artifactory
+  secret:
+    name: artifactory-access
+    key: ARTIFACTORY_URL
+
+tool-config:
+  name: Artifactory
+  url: 'https://artifactory-tools.<Cluster-Domain>'
+  privateUrl: 'http://artifactory-artifactory.tools:8082'
+  username: admin
+  password: password
+  otherSecret:
+    ENCRYPT_PASSWORD: ''
+    ADMIN_USER: admin-access
+    ADMIN_ACCESS_PASSWORD: admin
+  applicationMenu: true
