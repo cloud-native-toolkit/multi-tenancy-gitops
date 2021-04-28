@@ -1,3 +1,8 @@
+service-account:
+  name: openldap
+  create: false
+  sccs: ["anyuid"]
+
 openldap:
   OpenLdap:
     Image: "docker.io/osixia/openldap"

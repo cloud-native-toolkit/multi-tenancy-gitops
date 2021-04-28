@@ -5,6 +5,9 @@ version: 0.1.6
 keywords: [ldap]
 home: https://www.openldap.ort
 dependencies:
+  - name: service-account
+    version: 0.5.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
   - name: openldap
-    version: 0.1.6
-    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
+    version: 0.1.9
+    repository: https://hollisc.github.io/gitops-testing/ #https://cloud-native-toolkit.github.io/toolkit-charts/

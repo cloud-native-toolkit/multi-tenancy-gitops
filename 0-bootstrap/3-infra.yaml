@@ -27,7 +27,7 @@ spec:
   - group: ""
     kind: Namespace
   - group: ""
-    kind: ClusterRoleBinding
+    kind: RoleBinding
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: "console.openshift.io"

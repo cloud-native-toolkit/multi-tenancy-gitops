@@ -8,13 +8,10 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: 2-services/active/instances/openldap
-    repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
-    targetRevision: <github-branch>
+    path: 2-services/instances/openldap
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: demo-cntk
     helm:
       valueFiles:
       - values.yaml
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy: {}
