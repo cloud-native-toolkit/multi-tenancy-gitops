@@ -75,7 +75,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 2-services/active/operators/argocd
+    path: 2-services/argocd/active/operators
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
   syncPolicy:
@@ -93,7 +93,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 2-services/active/instances/argocd
+    path: 2-services/argocd/active/instances
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
   syncPolicy:

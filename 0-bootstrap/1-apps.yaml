@@ -32,7 +32,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 1-apps/argocd
+    path: 1-apps/argocd/active
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
   syncPolicy:
