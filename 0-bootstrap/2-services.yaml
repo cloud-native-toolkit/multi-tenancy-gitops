@@ -34,6 +34,28 @@ spec:
   # TODO: SCC needs to be moved to 3-infra, here for now for artifactory
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
+  - group: "console.openshift.io"
+    kind: ConsoleLink
+  - group: "apps"
+    kind: statefulsets
+  - group: "apps"
+    kind: deployments
+  - group: ""
+    kind: services
+  - group: ""
+    kind: configmaps
+  - group: ""
+    kind: secrets
+  - group: ""
+    kind: serviceaccounts
+  - group: "batch"
+    kind: jobs
+  - group: ""
+    kind: roles
+  - group: "route.openshift.io"
+    kind: routes
+  - group: ""
+    kind: RoleBinding
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only

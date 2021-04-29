@@ -10,4 +10,4 @@ dependencies:
     repository: https://ibm-garage-cloud.github.io/toolkit-charts/
   - name: openldap
     version: 0.1.9
-    repository: https://hollisc.github.io/gitops-testing/ #https://cloud-native-toolkit.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
