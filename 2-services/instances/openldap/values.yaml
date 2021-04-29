@@ -1,0 +1,44 @@
+service-account:
+  name: openldap
+  create: false
+  sccs: ["anyuid"]
+
+openldap:
+  OpenLdap:
+    Image: "docker.io/osixia/openldap"
+    ImageTag: "1.1.10"
+    ImagePullPolicy: "Always"
+    Component: "openldap"
+
+    InitImage: "docker.io/busybox"
+    InitImageTag: "1.30.1"
+    InitImagePullPolicy: "Always"
+
+    Replicas: 1
+
+    Cpu: "512m"
+    Memory: "200Mi"
+
+    Domain: "local.io"
+    AdminPassword: "admin"
+    Https: "false"
+    SeedUsers:
+      usergroup: "users"
+      userlist: "user1,user2,user3,user4"
+      initialPassword: "redhat"
+
+  PhpLdapAdmin:
+    Image: "docker.io/osixia/phpldapadmin"
+    ImageTag: "0.7.0"
+    ImagePullPolicy: "Always"
+    Component: "phpadmin"
+
+    Replicas: 1
+
+    NodePort: 31080
+
+    Cpu: "512m"
+    Memory: "200Mi"
+
+route:
+  enabled: true

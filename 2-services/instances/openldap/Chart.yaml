@@ -1,0 +1,13 @@
+apiVersion: v2
+description: A OpenLDAP Chart for Kubernetes
+name: openldap
+version: 0.1.6
+keywords: [ldap]
+home: https://www.openldap.ort
+dependencies:
+  - name: service-account
+    version: 0.5.0
+    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+  - name: openldap
+    version: 0.1.9
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
