@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: applications
   source:
-    path: 1-apps/instances/staging/mq-quarkus-app
+    path: 1-apps/instances/namespace-staging/mq-quarkus-app
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
     helm:

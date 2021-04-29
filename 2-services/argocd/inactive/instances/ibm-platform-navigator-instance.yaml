@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/active/instances/ibm-platform-navigator
+    path: 2-services/instances/ibm-platform-navigator
     repoURL: https://github.com/<github-org>/multi-tenancy-gitops.git
     targetRevision: <github-branch>
   syncPolicy: {}
