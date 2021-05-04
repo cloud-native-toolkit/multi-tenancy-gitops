@@ -68,6 +68,13 @@ rules:
     resources:
       - subscriptions
   - verbs:
+      - '*'
+    apiGroups:
+      - 'tekton.dev'
+    resources:
+      - pipelines
+      - tasks
+  - verbs:
       - create
       - list
     apiGroups:
