@@ -46,6 +46,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'cert-manager.io'
+    resources:
+      - clusterissuers         
+  - verbs:
+      - '*'
+    apiGroups:
       - 'bitnami.com'
     resources:
       - sealedsecretcontrollers
