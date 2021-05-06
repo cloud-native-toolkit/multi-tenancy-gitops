@@ -7,20 +7,17 @@ appVersion: 1.16.0
 dependencies:
   - name: service-account
     version: 0.5.0
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
   - name: service-account
     version: 0.5.0
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
     alias: config-service-account
   - name: sonarqube
     version: 6.6.0
     repository: https://oteemo.github.io/charts
   - name: ocp-route
     version: 0.3.0
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
-  # - name: tool-config
-  #   version: 0.9.0
-  #   repository: https://ibm-garage-cloud.github.io/toolkit-charts/
-  # - name: setup-job
-  #   version: 0.1.7
-  #   repository: https://ibm-garage-cloud.github.io/toolkit-charts/
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
+  - name: argocd-hook-job
+    version: 0.1.3
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
