@@ -46,6 +46,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'cert-manager.io'
+    resources:
+      - clusterissuers         
+  - verbs:
+      - '*'
+    apiGroups:
       - 'bitnami.com'
     resources:
       - sealedsecretcontrollers
@@ -67,6 +73,13 @@ rules:
       - 'operators.coreos.com'
     resources:
       - subscriptions
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'tekton.dev'
+    resources:
+      - pipelines
+      - tasks
   - verbs:
       - create
       - list
