@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mq-self-signed-ca-cert
+spec:
+  commonName: any.common.name
+  isCA: true
+  dnsNames:
+    - >-
+      *.gitops-sandbox2-6ccd7f378ae819553d37d5f2ee142bd6-0000.tor01.containers.appdomain.cloud
+  secretName: mq-self-signed-ca-cert
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: selfsigned-cluster-issuer
