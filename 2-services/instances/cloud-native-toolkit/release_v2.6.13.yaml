@@ -1,14 +1,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-gitops-edge-v2-6-10
+  name: ibm-gitops-edge-v2-6-13
   annotations:
     description: Registers the image with the Edge server using the hzn cli
     app.openshift.io/description: Registers the image with the Edge server using the hzn cli
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -178,14 +178,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-operator-bundle-v2-6-10
+  name: ibm-operator-bundle-v2-6-13
   annotations:
     description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -306,14 +306,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-gradle-pact-verify-v2-6-10
+  name: ibm-gradle-pact-verify-v2-6-13
   annotations:
     description: Performs pact verification on the service provider
     app.openshift.io/description: Performs pact verification on the service provider
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -417,14 +417,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-health-check-mq-v2-6-10
+  name: ibm-health-check-mq-v2-6-13
   annotations:
     description: Performs a health check on the queue manager
     app.openshift.io/description: Performs a health check on the queue manager
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: app-namespace
@@ -495,14 +495,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-build-tag-push-v2-6-10
+  name: ibm-build-tag-push-v2-6-13
   annotations:
     description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -619,14 +619,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-dockerfile-lint-v2-6-10
+  name: ibm-dockerfile-lint-v2-6-13
   annotations:
     description: Optional linter for Dockerfiles; if a ".hadolint" file is in the repo root, this task automatically picks up; otherwise hadolint file name must be passed via ConfigMap. See Hadolint on Dockerhub for more
     app.openshift.io/description: Optional linter for Dockerfiles; if a ".hadolint" file is in the repo root, this task automatically picks up; otherwise hadolint file name must be passed via ConfigMap
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -669,7 +669,7 @@ spec:
       script: |
         set +x
         if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
-            git clone "https://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F 'https://' '{print $2}')" $(params.source-dir)
+            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
         else
             set -x
             git clone $(params.git-url) $(params.source-dir)
@@ -679,7 +679,7 @@ spec:
         git checkout $(params.git-revision)
     - name: lint
       image: $(params.LINT_IMAGE)
-      workingDir: $(params.source-dir)      
+      workingDir: $(params.source-dir)
       env:
         - name: HADOLINT_CFG
           valueFrom:
@@ -687,13 +687,13 @@ spec:
               name: hadolint-config
               key: HADOLINT_CFG
               optional: true
-      script: | 
+      script: |
         PERFORM_LINT="$(params.lint-dockerfile)"
         if [[ "${PERFORM_LINT}" == "false" ]] || [[ -z "${PERFORM_LINT}" ]]; then
           echo "User selected to skip Dockerfile linting. Skipping this task."
           exit 0
         fi
-        
+
         FILE="$(params.source-dir)"/.hadolint.yaml
 
         if [ -f "${HADOLINT_CFG}" ]; then
@@ -708,9 +708,9 @@ spec:
           cat "${FILE}"
           echo "For more information about hadolint please refer to https://cloudnativetoolkit.dev/"
           hadolint $(params.DOCKERFILE)
-        
+
         else
-          echo "In this step, hadolint will lint your Dockerfile" 
+          echo "In this step, hadolint will lint your Dockerfile"
           echo "If you would like to configure hadolint, please see https://github.com/hadolint/hadolint"
           echo "For more information about hadolint please refer to https://cloudnativetoolkit.dev/"
           hadolint $(params.DOCKERFILE)
@@ -720,14 +720,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-operator-catalog-gitops-v2-6-10
+  name: ibm-operator-catalog-gitops-v2-6-13
   annotations:
     description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -967,14 +967,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-img-scan-trivy-v2-6-10
+  name: ibm-img-scan-trivy-v2-6-13
   annotations:
     description: Runs an image scan with Trivy and fails the build if issues are found.
     app.openshift.io/description: Runs an image scan with Trivy and fails the build if issues are found.
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: image-url
@@ -1063,14 +1063,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-health-check-v2-6-10
+  name: ibm-health-check-v2-6-13
   annotations:
     description: Performs a health check on the deployed application
     app.openshift.io/description: Performs a health check on the deployed application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: app-namespace
@@ -1151,14 +1151,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-smoke-tests-mq-v2-6-10
+  name: ibm-smoke-tests-mq-v2-6-13
   annotations:
     description: Deploys the application to the CI environment for verification using the provided helm chart
     app.openshift.io/description: Deploys the application to the CI environment for verification using the provided helm chart
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -1221,7 +1221,7 @@ spec:
         git checkout $(params.git-revision)
     - name: deploy
       image: $(params.tools-image)
-      workingdir: $(params.source-dir)
+      workingDir: $(params.source-dir)
       env:
         - name: TLS_SECRET_NAME
           valueFrom:
@@ -1416,7 +1416,7 @@ spec:
           fi
     - name: cleanup
       image: $(params.tools-image)
-      workingdir: $(params.source-dir)
+      workingDir: $(params.source-dir)
       env:
         - name: TLS_SECRET_NAME
           valueFrom:
@@ -1442,14 +1442,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-nodejs-test-v2-6-10
+  name: ibm-nodejs-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a NodeJS application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a NodeJS application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -1602,14 +1602,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-img-release-v2-6-10
+  name: ibm-img-release-v2-6-13
   annotations:
     description: Tags the git repository and releases the intermediate container image with the version tag
     app.openshift.io/description: Tags the git repository and releases the intermediate container image with the version tag
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: image-from
@@ -1682,14 +1682,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-golang-test-v2-6-10
+  name: ibm-golang-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a Golang application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a Golang application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -1796,14 +1796,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-img-scan-ibm-v2-6-10
+  name: ibm-img-scan-ibm-v2-6-13
   annotations:
     description: Checks the results for the Vulnerability Advisor scan if deploying images to IBM Container Registry
     app.openshift.io/description: Checks the results for the Vulnerability Advisor scan if deploying images to IBM Container Registry
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: image-url
@@ -1908,14 +1908,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-build-tag-push-ace-bar-v2-6-10
+  name: ibm-build-tag-push-ace-bar-v2-6-13
   annotations:
     description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
   - name: git-url
@@ -2047,14 +2047,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-java-gradle-test-v2-6-10
+  name: ibm-java-gradle-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a Java gradle application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a Java gradle application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -2168,14 +2168,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-operator-test-v2-6-10
+  name: ibm-operator-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a Java gradle application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a Java gradle application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -2213,7 +2213,7 @@ spec:
       script: |
         set +x
         if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
-            git clone "https://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F 'https://' '{print $2}')" $(params.source-dir)
+            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
         else
             set -x
             git clone $(params.git-url) $(params.source-dir)
@@ -2231,14 +2231,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-operator-catalog-build-v2-6-10
+  name: ibm-operator-catalog-build-v2-6-13
   annotations:
     description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/description: Executes logic to build, tag and push a container image using the intermediate sha tag to the image-url
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -2417,14 +2417,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-sonar-test-v2-6-10
+  name: ibm-sonar-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a Python application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a NodeJS application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -2520,14 +2520,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-tag-release-v2-6-10
+  name: ibm-tag-release-v2-6-13
   annotations:
     description: Tags the git repository with the next version release value
     app.openshift.io/description: Tags the git repository with the next version release value
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -2627,14 +2627,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-gitops-with-pr-v2-6-10
+  name: ibm-gitops-with-pr-v2-6-13
   annotations:
     description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: app-name
@@ -2663,7 +2663,7 @@ spec:
   steps:
     - name: gitops
       image: $(params.tools-image)
-      workingdir: $(params.source-dir)
+      workingDir: $(params.source-dir)
       env:
         - name: NAMESPACE
           valueFrom:
@@ -2862,14 +2862,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-deploy-v2-6-10
+  name: ibm-deploy-v2-6-13
   annotations:
     description: Deploys the application to the CI environment for verification using the provided helm chart
     app.openshift.io/description: Deploys the application to the CI environment for verification using the provided helm chart
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -3074,14 +3074,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-setup-v2-6-10
+  name: ibm-setup-v2-6-13
   annotations:
     description: Sets up the pipeline environment and generates/normalizes a number of param values
     app.openshift.io/description: Sets up the pipeline environment and generates/normalizes a number of param values
     app.openshift.io/vcs-ref: master
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -3356,14 +3356,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-java-maven-test-v2-6-10
+  name: ibm-java-maven-test-v2-6-13
   annotations:
     description: Executes build, test, and sonarscan logic for a Java maven application
     app.openshift.io/description: Executes build, test, and sonarscan logic for a Java maven application
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -3482,14 +3482,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-helm-release-v2-6-10
+  name: ibm-helm-release-v2-6-13
   annotations:
     description: Publishes the helm chart to the helm repository using the version provided in the image-url
     app.openshift.io/description: Publishes the helm chart to the helm repository using the version provided in the image-url
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: git-url
@@ -3773,14 +3773,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-operator-gitops-v2-6-10
+  name: ibm-operator-gitops-v2-6-13
   annotations:
     description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: app-name
@@ -3965,14 +3965,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-img-scan-v2-6-10
+  name: ibm-img-scan-v2-6-13
   annotations:
     description: Runs an image scan with Trivy or IBM VA and fails the build if issues are found.
     app.openshift.io/description: Runs an image scan with Trivy or IBM VA and fails the build if issues are found.
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: image-url
@@ -4147,14 +4147,14 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: ibm-gitops-v2-6-10
+  name: ibm-gitops-v2-6-13
   annotations:
     description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/description: Publishes the helm chart configuration to the provided gitops repo to trigger downstream deployments
     app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
     app.openshift.io/vcs-ref: master
   labels:
-    version: 2.6.10
+    version: 2.6.13
 spec:
   params:
     - name: app-name
@@ -4545,7 +4545,7 @@ spec:
       name: ibm-img-scan
   - name: helm-release
     taskRef:
-      name: ibm-helm-release-v2-6-10
+      name: ibm-helm-release-v2-6-13
     runAfter:
       - img-scan
     params:
@@ -4599,7 +4599,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -4609,7 +4609,7 @@ spec:
           value: $(params.scan-image)
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - setup
       params:
@@ -4629,7 +4629,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: smoke-tests-mq
       taskRef:
-        name: ibm-smoke-tests-mq-v2-6-10
+        name: ibm-smoke-tests-mq-v2-6-13
       runAfter:
         - build
       params:
@@ -4657,7 +4657,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - smoke-tests-mq
       params:
@@ -4671,7 +4671,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -4681,7 +4681,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -4693,7 +4693,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -4713,7 +4713,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -4749,7 +4749,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -4761,7 +4761,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-golang-test-v2-6-10
+        name: ibm-golang-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -4775,7 +4775,7 @@ spec:
           value: "$(tasks.setup.results.app-name)"
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -4789,7 +4789,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -4809,7 +4809,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -4837,7 +4837,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -4859,7 +4859,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -4873,7 +4873,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -4883,7 +4883,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -4895,7 +4895,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -4915,7 +4915,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: edge-cd
       taskRef:
-        name: ibm-gitops-edge-v2-6-10
+        name: ibm-gitops-edge-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -4956,7 +4956,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -4970,7 +4970,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-java-maven-test-v2-6-10
+        name: ibm-java-maven-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -4986,7 +4986,7 @@ spec:
           value: "$(params.java-bin-path)"
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -5000,7 +5000,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -5020,7 +5020,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -5048,7 +5048,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -5070,7 +5070,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -5084,7 +5084,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -5094,7 +5094,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -5106,7 +5106,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -5126,7 +5126,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -5162,7 +5162,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -5174,7 +5174,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-nodejs-test-v2-6-10
+        name: ibm-nodejs-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -5190,7 +5190,7 @@ spec:
           value: $(tasks.setup.results.app-name)
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -5204,7 +5204,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -5224,7 +5224,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -5252,7 +5252,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -5274,7 +5274,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -5288,7 +5288,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -5298,7 +5298,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -5310,7 +5310,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -5330,7 +5330,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -5368,7 +5368,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -5382,7 +5382,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: code-lint
       taskRef:
-        name: ibm-sonar-test-v2-6-10
+        name: ibm-sonar-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -5396,7 +5396,7 @@ spec:
           value: $(tasks.setup.results.app-name)
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - code-lint
       params:
@@ -5410,7 +5410,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -5430,7 +5430,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -5458,7 +5458,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -5480,7 +5480,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -5494,7 +5494,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -5504,7 +5504,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -5516,7 +5516,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -5536,7 +5536,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -5572,7 +5572,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -5584,7 +5584,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-golang-test-v2-6-10
+        name: ibm-golang-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -5598,7 +5598,7 @@ spec:
           value: "$(tasks.setup.results.app-name)"
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -5612,7 +5612,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -5632,7 +5632,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -5660,7 +5660,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -5682,7 +5682,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -5696,7 +5696,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -5706,7 +5706,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -5718,7 +5718,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -5738,7 +5738,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -5778,7 +5778,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -5792,7 +5792,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-java-gradle-test-v2-6-10
+        name: ibm-java-gradle-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -5806,7 +5806,7 @@ spec:
           value: "$(tasks.setup.results.app-name)"
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -5820,7 +5820,7 @@ spec:
           value: "$(tasks.setup.results.dockerfile-lint)"
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -5840,7 +5840,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -5868,7 +5868,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -5890,7 +5890,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: pact-verify
       taskRef:
-        name: ibm-gradle-pact-verify-v2-6-10
+        name: ibm-gradle-pact-verify-v2-6-13
       runAfter:
         - health
       params:
@@ -5906,7 +5906,7 @@ spec:
           value: "$(tasks.deploy.results.service-port)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - pact-verify
       params:
@@ -5920,7 +5920,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -5930,7 +5930,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -5942,7 +5942,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -5962,7 +5962,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
@@ -5995,7 +5995,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -6005,7 +6005,7 @@ spec:
           value: $(params.scan-image)
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - setup
       params:
@@ -6019,7 +6019,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: build
       taskRef:
-        name: ibm-operator-catalog-build-v2-6-10
+        name: ibm-operator-catalog-build-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -6033,7 +6033,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: gitops
       taskRef:
-        name: ibm-operator-catalog-gitops-v2-6-10
+        name: ibm-operator-catalog-gitops-v2-6-13
       runAfter:
         - build
       params:
@@ -6068,7 +6068,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -6078,7 +6078,7 @@ spec:
           value: $(params.scan-image)
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - setup
       params:
@@ -6098,7 +6098,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - build
       params:
@@ -6112,7 +6112,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -6122,7 +6122,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -6134,7 +6134,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: operator-bundle
       taskRef:
-        name: ibm-operator-bundle-v2-6-10
+        name: ibm-operator-bundle-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -6150,7 +6150,7 @@ spec:
           value: "$(tasks.tag-release.results.tag)"
     - name: gitops
       taskRef:
-        name: ibm-operator-gitops-v2-6-10
+        name: ibm-operator-gitops-v2-6-13
       runAfter:
         - operator-bundle
       params:
@@ -6187,7 +6187,7 @@ spec:
   tasks:
     - name: setup
       taskRef:
-        name: ibm-setup-v2-6-10
+        name: ibm-setup-v2-6-13
       params:
         - name: git-url
           value: $(params.git-url)
@@ -6199,7 +6199,7 @@ spec:
           value: $(params.lint-dockerfile)
     - name: test
       taskRef:
-        name: ibm-java-maven-test-v2-6-10
+        name: ibm-java-maven-test-v2-6-13
       runAfter:
         - setup
       params:
@@ -6214,7 +6214,7 @@ spec:
 
     - name: dockerfile-lint
       taskRef:
-        name: ibm-dockerfile-lint-v2-6-10
+        name: ibm-dockerfile-lint-v2-6-13
       runAfter:
         - test
       params:
@@ -6229,7 +6229,7 @@ spec:
           
     - name: build
       taskRef:
-        name: ibm-build-tag-push-v2-6-10
+        name: ibm-build-tag-push-v2-6-13
       runAfter:
         - dockerfile-lint
       params:
@@ -6249,7 +6249,7 @@ spec:
           value: "$(tasks.setup.results.image-tag)"
     - name: deploy
       taskRef:
-        name: ibm-deploy-v2-6-10
+        name: ibm-deploy-v2-6-13
       runAfter:
         - build
       params:
@@ -6277,7 +6277,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: health
       taskRef:
-        name: ibm-health-check-v2-6-10
+        name: ibm-health-check-v2-6-13
       runAfter:
         - deploy
       params:
@@ -6299,7 +6299,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: tag-release
       taskRef:
-        name: ibm-tag-release-v2-6-10
+        name: ibm-tag-release-v2-6-13
       runAfter:
         - health
       params:
@@ -6313,7 +6313,7 @@ spec:
           value: "$(tasks.setup.results.js-image)"
     - name: img-release
       taskRef:
-        name: ibm-img-release-v2-6-10
+        name: ibm-img-release-v2-6-13
       runAfter:
         - tag-release
       params:
@@ -6323,7 +6323,7 @@ spec:
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
     - name: img-scan
       taskRef:
-        name: ibm-img-scan-v2-6-10
+        name: ibm-img-scan-v2-6-13
       runAfter:
         - img-release
       params:
@@ -6335,7 +6335,7 @@ spec:
           value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
-        name: ibm-helm-release-v2-6-10
+        name: ibm-helm-release-v2-6-13
       runAfter:
         - img-scan
       params:
@@ -6355,7 +6355,7 @@ spec:
           value: "$(tasks.setup.results.tools-image)"
     - name: gitops
       taskRef:
-        name: ibm-gitops-v2-6-10
+        name: ibm-gitops-v2-6-13
       runAfter:
         - helm-release
       params:
