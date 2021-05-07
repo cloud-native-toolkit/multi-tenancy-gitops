@@ -48,7 +48,7 @@ rules:
     apiGroups:
       - 'cert-manager.io'
     resources:
-      - clusterissuers         
+      - clusterissuers
   - verbs:
       - '*'
     apiGroups:
@@ -80,6 +80,12 @@ rules:
     resources:
       - pipelines
       - tasks
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'maistra.io'
+    resources:
+      - servicemeshcontrolplanes      
   - verbs:
       - create
       - list
