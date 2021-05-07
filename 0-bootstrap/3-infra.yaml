@@ -16,7 +16,7 @@ spec:
   - namespace: staging
     server: https://kubernetes.default.svc
   - namespace: prod
-    server: https://kubernetes.default.svc    
+    server: https://kubernetes.default.svc
   - namespace: sealed-secrets
     server: https://kubernetes.default.svc
   - namespace: tools
@@ -49,6 +49,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"  
 spec:
   destination:
     namespace: openshift-gitops
