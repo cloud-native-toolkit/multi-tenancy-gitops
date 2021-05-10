@@ -19,8 +19,6 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: dev
     server: https://kubernetes.default.svc
-  - namespace: qa
-    server: https://kubernetes.default.svc
   - namespace: staging
     server: https://kubernetes.default.svc
   - namespace: prod

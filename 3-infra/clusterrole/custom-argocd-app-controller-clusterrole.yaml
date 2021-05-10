@@ -55,6 +55,7 @@ rules:
       - 'bitnami.com'
     resources:
       - sealedsecretcontrollers
+      - sealedsecrets
   - verbs:
       - '*'
     apiGroups:
@@ -85,7 +86,7 @@ rules:
     apiGroups:
       - 'maistra.io'
     resources:
-      - servicemeshcontrolplanes      
+      - servicemeshcontrolplanes
   - verbs:
       - create
       - list
