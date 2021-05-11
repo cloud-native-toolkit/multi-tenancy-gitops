@@ -48,13 +48,14 @@ rules:
     apiGroups:
       - 'cert-manager.io'
     resources:
-      - clusterissuers         
+      - clusterissuers
   - verbs:
       - '*'
     apiGroups:
       - 'bitnami.com'
     resources:
       - sealedsecretcontrollers
+      - sealedsecrets
   - verbs:
       - '*'
     apiGroups:
@@ -80,6 +81,12 @@ rules:
     resources:
       - pipelines
       - tasks
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'maistra.io'
+    resources:
+      - servicemeshcontrolplanes
   - verbs:
       - create
       - list

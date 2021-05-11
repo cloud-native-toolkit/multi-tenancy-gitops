@@ -14,4 +14,7 @@ spec:
     helm:
       valueFiles:
       - values.yaml
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true        

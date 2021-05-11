@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: infra
+  name: applications
 spec:
   sourceRepos:
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
@@ -11,29 +11,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: dev
     server: https://kubernetes.default.svc
-  - namespace: qa
-    server: https://kubernetes.default.svc
   - namespace: staging
     server: https://kubernetes.default.svc
-  - namespace: sealed-secrets
+  - namespace: prod
     server: https://kubernetes.default.svc
-  - namespace: tools
-    server: https://kubernetes.default.svc
-  - namespace: istio-system
-    server: https://kubernetes.default.svc
-  - namespace: openldap
-    server: https://kubernetes.default.svc
-  clusterResourceWhitelist:
-  - group: ""
-    kind: Namespace
-  - group: ""
-    kind: RoleBinding
-  - group: "security.openshift.io"
-    kind: SecurityContextConstraints
-  - group: "console.openshift.io"
-    kind: ConsoleNotification
-  - group: "console.openshift.io"
-    kind: ConsoleLink
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -46,14 +27,16 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infra
+  name: applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "400"
 spec:
   destination:
     namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 3-infra/argocd/active
+    path: 1-apps/argocd/active
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
