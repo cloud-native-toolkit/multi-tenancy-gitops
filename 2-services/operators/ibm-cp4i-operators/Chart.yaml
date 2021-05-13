@@ -6,5 +6,5 @@ version: 0.1.0
 appVersion: "1.0"
 dependencies:
   - name: ibm-cp4i-operators
-    version: 0.2.1
+    version: 0.2.2
     repository: https://cloud-native-toolkit.github.io/toolkit-charts/

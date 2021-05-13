@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-assetrepository-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "230"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: 2-services/operators/ibm-assetrepository-operator
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+    helm:
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

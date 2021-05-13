@@ -2,6 +2,12 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: sonarqube
+  annotations:
+    argocd.argoproj.io/sync-wave: "300"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io  
 spec:
   destination:
     namespace: tools
