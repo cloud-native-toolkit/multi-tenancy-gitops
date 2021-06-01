@@ -1,0 +1,94 @@
+
+global: {}
+
+service-account:
+  name: instana-agent
+  create: true
+  sccs: ["privileged"]
+
+instana-agent: 
+  agent:
+    # agent.mode is used to set agent mode and it can be APM, INFRASTRUCTURE or AWS
+    # mode: APM
+
+    # Rather than specifying the agent key and optionally the download key, you can "bring your
+    # own secret" creating it in the namespace in which you install the `instana-agent` and
+    # specify its name in the `keysSecret` field. The secret you create must contains
+    # a field called `key` and optionally one called `downloadKey`, which contain, respectively,
+    # the values you'd otherwise set in `.agent.key` and `agent.downloadKey`.
+    keysSecret: 
+
+    # agent.listenAddress is the IP address the agent HTTP server will listen to.
+    # listenAddress: *
+
+    # agent.endpointHost is the hostname of the Instana server your agents will connect to.
+    endpointHost: 
+    # agent.endpointPort is the port number (as a String) of the Instana server your agents will connect to.
+    endpointPort: 
+
+    # use this to set additional environment variables for the instana agent
+    # for example:
+    # env:
+    #   INSTANA_AGENT_TAGS: dev
+    env: {}
+
+    configuration:
+      # When setting this to true, the Helm chart will automatically look up the entries
+      # of the default instana-agent ConfigMap, and mount as agent configuration files
+      # under /opt/instana/agent/etc/instana all entries with keys that match the
+      # 'configuration-*.yaml' scheme
+      #
+      # IMPORTANT: Needs Helm 3.1+ as it is built on the `lookup` function
+      # IMPORTANT: Editing the ConfigMap adding keys requires a `helm upgrade` to take effect
+      autoMountConfigEntries: false
+
+    configuration_yaml: |
+      # Manual a-priori configuration. Configuration will be only used when the sensor
+      # is actually installed by the agent.
+      # The commented out example values represent example configuration and are not
+      # necessarily defaults. Defaults are usually 'absent' or mentioned separately.
+      # Changes are hot reloaded unless otherwise mentioned.
+      # It is possible to create files called 'configuration-abc.yaml' which are
+      # merged with this file in file system order. So 'configuration-cde.yaml' comes
+      # after 'configuration-abc.yaml'. Only nested structures are merged, values are
+      # overwritten by subsequent configurations.
+      # Secrets
+      # To filter sensitive data from collection by the agent, all sensors respect
+      # the following secrets configuration. If a key collected by a sensor matches
+      # an entry from the list, the value is redacted.
+      #com.instana.secrets:
+      #  matcher: 'contains-ignore-case' # 'contains-ignore-case', 'contains', 'regex'
+      #  list:
+      #    - 'key'
+      #    - 'password'
+      #    - 'secret'
+      # Host
+      #com.instana.plugin.host:
+      #  tags:
+      #    - 'dev'
+      #    - 'app1'
+      # Hardware & Zone
+      #com.instana.plugin.generic.hardware:
+      #  enabled: true # disabled by default
+      #  availability-zone: 'zone'
+    # agent.redactKubernetesSecrets sets the INSTANA_KUBERNETES_REDACT_SECRETS environment variable.
+    # redactKubernetesSecrets: null
+
+  cluster:
+    # cluster.name represents the name that will be assigned to this cluster in Instana
+    name: 
+
+  # openshift specifies whether the cluster role should include openshift permissions and other tweaks to the YAML.
+  # The chart will try to auto-detect if the cluster is OpenShift, so you will likely not even need to set this explicitly.
+  openshift: true
+
+  serviceAccount:
+    # Specifies whether a ServiceAccount should be created
+    create: false
+    # The name of the ServiceAccount to use.
+    # If not set and `create` is true, a name is generated using the fullname template
+    # name: instana-agent
+
+  zone:
+    # zone.name is the custom zone that detected technologies will be assigned to
+    name: 
