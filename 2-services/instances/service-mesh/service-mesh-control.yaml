@@ -26,3 +26,14 @@ spec:
     sampling: 10000
     type: Jaeger
   version: v2.0
+---
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  members:
+    - dev
+    - prod
+    - staging
