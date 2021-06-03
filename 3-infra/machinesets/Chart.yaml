@@ -1,0 +1,10 @@
+apiVersion: v2
+name: refarch-machinesets
+description: MachineSets for Infrastructure Nodes, Storage and CloudPaks
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: refarch-machinesets
+    version: 0.1.4
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/
