@@ -1,0 +1,10 @@
+apiVersion: v2
+name: refarch-infraconfig
+description: Placement of Infrastructure Node Components
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: refarch-infraconfig
+    version: 0.1.3
+    repository: https://cloud-native-toolkit.github.io/toolkit-charts/

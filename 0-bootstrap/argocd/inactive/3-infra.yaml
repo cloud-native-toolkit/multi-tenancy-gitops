@@ -23,6 +23,16 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openldap
     server: https://kubernetes.default.svc
+  - namespace: openshift-storage
+    server: https://kubernetes.default.svc
+  - namespace: openshift-machine-api
+    server: https://kubernetes.default.svc
+  - namespace: openshift-monitoring
+    server: https://kubernetes.default.svc
+  - namespace: openshift-cluster-node-tuning-operator
+    server: https://kubernetes.default.svc
+  - namespace: openshift-gitops
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
@@ -34,6 +44,10 @@ spec:
     kind: ConsoleNotification
   - group: "console.openshift.io"
     kind: ConsoleLink
+  - group: "machineconfiguration.openshift.io"
+    kind: MachineConfigPool
+  - group: "machineconfiguration.openshift.io"
+    kind: ContainerRuntimeConfig
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
