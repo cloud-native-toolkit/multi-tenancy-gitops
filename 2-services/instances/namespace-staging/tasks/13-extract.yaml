@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-img-info-extract
+  annotations:
+    description: Extracts the image info
+    app.openshift.io/description: Extracts the image info
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+    app.openshift.io/vcs-ref: master
+  labels:
+    version: 0.0.0
+spec:
+  params:
+    - name: git-url
+    - name: git-revision
+    - name: source-dir
+      default: /source
+    - name: image-from
+      default: ""
+    - name: image-to
+      default: ""
+    - name: tools-image
+      default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
+  results:
+    - name: image-url
+      description: The url of the image to be pushed
+    - name: image-tag
+      description: The tag of the image to be pushed
+  volumes:
+    - name: source
+      emptyDir: {}
+  stepTemplate:
+    volumeMounts:
+      - name: source
+        mountPath: $(params.source-dir)
+  steps:
+    - name: git-clone
+      image: quay.io/ibmgaragecloud/alpine-git
+      env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: GIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: password
+              optional: true
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: username
+              optional: true
+      script: |
+        set +x
+        if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
+            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
+        else
+            set -x
+            git clone $(params.git-url) $(params.source-dir)
+        fi
+        set -x
+        cd $(params.source-dir)
+        git checkout $(params.git-revision)
+    - name: image-tag
+      image: $(params.tools-image)
+      workingDir: $(params.source-dir)
+      script: |
+        IMAGE_FROM="$(params.image-from)"
+        REGISTRY_SERVER_FROM=$(echo "${IMAGE_FROM}" | awk -F / '{print $1}')
+        echo ${REGISTRY_SERVER_FROM}
+        IMAGE_TO="$(params.image-to)"
+        LATEST_TAG="$(git describe --tags `git rev-list --tags --max-count=1`)"
+        echo ${IMAGE_TO}:${LATEST_TAG}
+        echo -n "${IMAGE_TO}:${LATEST_TAG}" | tee $(results.image-url.path)
+        echo -n "${LATEST_TAG}" | tee $(results.image-tag.path)

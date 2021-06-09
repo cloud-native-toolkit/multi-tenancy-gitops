@@ -1,0 +1,66 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ibm-test-pipeline-for-staging-env
+  annotations:
+    app.openshift.io/runtime: test
+spec:
+  params:
+    - name: git-url
+      description: The url for the queuemanager git repository
+    - name: git-revision
+      description: The git revision (branch, tag, or sha) that should be built
+      default: staging
+    - name: environment
+      description: Next environment to be promoted
+      default: prod
+    - name: argoAppName
+      description: Name of the application deployed by argocd in dev namespace (ibm-mq-staging-instance or mq-quarkus-app-staging)
+  tasks:
+    - name: setup
+      taskRef:
+        name: ibm-setup-v2-5-0
+      params:
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-revision
+          value: $(params.git-revision)
+    - name: img-info
+      taskRef:
+        name: ibm-img-info-extract
+      runAfter:
+        - setup
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: image-from
+          value: "$(tasks.setup.results.image-url)"
+        - name: image-to
+          value: "$(tasks.setup.results.image-release)"
+    - name: staging-instance-tests
+      taskRef:
+        name: ibm-argo-tests
+      runAfter:
+        - img-info
+      params:
+        - name: image-url
+          value: "$(tasks.img-info.results.image-url)"
+        - name: argoAppName
+          value: "$(params.argoAppName)"
+    # Add a task to perform some performance / end to end testing in staging environment
+    - name: promote-changes-to-queuemanager
+      taskRef:
+        name: ibm-update-image
+      runAfter:
+        - staging-instance-tests
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-branch
+          value: "$(params.environment)"
+        - name: image-url
+          value: "$(tasks.staging-instance-tests.results.image-url)"

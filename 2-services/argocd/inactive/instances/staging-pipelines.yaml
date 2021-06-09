@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: staging-pipelines
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: staging
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: 2-services/instances/namespace-staging/pipelines
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

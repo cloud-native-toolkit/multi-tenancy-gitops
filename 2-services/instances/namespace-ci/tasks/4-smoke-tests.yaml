@@ -1,0 +1,301 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-smoke-tests
+  annotations:
+    description: Deploys the application to the CI environment for verification using the provided helm chart
+    app.openshift.io/description: Deploys the application to the CI environment for verification using the provided helm chart
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+    app.openshift.io/vcs-ref: master
+  labels:
+    version: 0.0.0
+spec:
+  params:
+    - name: git-url
+    - name: git-revision
+      default: master
+    - name: source-dir
+      default: /source
+    - name: image-server
+      default: ""
+    - name: image-namespace
+      default: ""
+    - name: image-repository
+      default: ""
+    - name: image-tag
+      default: ""
+    - name: app-namespace
+      default: ""
+    - name: app-name
+      default: ""
+    - name: deploy-ingress-type
+      default: "route"
+    - name: tools-image
+      default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
+    - name: health-protocol
+      default: "https"
+    - name: health-endpoint
+      default: "/health"
+    - name: health-url
+      default: ""
+    - name: health-curl
+      default: "-k"
+    - name: tools-image
+      default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
+    - name: resource-type
+      default: ""
+  results:
+    - name: service-port
+    - name: resource-type
+  volumes:
+    - name: source
+      emptyDir: {}
+  stepTemplate:
+    volumeMounts:
+      - name: source
+        mountPath: $(params.source-dir)
+  steps:
+    - name: git-clone
+      image: quay.io/ibmgaragecloud/alpine-git
+      env:
+        - name: GIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: password
+              optional: true
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: username
+              optional: true
+      script: |
+        set +x
+        if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
+            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
+        else
+            set -x
+            git clone $(params.git-url) $(params.source-dir)
+        fi
+        set -x
+        cd $(params.source-dir)
+        git checkout $(params.git-revision)
+    - name: deploy
+      image: $(params.tools-image)
+      workingDir: $(params.source-dir)
+      env:
+        - name: TLS_SECRET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: ibmcloud-config
+              key: TLS_SECRET_NAME
+              optional: true
+        - name: INGRESS_SUBDOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: ibmcloud-config
+              key: INGRESS_SUBDOMAIN
+              optional: true
+      securityContext:
+        privileged: true      
+      script: |
+          #!/usr/bin/env bash
+          set -ex
+          GIT_URL="$(params.git-url)"
+          GIT_REVISION="$(params.git-revision)"
+          APP_NAMESPACE="$(params.app-namespace)"
+          APP_NAME="$(params.app-name)"
+          if [[ -z "${APP_NAME}" ]]; then
+            APP_NAME="$(params.image-repository)"
+          fi
+          IMAGE_SERVER="$(params.image-server)"
+          IMAGE_NAMESPACE="$(params.image-namespace)"
+          IMAGE_REPOSITORY="$(params.image-repository)"
+          IMAGE_VERSION="$(params.image-tag)"
+          IMAGE_URL="${IMAGE_SERVER}/${IMAGE_NAMESPACE}/${IMAGE_REPOSITORY}"
+          INGRESS_TYPE="$(params.deploy-ingress-type)"
+          if [[ "${INGRESS_TYPE}" == "route" ]]; then
+            ROUTE_ENABLED="true"
+            INGRESS_ENABLED="false"
+          else
+            ROUTE_ENABLED="false"
+            INGRESS_ENABLED="true"
+          fi
+
+          export CHART_ROOT=$(find . -name chart)
+          echo "CHART_ROOT: $CHART_ROOT"
+
+          FILE_NUM=$(find . -name 'Chart*.yaml' |wc -l)
+          if [[ "${FILE_NUM}" -gt 1 ]]; then
+            echo "Error: Found >1 Chart*.yaml"
+            exit 1
+          fi
+
+          export CHART=$(find . -name 'Chart*.yaml')
+          echo "CHART: $CHART"
+
+          export CHART_NAME=$(cat $CHART | yq r - name)
+          echo "CHART_NAME: $CHART_NAME"
+
+          # Update Chart name and version
+          if [[ "${CHART_NAME}" != "${APP_NAME}" ]]; then
+            echo "Renaming chart from ${CHART_NAME} to ${APP_NAME}"
+            cp -R "${CHART_ROOT}/${CHART_NAME}" "${CHART_ROOT}/${APP_NAME}"
+            cat "${CHART_ROOT}/${CHART_NAME}/Chart.yaml" | \
+                yq w - name "${APP_NAME}" | \
+                yq w - version "1.0.0-rc${IMAGE_VERSION}" > "${CHART_ROOT}/${APP_NAME}/Chart.yaml"
+          else
+            echo "Chart name and image name match: ${APP_NAME}"
+          fi
+
+          CHART_PATH="${CHART_ROOT}/${APP_NAME}"
+
+          RELEASE_NAME="${APP_NAME}"
+          echo "RELEASE_NAME: $RELEASE_NAME"
+
+          echo $(helm version)
+
+          echo "CHECKING CHART (lint)"
+          helm lint ${CHART_PATH}
+
+          PREFIX=""
+          if [[ -f "${CHART_PATH}/requirements.yaml" ]] || grep -Eq "^dependencies:" "${CHART_PATH}/Chart.yaml"; then
+              DEPENDENCY_FILE="${CHART_PATH}/Chart.yaml"
+              if [[ -f "${CHART_PATH}/requirements.yaml" ]]; then
+                  DEPENDENCY_FILE="${CHART_PATH}/requirements.yaml"
+              fi
+
+              PREFIX="$(yq r -j "${DEPENDENCY_FILE}" | jq -r '.dependencies | .[] | .alias // .name' | head -1)."
+          fi
+
+          # Update helm chart with repository and tag values
+          cat ${CHART_PATH}/values.yaml | \
+              yq w - "${PREFIX}nameOverride" "${APP_NAME}" | \
+              yq w - "${PREFIX}fullnameOverride" "${APP_NAME}" | \
+              yq w - "${PREFIX}vcsInfo.repoUrl" "${GIT_URL}" | \
+              yq w - "${PREFIX}vcsInfo.branch" "${GIT_REVISION}" | \
+              yq w - "${PREFIX}image.repository" "${IMAGE_URL}" | \
+              yq w - --style single "${PREFIX}image.tag" "${IMAGE_VERSION}" | \
+              yq w - "${PREFIX}ingress.enabled" "${INGRESS_ENABLED}" | \
+              yq w - "${PREFIX}route.enabled" "${ROUTE_ENABLED}" > ./values.yaml.tmp
+          cp ./values.yaml.tmp ${CHART_PATH}/values.yaml
+          cat ${CHART_PATH}/values.yaml
+
+          helm dep update "${CHART_PATH}"
+
+          # Using 'upgrade --install" for rolling updates. Note that subsequent updates will occur in the same namespace the release is currently deployed in, ignoring the explicit--namespace argument".
+          helm template ${RELEASE_NAME} ${CHART_PATH} \
+              --namespace ${APP_NAMESPACE} \
+              --set ${PREFIX}ingress.tlsSecretName="${TLS_SECRET_NAME}" \
+              --set ${PREFIX}ingress.subdomain="${INGRESS_SUBDOMAIN}" > ./release.yaml
+
+          echo -e "Generated release yaml for: ${APP_NAMESPACE}/${APP_NAME}"
+          cat ./release.yaml
+
+          echo -e "Deploying into: ${APP_NAMESPACE}/${APP_NAME}"
+          kubectl apply -n ${APP_NAMESPACE} -f ./release.yaml --validate=false > results.out
+          cat results.out
+          echo "Waiting for rollout of ${APP_NAMESPACE}/${APP_NAME}"
+
+
+          cat results.out | \
+            grep -E "deployment|statefulset|integrationserver|queuemanager" | \
+            sed "s/deployment.apps/deployment/g" | \
+            sed "s/statefulset.apps/statefulset/g" | \
+            sed "s/configured//g" | \
+            sed "s/created//g" | \
+            sed "s/unchanged//g" | while read target; do
+            echo "Waiting for rollout of ${target} in ${APP_NAMESPACE}"
+            if [[ ${target} == *"integrationserver"* ]]; then
+              kubectl wait --timeout=-1s --for=condition=Ready ${target}
+            elif [[ ${target} == *"queuemanager"* ]]; then
+              until [[ "$(kubectl get ${target} -o 'jsonpath={.status.phase}')" = "Running" ]];
+              do
+              sleep 5
+              echo "Waiting for Queuemanager to be ready."
+              done
+            else
+              kubectl rollout status -n ${APP_NAMESPACE} ${target}
+              SERVICE_PORT=$(kubectl get svc "${APP_NAME}" -n "${APP_NAMESPACE}" -o jsonpath="{.spec.ports[?(@.name == 'http')].port}")
+              echo -n "${SERVICE_PORT}" | tee $(results.service-port.path)
+            fi
+            echo -n "${target}" | cut -f1 -d / | tee $(results.resource-type.path)
+          done
+    - name: health-check
+      image: $(params.tools-image)
+      script: |
+          #!/usr/bin/env bash
+          set -x
+
+          URL="$(params.health-url)"
+          CURL_FLAGS="$(params.health-curl)"
+
+          if [[ -z "${URL}" ]]; then
+            APP_NAMESPACE="$(params.app-namespace)"
+            APP_NAME="$(params.app-name)"
+            PROTOCOL="$(params.health-protocol)"
+            INGRESS_TYPE="$(params.deploy-ingress-type)"
+            HEALTH_ENDPOINT="$(params.health-endpoint)"
+
+            echo "resource-type: $(params.resource-type)"
+
+            if [[ "$(params.resource-type)" == *"integrationserver"* ]]; then
+                HOST=$(kubectl get route/${APP_NAME}-${PROTOCOL} --namespace ${APP_NAMESPACE} --output=jsonpath='{ .spec.host }')
+                if [[ -z "${PROTOCOL}" ]]; then
+                  PROTOCOL="https"
+                fi
+            elif [[ "${INGRESS_TYPE}" == "route" ]]; then
+                HOST=$(kubectl get route/${APP_NAME} --namespace ${APP_NAMESPACE} --output=jsonpath='{ .spec.host }')
+                if [[ -z "${PROTOCOL}" ]]; then
+                  PROTOCOL="https"
+                fi
+            else
+                HOST=$(kubectl get ingress/${APP_NAME} --namespace ${APP_NAMESPACE} --output=jsonpath='{ .spec.rules[0].host }')
+                if [[ -z "${PROTOCOL}" ]]; then
+                  PROTOCOL="http"
+                fi
+            fi
+
+            URL="${PROTOCOL}://${HOST}${HEALTH_ENDPOINT}"
+
+          fi
+
+          sleep_countdown=5
+          # sleep for 10 seconds to allow enough time for the server to start
+          sleep 10
+          echo "Health check start"
+          while [[ $(curl ${CURL_FLAGS} -sL -w "%{http_code}\\n" "${URL}" -o /dev/null --connect-timeout 3 --max-time 5 --retry 3 --retry-max-time 30) != "200" ]]; do
+              sleep 30
+              echo "Health check failure. Remaining retries: $sleep_countdown"
+              sleep_countdown=$((sleep_countdown-1))
+              if [[ $sleep_countdown -eq 0 ]]; then
+                      echo "Could not reach health endpoint: ${URL}"
+                      exit 1;
+              fi
+          done
+          echo "Successfully reached health endpoint: ${URL}"
+          echo "====================================================================="
+    - name: cleanup
+      image: $(params.tools-image)
+      workingDir: $(params.source-dir)
+      env:
+        - name: TLS_SECRET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: ibmcloud-config
+              key: TLS_SECRET_NAME
+              optional: true
+        - name: INGRESS_SUBDOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: ibmcloud-config
+              key: INGRESS_SUBDOMAIN
+              optional: true
+      script: |
+          #!/usr/bin/env bash
+          set -ex
+
+          APP_NAMESPACE="$(params.app-namespace)"
+
+          kubectl delete -n ${APP_NAMESPACE} -f ./release.yaml

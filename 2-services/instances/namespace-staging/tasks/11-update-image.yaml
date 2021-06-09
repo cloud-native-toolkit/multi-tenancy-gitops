@@ -1,0 +1,113 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-update-image
+  annotations:
+    description: Updates image info to the provided repo to trigger pipelines
+    app.openshift.io/description: Updates image info to the provided repo to trigger pipelines
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+    app.openshift.io/vcs-ref: master
+  labels:
+    version: 0.0.0
+spec:
+  params:
+    - name: git-url
+      description: The name of the git repository
+    - name: git-branch
+      description: The git revision (branch, tag, or sha) that should be built
+      default: master
+    - name: source-dir
+      default: /source
+    - name: image-url
+      default: ""
+    - name: tools-image
+      default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
+  volumes:
+    - name: source
+      emptyDir: {}
+  stepTemplate:
+    volumeMounts:
+      - name: source
+        mountPath: $(params.source-dir)
+  steps:
+    - name: update-image
+      image: $(params.tools-image)
+      workingDir: $(params.source-dir)
+      env:
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: username
+              optional: true
+        - name: GIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: password
+              optional: true
+      script: |
+          #!/usr/bin/env bash
+          set -ex
+
+          BRANCH_CMD=""
+          if [[ -n "$(params.git-branch)" ]]; then
+            BRANCH_CMD="-b $(params.git-branch)"
+          fi
+
+          regex="^(https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/(.+).git$"
+
+          if [[ $(params.git-url) =~ $regex ]]; then
+              GIT_PROTOCOL=${BASH_REMATCH[1]}
+              GIT_SEPARATOR=${BASH_REMATCH[2]}
+              GIT_HOST=${BASH_REMATCH[3]}
+              GIT_ORG=${BASH_REMATCH[4]}
+              GIT_REPO=${BASH_REMATCH[5]}
+          else
+              echo "Please provide a valid git url"
+              exit 1
+          fi
+
+          git config --global user.email "gitops@cloudnativetoolkit.dev"
+          git config --global user.name "Cloud Native Toolkit Pipeline"
+
+          echo "Cloning the corresponding repository"
+          # clone repo
+          GIT_URL="${GIT_PROTOCOL}://${GIT_USERNAME}:${GIT_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_REPO}"
+          git clone ${BRANCH_CMD} ${GIT_URL} update_image
+          set -x
+          cd update_image
+          cd chart/base
+
+          IMAGE_SERVER="$(echo "$(params.image-url)" | awk -F / '{print $1}')"
+          IMAGE_NAMESPACE="$(echo "$(params.image-url)" | awk -F / '{print $2}')"
+          IMAGE_REPOSITORY="$(echo "$(params.image-url)" | awk -F / '{print $3}' | awk -F : '{print $1}')"
+          IMAGE_VERSION="$(echo "$(params.image-url)" | awk -F / '{print $3}' | awk -F : '{print $2}')"
+          IMAGE_URL="${IMAGE_SERVER}/${IMAGE_NAMESPACE}/${IMAGE_REPOSITORY}"
+
+          echo ${IMAGE_URL}:${IMAGE_VERSION}
+
+          git checkout -b cntk-ci-pipeline-${IMAGE_REPOSITORY}-${IMAGE_VERSION}
+
+          # update value for key applicationImage
+          sed -i "/repository:/c\  repository:  ${IMAGE_URL}" ./values.yaml
+          sed -i "/tag:/c\  tag: ${IMAGE_VERSION}" ./values.yaml
+
+          # verify the value for key applicationImage got updated
+          cat ./values.yaml | grep "tag"
+
+          if [[ $(git status -s | wc -l) -eq 0 ]]; then
+            echo "No changes"
+            exit 0
+          fi
+
+          # push changes to git
+          git add values.yaml
+          git commit -m "Cloudnative toolkit commit" --amend --no-edit --signoff
+          git remote rm origin
+
+          git remote add origin ${GIT_URL} > /dev/null 2>&1
+          git push origin cntk-ci-pipeline-${IMAGE_REPOSITORY}-${IMAGE_VERSION}
+
+          GIT_PUSH_URL="${GIT_PROTOCOL}://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/pulls"
+          curl -u ${GIT_USERNAME}:${GIT_PASSWORD} -d '{"title":"PR to promote to $(params.git-branch) environment","base":"'$(params.git-branch)'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${IMAGE_REPOSITORY}'-'${IMAGE_VERSION}'"}' ${GIT_PUSH_URL}

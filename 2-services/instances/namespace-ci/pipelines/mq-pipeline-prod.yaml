@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: mq-infra-prod
+  annotations:
+    app.openshift.io/runtime: mq
+spec:
+  params:
+    - name: git-url
+      description: The url for the git repository
+    - name: git-revision
+      description: The git revision (branch, tag, or sha) that should be built
+      default: prod
+    - name: scan-image
+      description: Enable the pipeline to scan the image for vulnerabilities
+      default: "true"
+    - name: environment
+      description: Production environment
+      default: namespace-prod
+    - name: app-type
+      description: Please choose the right type (Apps, Services, Infra)
+      default: 2-services/instances
+  tasks:
+    - name: setup
+      taskRef:
+        name: ibm-setup-v2-6-13
+      params:
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-revision
+          value: $(params.git-revision)
+        - name: scan-image
+          value: $(params.scan-image)
+    - name: img-info-extract
+      taskRef:
+        name: ibm-img-info-extract
+      runAfter:
+        - setup
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: image-from
+          value: "$(tasks.setup.results.image-url)"
+        - name: image-to
+          value: "$(tasks.setup.results.image-release)"
+    - name: gitops-pr
+      taskRef:
+        name: ibm-gitops-with-pr-no-helm-release
+      runAfter:
+        - img-info-extract
+      params:
+        - name: app-name
+          value: "$(tasks.setup.results.app-name)"
+        - name: version
+          value: "$(tasks.img-info-extract.results.image-tag)"
+        - name: tools-image
+          value: "$(tasks.setup.results.tools-image)"
+        - name: environment
+          value: "$(params.environment)"
+        - name: app-type
+          value: "$(params.app-type)"

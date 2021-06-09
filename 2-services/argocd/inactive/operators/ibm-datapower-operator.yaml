@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: ibm-datapower-operator
   annotations:
-    argocd.argoproj.io/sync-wave: "230"
+    argocd.argoproj.io/sync-wave: "225"
   labels:
     gitops.tier.group: ibm-cloudpak
   finalizers:

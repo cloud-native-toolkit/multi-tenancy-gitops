@@ -1,0 +1,280 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-setup-v2-5-0
+  annotations:
+    description: Sets up the pipeline environment and generates/normalizes a number of param values
+    app.openshift.io/description: Sets up the pipeline environment and generates/normalizes a number of param values
+    app.openshift.io/vcs-ref: master
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+  labels:
+    version: 0.0.0
+spec:
+  params:
+    - name: git-url
+      description: The url for the git repository
+    - name: git-revision
+      description: The git revision (branch, tag, or sha) that should be built
+      default: master
+    - name: source-dir
+      default: /source
+    - name: image-url
+      description: The dev image (use image-release for released image)
+      default: ""
+    - name: image-server
+      description: The dev image registry server if params.image-url not provided
+      default: ""
+    - name: image-namespace
+      description: The dev image registry namespace if params.image-url not provided
+      default: ""
+    - name: image-repository
+      description: The dev image registry repository/imagename if params.image-url not provided
+      default: ""
+    - name: image-tag
+      description: The dev image registry tag if params.image-url not provided
+      default: ""
+    - name: image-release
+      description: The url of final released image
+      default: ""
+    - name: app-namespace
+      description: The openshift/kubernetes namespace to deploy dev app
+      default: ""
+    - name: app-name
+      description: The app name to be use in openshift/kuberentes deployment and helm chart
+      default: ""
+    - name: deploy-ingress-type
+      default: "route"
+    - name: health-protocol
+      default: "https"
+    - name: health-endpoint
+      description: Endpoint to check health after deployment, liberty uses / not /health
+      default: "/health"
+    - name: health-url
+      description: Override for health check url
+      default: ""
+    - name: health-curl
+      description: Override for health check curl flags
+      default: "-k"
+    - name: scan-image
+      description: Flag indicating that a Vulnerability Advisor scan should be performed
+      default: "false"
+    - name: tools-image
+      default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
+    - name: js-image
+      default: quay.io/ibmgaragecloud/node:lts-stretch
+    - name: ace-project
+      description: Name of the ACE Toolkit project
+      default: ""
+    - name: lint-dockerfile
+      description: Flag indication that Dockerfile will be linted
+      default: "true"
+  results:
+    - name: git-url
+    - name: git-revision
+    - name: source-dir
+    - name: image-url
+    - name: image-server
+    - name: image-namespace
+    - name: image-repository
+    - name: image-tag
+    - name: image-release
+    - name: app-namespace
+    - name: app-name
+    - name: deploy-ingress-type
+    - name: health-protocol
+    - name: health-endpoint
+    - name: health-url
+    - name: health-curl
+    - name: tools-image
+    - name: js-image
+    - name: scan-image
+    - name: scan-trivy
+    - name: scan-ibm
+    - name: ace-project
+    - name: dockerfile-lint
+  volumes:
+    - name: source
+      emptyDir: {}
+  stepTemplate:
+    volumeMounts:
+      - name: source
+        mountPath: $(params.source-dir)
+  steps:
+    - name: git-clone
+      image: quay.io/ibmgaragecloud/alpine-git
+      env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: GIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: password
+              optional: true
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: git-credentials
+              key: username
+              optional: true
+        - name: REGISTRY_RELEASE_SERVER
+          valueFrom:
+            secretKeyRef:
+              name: registry-access
+              key: REGISTRY_URL
+              optional: true
+        - name: REGISTRY_RELEASE_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: registry-access
+              key: REGISTRY_NAMESPACE
+              optional: true
+      script: |
+        set +x
+        if [[ -n "${GIT_USERNAME}" ]] && [[ -n "${GIT_PASSWORD}" ]]; then
+            git clone "$(echo $(params.git-url) | awk -F '://' '{print $1}')://${GIT_USERNAME}:${GIT_PASSWORD}@$(echo $(params.git-url) | awk -F '://' '{print $2}')" $(params.source-dir)
+        else
+            git clone $(params.git-url) $(params.source-dir)
+        fi
+        cd $(params.source-dir)
+        git checkout $(params.git-revision)
+
+        # Results
+        # Defaults
+        echo -n "$(params.git-url)">$(results.git-url.path)
+        echo -n "$(git rev-parse --verify HEAD)">$(results.git-revision.path)
+        echo -n "$(params.source-dir)">$(results.source-dir.path)
+        echo -n "$(params.app-namespace)">$(results.app-namespace.path)
+        echo -n "$(params.app-name)">$(results.app-name.path)
+        echo -n "$(params.deploy-ingress-type)">$(results.deploy-ingress-type.path)
+        echo -n "$(params.health-protocol)">$(results.health-protocol.path)
+        echo -n "$(params.health-endpoint)">$(results.health-endpoint.path)
+        echo -n "$(params.health-url)">$(results.health-url.path)
+        echo -n "$(params.health-curl)">$(results.health-curl.path)
+        echo -n "$(params.tools-image)">$(results.tools-image.path)
+        echo -n "$(params.js-image)">$(results.js-image.path)
+        echo -n "$(params.ace-project)">$(results.ace-project.path)
+
+
+        REGISTRY_SERVER="$(params.image-server)"
+        REGISTRY_NAMESPACE="$(params.image-namespace)"
+        REGISTRY_REPOSITORY="$(params.image-repository)"
+        REGISTRY_TAG="$(params.image-tag)"
+
+        if [[ -n "$(params.image-url)" ]]; then
+          REGISTRY_SERVER_VALUE=$(echo "$(params.image-url)" | awk -F / '{print $1}')
+          if [[ -n "${REGISTRY_SERVER_VALUE}" ]]; then
+            REGISTRY_SERVER="${REGISTRY_SERVER_VALUE}"
+          fi
+
+          REGISTRY_NAMESPACE_VALUE=$(echo "$(params.image-url)" | awk -F / '{print $2}')
+          if [[ -n "${REGISTRY_NAMESPACE_VALUE}" ]]; then
+            if [[ "${REGISTRY_NAMESPACE_VALUE}" = '$NAMESPACE' ]]; then
+              REGISTRY_NAMESPACE=${NAMESPACE}
+            else
+              REGISTRY_NAMESPACE="${REGISTRY_NAMESPACE_VALUE}"
+            fi
+          fi
+
+          REGISTRY_REPOSITORY_VALUE=$(echo "$(params.image-url)" | awk -F / '{print $3}' |  awk -F : '{print $1}')
+          if [[ -n "${REGISTRY_REPOSITORY_VALUE}" ]]; then
+            REGISTRY_REPOSITORY="${REGISTRY_REPOSITORY_VALUE}"
+          fi
+
+          REGISTRY_TAG_VALUE=$(echo "$(params.image-url)" | awk -F / '{print $3}' | awk -F : '{print $2}')
+          if [[ -n "${REGISTRY_TAG_VALUE}" ]]; then
+            REGISTRY_TAG="${REGISTRY_TAG_VALUE}"
+          fi
+        fi
+
+        if [[ -z "${REGISTRY_SERVER}" ]]; then
+          # Assume is internal
+          REGISTRY_SERVER="image-registry.openshift-image-registry.svc:5000"
+        fi
+        if [[ -z "${REGISTRY_NAMESPACE}" ]]; then
+          # Assume current k8s namespace
+          REGISTRY_NAMESPACE="${NAMESPACE}"
+        fi
+        if [[ -z "${REGISTRY_REPOSITORY}" ]]; then
+          # Assume repo dir is image repository/image-name
+          REGISTRY_REPOSITORY="$(basename $(echo -n $(git config --get remote.origin.url)) .git | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')"
+        fi
+        if [[ -z "${REGISTRY_TAG}" ]]; then
+          # Assume short git commit revision
+          REGISTRY_TAG="$(git rev-parse --verify HEAD --short)"
+        fi
+        echo -n "${REGISTRY_SERVER}">$(results.image-server.path)
+        echo -n "${REGISTRY_NAMESPACE}">$(results.image-namespace.path)
+        echo -n "${REGISTRY_REPOSITORY}">$(results.image-repository.path)
+        echo -n "${REGISTRY_TAG}">$(results.image-tag.path)
+        echo -n "${REGISTRY_SERVER}/${REGISTRY_NAMESPACE}/${REGISTRY_REPOSITORY}:${REGISTRY_TAG}">$(results.image-url.path)
+
+        if [[ -z "$(params.app-namespace)" ]]; then
+          # Assume current namespace
+          echo -n "${NAMESPACE}">$(results.app-namespace.path)
+        fi
+
+        if [[ -z "$(params.app-name)" ]]; then
+          # Assume image repository/name
+          echo -n "${REGISTRY_REPOSITORY}">$(results.app-name.path)
+        fi
+
+
+        if [[ -n "$(params.image-release)" ]]; then
+          REGISTRY_RELEASE_SERVER_VALUE=$(echo "$(params.image-release)" | awk -F / '{print $1}')
+          if [[ -n "${REGISTRY_RELEASE_SERVER_VALUE}" ]]; then
+            REGISTRY_RELEASE_SERVER="${REGISTRY_RELEASE_SERVER_VALUE}"
+          fi
+
+          REGISTRY_RELEASE_NAMESPACE_VALUE=$(echo "$(params.image-release)" | awk -F / '{print $2}')
+          if [[ -n "${REGISTRY_RELEASE_NAMESPACE_VALUE}" ]]; then
+            if [[ "${REGISTRY_RELEASE_NAMESPACE_VALUE}" = '$NAMESPACE' ]]; then
+              REGISTRY_RELEASE_NAMESPACE=${NAMESPACE}
+            else
+              REGISTRY_RELEASE_NAMESPACE="${REGISTRY_RELEASE_NAMESPACE_VALUE}"
+            fi
+          elif [[ "${REGISTRY_RELEASE_SERVER}" = "image-registry.openshift-image-registry.svc:5000" ]]; then
+            REGISTRY_RELEASE_NAMESPACE=${NAMESPACE}
+          fi
+        fi
+        if [[ -z "${REGISTRY_RELEASE_NAMESPACE}" ]]; then
+          # Assume current k8s namespace
+          REGISTRY_RELEASE_NAMESPACE="${NAMESPACE}"
+        fi
+        if [[ -z "${REGISTRY_RELEASE_SERVER}" ]]; then
+          # Assume internal registry
+          REGISTRY_RELEASE_SERVER="image-registry.openshift-image-registry.svc:5000"
+        fi
+        REGISTRY_RELEASE_URL="${REGISTRY_RELEASE_SERVER}/${REGISTRY_RELEASE_NAMESPACE}/${REGISTRY_REPOSITORY}"
+        echo -n "${REGISTRY_RELEASE_URL}">$(results.image-release.path)
+
+        PERFORM_SCAN="$(params.scan-image)"
+        PERFORM_SCAN_IBM="false"
+        PERFORM_SCAN_TRIVY="false"
+        if [[ "${PERFORM_SCAN}" == "true" ]]; then
+          echo "User selected to perform container image scanning"
+          if echo "$REGISTRY_RELEASE_URL" | grep 'icr.io'; then
+            echo "Using IBM Container registry, enabling scanning using VA"
+            PERFORM_SCAN_IBM="true"
+          else
+            echo "Not using IBM Container registry, enabling scanning using trivy"
+            PERFORM_SCAN_TRIVY="true"
+          fi
+        fi
+
+        echo -n "${PERFORM_SCAN}">$(results.scan-image.path)
+        echo -n "${PERFORM_SCAN_TRIVY}">$(results.scan-trivy.path)
+        echo -n "${PERFORM_SCAN_IBM}">$(results.scan-ibm.path)
+
+        if [[ -z "$(params.ace-project)" ]]; then
+          # Retrieve name of ACE Toolkit project
+          ACE_PROJECT=$(ls workspace || true)
+          echo -n "${ACE_PROJECT}">$(results.ace-project.path)
+        fi
+
+        PERFORM_LINT="$(params.lint-dockerfile)"
+        echo -n "${PERFORM_LINT}">$(results.dockerfile-lint.path)
+
+        for f in /tekton/results/*; do echo "results.$(basename $f)=$(cat $f)"; done

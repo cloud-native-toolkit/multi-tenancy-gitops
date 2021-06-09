@@ -1,0 +1,178 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: mq-spring-app-dev
+  annotations:
+    app.openshift.io/runtime: openjdk
+    app.openshift.io/builder: maven
+spec:
+  params:
+    - name: git-url
+      description: The url for the git repository
+    - name: git-revision
+      description: The git revision (branch, tag, or sha) that should be built
+      default: master
+    - name: scan-image
+      description: Enable the pipeline to scan the image for vulnerabilities
+      default: "true"
+    - name: environment
+      description: environment
+      default: namespace-dev
+    - name: app-type
+      description: Application
+      default: 3-apps/instances
+  tasks:
+    - name: setup
+      taskRef:
+        name: ibm-setup-v2-6-13
+      params:
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-revision
+          value: $(params.git-revision)
+        - name: scan-image
+          value: $(params.scan-image)
+    - name: test
+      taskRef:
+        name: ibm-java-maven-test-v2-6-13
+      runAfter:
+        - setup
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: app-name
+          value: "$(tasks.setup.results.app-name)"
+    - name: build
+      taskRef:
+        name: ibm-build-tag-push-v2-6-13
+      runAfter:
+        - test
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: image-server
+          value: "$(tasks.setup.results.image-server)"
+        - name: image-namespace
+          value: "$(tasks.setup.results.image-namespace)"
+        - name: image-repository
+          value: "$(tasks.setup.results.image-repository)"
+        - name: image-tag
+          value: "$(tasks.setup.results.image-tag)"
+    - name: smoke-tests
+      taskRef:
+        name: ibm-smoke-tests
+      runAfter:
+        - build
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: image-server
+          value: "$(tasks.setup.results.image-server)"
+        - name: image-namespace
+          value: "$(tasks.setup.results.image-namespace)"
+        - name: image-repository
+          value: "$(tasks.setup.results.image-repository)"
+        - name: image-tag
+          value: "$(tasks.setup.results.image-tag)"
+        - name: app-namespace
+          value: "$(tasks.setup.results.app-namespace)"
+        - name: app-name
+          value: "$(tasks.setup.results.app-name)"
+        - name: deploy-ingress-type
+          value: "$(tasks.setup.results.deploy-ingress-type)"
+        - name: tools-image
+          value: "$(tasks.setup.results.tools-image)"
+        - name: health-protocol
+          value: "$(tasks.setup.results.health-protocol)"
+        - name: health-endpoint
+          value: "$(tasks.setup.results.health-endpoint)"
+        - name: health-url
+          value: "$(tasks.setup.results.health-url)"
+        - name: health-curl
+          value: "$(tasks.setup.results.health-curl)"
+    - name: tag-release
+      taskRef:
+        name: ibm-tag-release-v2-6-13
+      runAfter:
+        - smoke-tests
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: js-image
+          value: "$(tasks.setup.results.js-image)"
+    - name: img-release
+      taskRef:
+        name: ibm-img-release-v2-6-13
+      runAfter:
+        - tag-release
+      params:
+        - name: image-from
+          value: "$(tasks.setup.results.image-url)"
+        - name: image-to
+          value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
+    - name: img-scan
+      taskRef:
+        name: ibm-img-scan-v2-6-13
+      runAfter:
+        - img-release
+      params:
+        - name: image-url
+          value: $(tasks.img-release.results.image-url)
+        - name: scan-trivy
+          value: $(tasks.setup.results.scan-trivy)
+        - name: scan-ibm
+          value: $(tasks.setup.results.scan-ibm)
+    - name: helm-release
+      taskRef:
+        name: ibm-helm-release-v2-6-13
+      runAfter:
+        - img-scan
+      params:
+        - name: git-url
+          value: "$(tasks.setup.results.git-url)"
+        - name: git-revision
+          value: "$(tasks.setup.results.git-revision)"
+        - name: source-dir
+          value: "$(tasks.setup.results.source-dir)"
+        - name: image-url
+          value: "$(tasks.img-release.results.image-url)"
+        - name: app-name
+          value: "$(tasks.setup.results.app-name)"
+        - name: deploy-ingress-type
+          value: "$(tasks.setup.results.deploy-ingress-type)"
+        - name: tools-image
+          value: "$(tasks.setup.results.tools-image)"
+    - name: gitops
+      taskRef:
+        name: ibm-gitops
+      runAfter:
+        - helm-release
+      params:
+        - name: app-name
+          value: "$(tasks.setup.results.app-name)"
+        - name: version
+          value: "$(tasks.tag-release.results.tag)"
+        - name: helm-url
+          value: $(tasks.helm-release.results.helm-url)
+        - name: tools-image
+          value: "$(tasks.setup.results.tools-image)"
+        - name: environment
+          value: "$(params.environment)"
+        - name: app-type
+          value: "$(params.app-type)"

@@ -30,7 +30,7 @@ spec:
   - namespace: openldap
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-  # TODO: SCC needs to be moved to 3-infra, here for now for artifactory
+  # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: "console.openshift.io"
@@ -55,6 +55,10 @@ spec:
     kind: routes
   - group: ""
     kind: RoleBinding
+  - group: "cert-manager.io"
+    kind: ClusterIssuer
+  - group: "cert-manager.io"
+    kind: Certificate
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -89,7 +93,7 @@ kind: Application
 metadata:
   name: services-instances
   annotations:
-    argocd.argoproj.io/sync-wave: "300"
+    argocd.argoproj.io/sync-wave: "250"
 spec:
   destination:
     namespace: openshift-gitops

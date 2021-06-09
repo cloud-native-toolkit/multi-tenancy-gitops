@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+  branch: <branch>
+  host: github.com
+  org: <github-org>
+  owner: <github-id>
+  parentdir: .
+  protocol: https
+  repo: multi-tenancy-gitops
+  url: https://github.com/<github-org>/multi-tenancy-gitops.git
+kind: ConfigMap
+metadata:
+  labels:
+    app: multi-tenancy-gitops
+    group: pipeline
+    type: git
+  name: gitops-repo
+  namespace: ci
