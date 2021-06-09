@@ -172,3 +172,15 @@ rules:
       - storage.k8s.io
     resources:
       - '*'
+  - verbs: # for refarch machinesets, ocs, infraconfig
+      - '*'
+    apiGroups:
+      - machineconfiguration.openshift.io
+      - openshift-cluster-node-tuning-operator
+      - ocs.openshift.io
+      - machine.openshift.io
+      - tuned.openshift.io
+      - ingresscontrollers.operator.openshift.io
+      - imageregistry.operator.openshift.io
+    resources:
+      - '*'
