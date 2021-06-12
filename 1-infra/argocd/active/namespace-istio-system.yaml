@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"   
+spec:
+  destination:
+    namespace: istio-system
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: 1-infra/namespaces/istio-system
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,109 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: services
+spec:
+  sourceRepos:
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  destinations:
+  - namespace: tools
+    server: https://kubernetes.default.svc
+  - namespace: redhat-operators
+    server: https://kubernetes.default.svc
+  - namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  - namespace: openshift-marketplace
+    server: https://kubernetes.default.svc
+  - namespace: ci
+    server: https://kubernetes.default.svc
+  - namespace: dev
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  - namespace: prod
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
+    server: https://kubernetes.default.svc
+  - namespace: istio-system
+    server: https://kubernetes.default.svc
+  - namespace: openldap
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
+  - group: "security.openshift.io"
+    kind: SecurityContextConstraints
+  - group: "console.openshift.io"
+    kind: ConsoleLink
+  - group: "apps"
+    kind: statefulsets
+  - group: "apps"
+    kind: deployments
+  - group: ""
+    kind: services
+  - group: ""
+    kind: configmaps
+  - group: ""
+    kind: secrets
+  - group: ""
+    kind: serviceaccounts
+  - group: "batch"
+    kind: jobs
+  - group: ""
+    kind: roles
+  - group: "route.openshift.io"
+    kind: routes
+  - group: ""
+    kind: RoleBinding
+  - group: "cert-manager.io"
+    kind: ClusterIssuer
+  - group: "cert-manager.io"
+    kind: Certificate
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: services-operators
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 2-services/argocd/active/operators
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: services-instances
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 2-services/argocd/active/instances
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

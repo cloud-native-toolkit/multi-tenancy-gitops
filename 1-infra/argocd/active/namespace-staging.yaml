@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-staging
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"   
+spec:
+  destination:
+    namespace: staging
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: 1-infra/namespaces/staging
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
