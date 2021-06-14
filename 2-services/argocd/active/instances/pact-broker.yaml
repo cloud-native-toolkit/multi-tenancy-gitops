@@ -15,8 +15,8 @@ spec:
   project: services
   source:
     path: 2-services/instances/pact-broker
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: master
+    repoURL: https://github.com/Jibbscript/multi-tenancy-gitops.git
+    targetRevision: demo-mq-v2
     helm:
       valueFiles:
       - values.yaml

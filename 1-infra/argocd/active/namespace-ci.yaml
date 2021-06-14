@@ -11,8 +11,8 @@ spec:
   project: infra
   source:
     path: 1-infra/namespaces/ci
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: master
+    repoURL: https://github.com/Jibbscript/multi-tenancy-gitops.git
+    targetRevision: demo-mq-v2
   syncPolicy:
     automated:
       prune: true

@@ -6,7 +6,7 @@ spec:
   commonName: any.common.name
   isCA: true
   dnsNames:
-    - *.<cluster-domain>
+    - *.mq-kam-gitops-2-6ccd7f378ae819553d37d5f2ee142bd6-0000.us-south.containers.appdomain.cloud
   secretName: mq-self-signed-ca-cert
   issuerRef:
     group: cert-manager.io
