@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-gen-clusterissuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "255"
+  labels:
+    gitops.tier.group: cntk
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: 2-services/instances/cert-manager-gen-clusterissuer
+    repoURL: https://github.com/Jibbscript/multi-tenancy-gitops.git
+    targetRevision: demo-mq-v2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

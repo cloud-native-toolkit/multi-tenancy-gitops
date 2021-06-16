@@ -2,6 +2,4 @@ apiVersion: operator.cert-manager.io/v1alpha1
 kind: CertManager
 metadata:
   name: cert-manager-cntk
-  annotations:
-    argocd.argoproj.io/sync-wave: "250"
 spec: {}
