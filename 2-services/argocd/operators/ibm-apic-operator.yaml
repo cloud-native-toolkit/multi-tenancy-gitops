@@ -14,8 +14,8 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: 2-services/operators/ibm-apic-operator
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: operators/ibm-apic-operator
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
       valueFiles:

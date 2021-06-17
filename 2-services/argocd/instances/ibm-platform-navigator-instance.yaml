@@ -5,15 +5,15 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "300"
   labels:
-    gitops.tier.group: ibm-cloudpak    
+    gitops.tier.group: ibm-cloudpak
 spec:
   destination:
     namespace: tools
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: 2-services/instances/ibm-platform-navigator
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: instances/ibm-platform-navigator
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
   syncPolicy:
     automated:
