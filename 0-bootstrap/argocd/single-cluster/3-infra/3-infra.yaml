@@ -8,7 +8,7 @@ spec:
   - https://github.com/vgadepal/multi-tenancy-gitops.git
   destinations:
   - namespace: ace
-    server: https://kubernetes.default.svc  
+    server: https://kubernetes.default.svc
   - namespace: ci
     server: https://kubernetes.default.svc
   - namespace: dev
@@ -59,8 +59,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 3-infra/argocd/active
-    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
+    path: 0-bootstrap/argocd/single-cluster/3-infra
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:

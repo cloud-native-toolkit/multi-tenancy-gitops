@@ -1,17 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespace-openldap
+  name: machinesets
   annotations:
-    argocd.argoproj.io/sync-wave: "100"   
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: openldap
+    namespace: tools
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: 3-infra/namespaces/openldap
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: machinesets
+    repoURL: github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:

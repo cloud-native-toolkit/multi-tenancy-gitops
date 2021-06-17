@@ -3,14 +3,14 @@ kind: Application
 metadata:
   name: namespace-dev
   annotations:
-    argocd.argoproj.io/sync-wave: "100"    
+    argocd.argoproj.io/sync-wave: "100"
 spec:
   destination:
     namespace: dev
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: 3-infra/namespaces/dev
+    path: namespaces/dev
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:

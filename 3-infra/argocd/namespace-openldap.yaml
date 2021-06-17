@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespace-staging
+  name: namespace-openldap
   annotations:
-    argocd.argoproj.io/sync-wave: "100"   
+    argocd.argoproj.io/sync-wave: "100"
 spec:
   destination:
-    namespace: staging
+    namespace: openldap
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: 3-infra/namespaces/staging
+    path: namespaces/openldap
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:

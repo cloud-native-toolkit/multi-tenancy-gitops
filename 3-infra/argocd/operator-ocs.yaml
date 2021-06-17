@@ -1,17 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespace-ci
+  name: storage
   annotations:
-    argocd.argoproj.io/sync-wave: "100"    
+    argocd.argoproj.io/sync-wave: "110"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: ci
+    namespace: openshift-storage
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: 3-infra/namespaces/ci
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: storage
+    repoURL: github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:
