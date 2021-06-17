@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: apps-prod-secrets
+  name: apps-ace-ci
   annotations:
     argocd.argoproj.io/sync-wave: "400"
   finalizers:
-    - resources-finalizer.argocd.argoproj.io  
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: prod
+    namespace: ci
     server: https://kubernetes.default.svc
   project: applications
   source:
-    path: 1-apps/instances/namespace-prod/secrets
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: ace/config/cicd/overlays
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
     targetRevision: master
   syncPolicy:
     automated:

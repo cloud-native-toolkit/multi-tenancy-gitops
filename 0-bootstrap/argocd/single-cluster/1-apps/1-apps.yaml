@@ -36,8 +36,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 1-apps/argocd/cluster-dev/
-    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
+    path: 0-bootstrap/argocd/single-cluster/1-apps
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:
