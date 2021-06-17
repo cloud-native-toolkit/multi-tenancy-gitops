@@ -1,0 +1,4 @@
+resources:
+- ../../../../1-apps/argocd/apic/prod.yaml
+- ../../../../1-apps/argocd/mq/prod.yaml
+- ../../../../1-apps/argocd/ace/prod.yaml

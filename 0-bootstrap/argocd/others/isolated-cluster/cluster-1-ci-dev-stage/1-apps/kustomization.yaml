@@ -1,0 +1,13 @@
+resources:
+- ../../../../1-apps/argocd/apic/ci.yaml
+- ../../../../1-apps/argocd/apic/dev.yaml
+- ../../../../1-apps/argocd/apic/stage.yaml
+- ../../../../1-apps/argocd/apic/prod.yaml
+- ../../../../1-apps/argocd/mq/ci.yaml
+- ../../../../1-apps/argocd/mq/dev.yaml
+- ../../../../1-apps/argocd/mq/stage.yaml
+- ../../../../1-apps/argocd/mq/prod.yaml
+- ../../../../1-apps/argocd/ace/ci.yaml
+- ../../../../1-apps/argocd/ace/dev.yaml
+- ../../../../1-apps/argocd/ace/stage.yaml
+- ../../../../1-apps/argocd/ace/prod.yaml

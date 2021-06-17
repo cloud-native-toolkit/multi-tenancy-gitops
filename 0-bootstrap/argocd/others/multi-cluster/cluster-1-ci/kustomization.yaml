@@ -1,0 +1,4 @@
+resources:
+- ./1-apps/1-app.yaml
+- ./2-services/2-services.yaml
+- ./3-infra/3-infra.yaml

@@ -5,7 +5,7 @@ metadata:
   name: applications
 spec:
   sourceRepos:
-  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/vgadepal/multi-tenancy-gitops.git
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -36,8 +36,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 1-apps/argocd/active
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    path: 1-apps/argocd/cluster-dev/
+    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:

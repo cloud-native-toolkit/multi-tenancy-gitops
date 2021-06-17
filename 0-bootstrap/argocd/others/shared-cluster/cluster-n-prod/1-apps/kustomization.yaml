@@ -1,0 +1,2 @@
+resources:
+- ../../../1-apps/argocd/prod-ace.yaml

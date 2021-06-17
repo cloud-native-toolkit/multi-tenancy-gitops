@@ -5,8 +5,10 @@ metadata:
   name: infra
 spec:
   sourceRepos:
-  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/vgadepal/multi-tenancy-gitops.git
   destinations:
+  - namespace: ace
+    server: https://kubernetes.default.svc  
   - namespace: ci
     server: https://kubernetes.default.svc
   - namespace: dev
@@ -23,35 +25,19 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openldap
     server: https://kubernetes.default.svc
-  - namespace: openshift-storage
-    server: https://kubernetes.default.svc
-  - namespace: openshift-machine-api
-    server: https://kubernetes.default.svc
-  - namespace: openshift-monitoring
-    server: https://kubernetes.default.svc
-  - namespace: openshift-cluster-node-tuning-operator
-    server: https://kubernetes.default.svc
-  - namespace: openshift-gitops
+  - namespace: instana-agent
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
   - group: ""
     kind: RoleBinding
-  - group: "rbac.authorization.k8s.io"
-    kind: ClusterRole
-  - group: "rbac.authorization.k8s.io"
-    kind: ClusterRoleBinding
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: "console.openshift.io"
     kind: ConsoleNotification
   - group: "console.openshift.io"
     kind: ConsoleLink
-  - group: "machineconfiguration.openshift.io"
-    kind: MachineConfigPool
-  - group: "machineconfiguration.openshift.io"
-    kind: ContainerRuntimeConfig
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -74,7 +60,7 @@ spec:
   project: default
   source:
     path: 3-infra/argocd/active
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:
