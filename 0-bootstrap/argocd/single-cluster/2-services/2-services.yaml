@@ -73,7 +73,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: services-operators
+  name: services
   annotations:
     argocd.argoproj.io/sync-wave: "200"
 spec:
@@ -82,8 +82,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 0-bootstrap/argocd/cluster-dev/2-services
-    repoURL: https://github.com/vgadepal/multi-tenancy-gitops.git
+    path: 0-bootstrap/argocd/single-cluster/2-services
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: master
   syncPolicy:
     automated:
