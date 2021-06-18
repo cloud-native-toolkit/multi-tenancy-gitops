@@ -10,7 +10,7 @@ oc apply -f setup/ocp47/
 kubectl wait --for=condition=Established crd applications.argoproj.io
 ```
 
-- For OpenShift 4.6+ use the following:
+- For OpenShift 4.6 use the following:
 ```
 oc apply -f setup/ocp47/
 kubectl wait --for=condition=Established crd applications.argoproj.io
