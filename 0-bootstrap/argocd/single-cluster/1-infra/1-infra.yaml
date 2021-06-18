@@ -6,6 +6,7 @@ metadata:
 spec:
   sourceRepos:
   - https://github.com/hollisc/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
   destinations:
   - namespace: ace
     server: https://kubernetes.default.svc
