@@ -38,7 +38,7 @@ spec:
   source:
     path: 0-bootstrap/argocd/single-cluster/1-apps
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: master
+    targetRevision: kustomize
   syncPolicy:
     automated:
       prune: true
