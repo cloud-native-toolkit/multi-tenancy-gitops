@@ -5,7 +5,7 @@ metadata:
   name: services
 spec:
   sourceRepos:
-  - https://github.com/vgadepal/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
@@ -32,7 +32,7 @@ spec:
   - namespace: instana-agent
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-  # TODO: SCC needs to be moved to 3-infra, here for now for artifactory
+  # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: "console.openshift.io"
@@ -82,7 +82,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 0-bootstrap/argocd/single-cluster/2-services
+    path: 0-bootstrap/argocd/others/1-shared-cluster/cluster-1-cicd-dev-stage-prod/2-services
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: kustomize
   syncPolicy:

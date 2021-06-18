@@ -5,7 +5,7 @@ metadata:
   name: applications
 spec:
   sourceRepos:
-  - https://github.com/vgadepal/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -29,14 +29,14 @@ kind: Application
 metadata:
   name: applications
   annotations:
-    argocd.argoproj.io/sync-wave: "400"
+    argocd.argoproj.io/sync-wave: "300"
 spec:
   destination:
     namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 0-bootstrap/argocd/single-cluster/1-apps
+    path: 0-bootstrap/argocd/others/1-shared-cluster/cluster-1-cicd-dev-stage-prod/3-apps
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: kustomize
   syncPolicy:
