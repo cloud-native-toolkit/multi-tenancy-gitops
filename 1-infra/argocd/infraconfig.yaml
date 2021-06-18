@@ -15,6 +15,18 @@ spec:
     path: infraconfig
     repoURL: github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
     targetRevision: master
+    helm:
+      values: |
+        refarch-infraconfig:
+          cloudProvider: "aws"
+          argo:
+            namespace: openshift-gitops
+            serviceAccount: argocd-cluster-argocd-application-controller
+          registry:
+            storageClassName: ocs-storagecluster-cephfs
+            replicas: 2
+          ingress:
+            replicas: 2
   syncPolicy:
     automated:
       prune: true
