@@ -3,6 +3,7 @@
 To get started setup gitops operator and rbac on each cluster
 ```
 oc apply -f setup/ocp47/
+kubectl wait --for=condition=Established crd applications.argoproj.io
 ```
 
 Apply the bootstrap profile
