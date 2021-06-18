@@ -38,6 +38,8 @@ resources:
 #- ../../../../2-services/argocd/instances/sonarqube.yaml
 #- ../../../../2-services/argocd/instances/pact-broker.yaml
 #- ../../../../2-services/argocd/instances/cntk-pipeline-tasks.yaml
+# In OCP 4.7+ we need to install openshift-pipelines
+#- ../../../../2-services/argocd/operators/openshift-pipelines.yaml
 
 # Service Mesh
 #- ../../../../2-services/argocd/operators/elasticsearch.yaml
