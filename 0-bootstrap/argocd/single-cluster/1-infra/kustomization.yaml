@@ -1,17 +1,21 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+bases:
+- ../../../../1-infra/
+
+
 resources:
 #- ../../../../1-infra/argocd/consolelink.yaml
-- ../../../../1-infra/argocd/consolenotification.yaml
-- ../../../../1-infra/argocd/namespace-ci.yaml
-- ../../../../1-infra/argocd/namespace-dev.yaml
-- ../../../../1-infra/argocd/namespace-staging.yaml
-- ../../../../1-infra/argocd/namespace-prod.yaml
-- ../../../../1-infra/argocd/namespace-istio-system.yaml
-- ../../../../1-infra/argocd/namespace-openldap.yaml
-- ../../../../1-infra/argocd/namespace-sealed-secrets.yaml
-- ../../../../1-infra/argocd/namespace-tools.yaml
+#- ../../../../1-infra/argocd/consolenotification.yaml
+#- ../../../../1-infra/argocd/namespace-ci.yaml
+#- ../../../../1-infra/argocd/namespace-dev.yaml
+#- ../../../../1-infra/argocd/namespace-staging.yaml
+#- ../../../../1-infra/argocd/namespace-prod.yaml
+#- ../../../../1-infra/argocd/namespace-istio-system.yaml
+#- ../../../../1-infra/argocd/namespace-openldap.yaml
+#- ../../../../1-infra/argocd/namespace-sealed-secrets.yaml
+#- ../../../../1-infra/argocd/namespace-tools.yaml
 #- ../../../../1-infra/argocd/namespace-openshift-storage.yaml
 #- ../../../../1-infra/argocd/operator-ocs.yaml
 #- ../../../../1-infra/argocd/refarch-infraconfig.yaml

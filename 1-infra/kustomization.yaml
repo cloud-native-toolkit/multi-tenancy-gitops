@@ -1,0 +1,2 @@
+resources:
+- argocd/consolenotification.yaml
