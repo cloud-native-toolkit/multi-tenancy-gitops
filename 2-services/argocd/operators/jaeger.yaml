@@ -18,8 +18,13 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        jaeger-operator:
+        clusterType: "ocp4"
+        ocpCatalog:
+          source: redhat-operators
+          channel: 2.3
+          name: jaeger-product
   syncPolicy:
     automated:
       prune: true
