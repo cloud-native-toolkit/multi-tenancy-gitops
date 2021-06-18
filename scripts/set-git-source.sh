@@ -18,7 +18,7 @@ GIT_FROM_BRANCH=${GIT_FROM_BRANCH:-master}
 
 echo "Setting source git to ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}"
 
-find ${SCRIPTDIR}/.. -name '*.yaml' -print0 |
+find ${SCRIPTDIR}/../0-bootstrap -name '*.yaml' -print0 |
   while IFS= read -r -d '' File; do
     if grep -q "kind: Application\|kind: AppProject" "$File"; then
       echo "$File"
