@@ -1,11 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: openshift-service-mesh
+  name: openshift-pipelines
   annotations:
     argocd.argoproj.io/sync-wave: "200"
   labels:
-    gitops.tier.group: service-mesh
+    gitops.tier.group: cntk
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -14,7 +14,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: operators/openshift-service-mesh
+    path: operators/openshift-pipelines
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
   syncPolicy:
