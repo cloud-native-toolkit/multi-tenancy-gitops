@@ -13,7 +13,7 @@ spec:
   project: infra
   source:
     path: consolelink
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
     targetRevision: master
   syncPolicy:
     automated:
