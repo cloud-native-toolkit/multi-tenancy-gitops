@@ -2,5 +2,9 @@ apiVersion: cert-manager.io/v1alpha3
 kind: ClusterIssuer
 metadata:
   name: selfsigned-cluster-issuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "255"
+  labels:
+    gitops.tier.group: cntk
 spec:
   selfSigned: {}
