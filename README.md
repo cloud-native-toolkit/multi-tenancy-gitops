@@ -10,7 +10,11 @@ oc apply -f setup/ocp47/
 kubectl wait --for=condition=Established crd applications.argoproj.io
 ```
 
+<<<<<<< HEAD
 - For OpenShift 4.6 use the following:
+=======
+- For OpenShift 4.6+ use the following:
+>>>>>>> 9dc6399 (bootstrap per cluster)
 ```
 oc apply -f setup/ocp47/
 kubectl wait --for=condition=Established crd applications.argoproj.io
