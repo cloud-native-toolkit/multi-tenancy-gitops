@@ -1,0 +1,8 @@
+resources:
+#- ../../../../3-apps/argocd/ace/cicd.yaml
+
+#- ../../../../3-apps/argocd/mq/cicd.yaml
+
+#- ../../../../3-apps/argocd/apic/cicd.yaml
+
+#- ../../../../3-apps/argocd/bookinfo/cicd.yaml
