@@ -5,7 +5,7 @@ metadata:
   name: services
 spec:
   sourceRepos:
-  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/hollisc/multi-tenancy-gitops.git
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
@@ -83,8 +83,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/others/2-isolated-cluster/cluster-1-ci-dev-stage/2-services
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: kustomize
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: hc-cluster1-kustomize
   syncPolicy:
     automated:
       prune: true

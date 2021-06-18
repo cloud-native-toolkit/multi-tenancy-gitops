@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: bootstrap
+  namespace: openshift-gitops
 spec:
   destination:
     namespace: openshift-gitops
@@ -9,8 +10,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/single-cluster
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: kustomize
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: hc-cluster1-kustomize
   syncPolicy:
     automated:
       prune: true

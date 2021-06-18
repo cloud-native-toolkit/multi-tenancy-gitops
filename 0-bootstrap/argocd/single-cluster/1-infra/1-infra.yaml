@@ -5,7 +5,7 @@ metadata:
   name: infra
 spec:
   sourceRepos:
-  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/hollisc/multi-tenancy-gitops.git
   destinations:
   - namespace: ace
     server: https://kubernetes.default.svc
@@ -60,8 +60,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/single-cluster/1-infra
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: kustomize
+    repoURL: https://github.com/hollisc/multi-tenancy-gitops.git
+    targetRevision: hc-cluster1-kustomize
   syncPolicy:
     automated:
       prune: true
