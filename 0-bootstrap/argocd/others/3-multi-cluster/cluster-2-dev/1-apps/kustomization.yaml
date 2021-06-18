@@ -1,0 +1,9 @@
+resources:
+#- ../../../../1-apps/argocd/ace/dev.yaml
+
+#- ../../../../1-apps/argocd/mq/dev.yaml
+
+#- ../../../../1-apps/argocd/apic/dev.yaml
+
+#- ../../../../1-apps/argocd/bookinfo/dev.yaml
+

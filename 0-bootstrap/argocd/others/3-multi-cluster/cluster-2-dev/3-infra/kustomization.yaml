@@ -1,10 +1,7 @@
 resources:
 - ../../../../3-infra/argocd/inactive/consolelink.yaml
 - ../../../../3-infra/argocd/inactive/consolenotification.yaml
-- ../../../../3-infra/argocd/inactive/namespace-ci.yaml
 - ../../../../3-infra/argocd/inactive/namespace-dev.yaml
-- ../../../../3-infra/argocd/inactive/namespace-staging.yaml
-- ../../../../3-infra/argocd/inactive/namespace-prod.yaml
 - ../../../../3-infra/argocd/inactive/namespace-istio-system.yaml
 - ../../../../3-infra/argocd/inactive/namespace-openldap.yaml
 - ../../../../3-infra/argocd/inactive/namespace-sealed-secrets.yaml

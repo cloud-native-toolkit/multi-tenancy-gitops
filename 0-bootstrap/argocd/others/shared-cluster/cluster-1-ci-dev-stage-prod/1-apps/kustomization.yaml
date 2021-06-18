@@ -1,5 +1,0 @@
-resources:
-- ../../../1-apps/argocd/ci-ace.yaml
-- ../../../1-apps/argocd/dev-ace.yaml
-- ../../../1-apps/argocd/staging-ace.yaml
-- ../../../1-apps/argocd/prod-ace.yaml

@@ -1,0 +1,34 @@
+resources:
+# IBM Software
+#- ../../../2-services/operators/ibm-ace-operator.yaml
+#- ../../../2-services/operators/ibm-apic-operator.yaml
+#- ../../../2-services/operators/ibm-aspera-operator.yaml
+#- ../../../2-services/operators/ibm-assetrepository-operator.yaml
+#- ../../../2-services/operators/ibm-catalogs.yaml
+#- ../../../2-services/operators/ibm-cp4i-operators.yaml
+#- ../../../2-services/operators/ibm-datapower-operator.yaml
+#- ../../../2-services/operators/ibm-eventstreams-operator.yaml
+#- ../../../2-services/operators/ibm-foundations.yaml
+#- ../../../2-services/operators/ibm-mq-operator.yaml
+#- ../../../2-services/operators/ibm-opsdashboard-operator.yaml
+#- ../../../2-services/operators/ibm-platform-navigator.yaml
+#- ../../../2-services/instances/ibm-platform-navigator-instance.yaml
+# Required for IBM MQ
+#- ../../../2-services/instances/openldap.yaml
+# Required for IBM ACE, IBM MQ
+#- ../../../2-services/operators/cert-manager.yaml
+#- ../../../2-services/instances/cert-manager-instance.yaml
+
+# Sealed Secrets
+- ../../../2-services/operators/sealed-secrets.yaml
+- ../../../2-services/instances/sealed-secrets-instance.yaml
+
+# CICD
+
+
+# Service Mesh
+#- ../../../2-services/operators/elasticsearch.yaml
+#- ../../../2-services/operators/jaeger.yaml
+#- ../../../2-services/operators/kiali.yaml
+#- ../../../2-services/operators/openshift-service-mesh.yaml
+#- ../../../2-services/instances/openshift-service-mesh-instance.yaml

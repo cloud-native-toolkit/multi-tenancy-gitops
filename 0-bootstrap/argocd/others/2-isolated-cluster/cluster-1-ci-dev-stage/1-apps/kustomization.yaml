@@ -1,0 +1,16 @@
+resources:
+#- ../../../../1-apps/argocd/ace/cicd.yaml
+#- ../../../../1-apps/argocd/ace/dev.yaml
+#- ../../../../1-apps/argocd/ace/stage.yaml
+
+#- ../../../../1-apps/argocd/mq/cicd.yaml
+#- ../../../../1-apps/argocd/mq/dev.yaml
+#- ../../../../1-apps/argocd/mq/stage.yaml
+
+#- ../../../../1-apps/argocd/apic/cicd.yaml
+#- ../../../../1-apps/argocd/apic/dev.yaml
+#- ../../../../1-apps/argocd/apic/stage.yaml
+
+#- ../../../../1-apps/argocd/bookinfo/cicd.yaml
+#- ../../../../1-apps/argocd/bookinfo/dev.yaml
+#- ../../../../1-apps/argocd/bookinfo/stage.yaml
