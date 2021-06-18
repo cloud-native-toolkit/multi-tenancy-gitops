@@ -19,7 +19,6 @@ spec:
       values: |
         ocs-operator:
           ocs:
-            installOCS: true
             channel: stable-4.6
             sizeGiB: 512
             storageClass: gp2

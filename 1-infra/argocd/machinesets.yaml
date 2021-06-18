@@ -19,7 +19,9 @@ spec:
       values: |
         refarch-machinesets:
           infrastructureId: "rosa-east-2-zv89m"
-          cloudProvider: "aws"
+          cloudProvider:
+            name: "aws" # set to aws, azure or vsphere
+            managed: false
           aws:
             region: us-east-1
             zones:

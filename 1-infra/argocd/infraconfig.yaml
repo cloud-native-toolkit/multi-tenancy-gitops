@@ -18,7 +18,9 @@ spec:
     helm:
       values: |
         refarch-infraconfig:
-          cloudProvider: "aws"
+          cloudProvider:
+            name: "aws" # set to aws or vsphere,
+            managed: "false" # set to true for ARO or ROSA
           argo:
             namespace: openshift-gitops
             serviceAccount: argocd-cluster-argocd-application-controller
@@ -27,6 +29,15 @@ spec:
             replicas: 2
           ingress:
             replicas: 2
+          image-registry-hook-job:
+            name: infraconfig-postsync
+            namespace: tools
+            hook:
+              enabled: true
+              hooktype: infraconfig-postsync
+            hookdeletepolicy:
+              enabled: true
+              hookdeletepolicytype: HookSucceeded
   syncPolicy:
     automated:
       prune: true
