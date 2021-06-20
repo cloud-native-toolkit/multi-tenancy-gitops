@@ -4,6 +4,7 @@ bases:
 resources:
 #- argocd-symlink/consolenotification.yaml
 - argocd/namespace-ci.yaml
+- argocd/namespace-tools.yaml
 #- ../../../../1-infra/argocd/consolelink.yaml
 #- ../../../../1-infra/argocd/consolenotification.yaml
 #- ../../../../1-infra/argocd/namespace-ci.yaml
