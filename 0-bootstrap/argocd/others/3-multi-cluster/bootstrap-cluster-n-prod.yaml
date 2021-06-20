@@ -9,8 +9,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/others/3-multi-cluster/cluster-n-prod
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: kustomize
+    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    targetRevision: test-kustomize-06-20
   syncPolicy:
     automated:
       prune: true
