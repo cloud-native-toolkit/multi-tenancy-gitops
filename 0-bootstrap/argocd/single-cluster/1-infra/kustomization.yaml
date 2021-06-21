@@ -2,10 +2,11 @@ bases:
 - ../../../../1-infra/
 
 resources:
+- argocd/consolenotification.yaml
 - argocd/namespace-ci.yaml
 - argocd/namespace-tools.yaml
 #- ../../../../1-infra/argocd/consolelink.yaml
-- ../../../../1-infra/argocd/consolenotification.yaml
+#- ../../../../1-infra/argocd/consolenotification.yaml
 #- ../../../../1-infra/argocd/namespace-ci.yaml
 #- ../../../../1-infra/argocd/namespace-dev.yaml
 #- ../../../../1-infra/argocd/namespace-staging.yaml
