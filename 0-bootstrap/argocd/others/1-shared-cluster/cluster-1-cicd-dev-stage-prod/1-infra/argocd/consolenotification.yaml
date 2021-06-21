@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cntk-consolenotification
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: consolenotification
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
