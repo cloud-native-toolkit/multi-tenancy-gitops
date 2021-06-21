@@ -6,6 +6,7 @@ metadata:
 spec:
   sourceRepos:
   - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services-apps.git
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc

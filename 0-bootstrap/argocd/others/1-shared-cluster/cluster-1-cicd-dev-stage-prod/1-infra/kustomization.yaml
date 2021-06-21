@@ -12,7 +12,7 @@ resources:
 #- argocd/namespace-openshift-storage.yaml
 #- argocd/operator-ocs.yaml
 #- argocd/refarch-infraconfig.yaml
-#- .rgocd/refarch-machinesets.yaml
+#- argocd/refarch-machinesets.yaml
 
 
 

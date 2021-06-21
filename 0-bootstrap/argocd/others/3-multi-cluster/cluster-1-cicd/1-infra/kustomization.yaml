@@ -1,15 +1,15 @@
 resources:
-- ../../../../1-infra/argocd/consolelink.yaml
-- ../../../../1-infra/argocd/consolenotification.yaml
-- ../../../../1-infra/argocd/namespace-ci.yaml
-- ../../../../1-infra/argocd/namespace-istio-system.yaml
-- ../../../../1-infra/argocd/namespace-openldap.yaml
-- ../../../../1-infra/argocd/namespace-sealed-secrets.yaml
-- ../../../../1-infra/argocd/namespace-tools.yaml
-#- ../../../../1-infra/argocd/namespace-openshift-storage.yaml
-#- ../../../../1-infra/argocd/operator-ocs.yaml
-#- ../../../../1-infra/argocd/refarch-infraconfig.yaml
-#- ../../../../1-infra/argocd/refarch-machinesets.yaml
+- argocd/consolelink.yaml
+- argocd/consolenotification.yaml
+- argocd/namespace-ci.yaml
+- argocd/namespace-istio-system.yaml
+- argocd/namespace-openldap.yaml
+- argocd/namespace-sealed-secrets.yaml
+- argocd/namespace-tools.yaml
+#- argocd/namespace-openshift-storage.yaml
+#- argocd/operator-ocs.yaml
+#- argocd/refarch-infraconfig.yaml
+#- argocd/refarch-machinesets.yaml
 
 
 

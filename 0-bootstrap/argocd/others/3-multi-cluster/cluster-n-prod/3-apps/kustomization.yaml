@@ -1,8 +1,8 @@
 resources:
-#- ../../../../3-apps/argocd/ace/prod.yaml
+#- argocd/ace/prod.yaml
 
-#- ../../../../3-apps/argocd/mq/prod.yaml
+#- argocd/mq/prod.yaml
 
-#- ../../../../3-apps/argocd/apic/prod.yaml
+#- argocd/apic/prod.yaml
 
-#- ../../../../3-apps/argocd/bookinfo/prod.yaml
+#- argocd/bookinfo/prod.yaml
