@@ -1,38 +1,38 @@
 resources:
 # IBM Software
-#- ../../../../2-services/argocd/operators/ibm-ace-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-apic-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-aspera-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-assetrepository-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-cp4i-operators.yaml
-#- ../../../../2-services/argocd/operators/ibm-datapower-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-eventstreams-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-mq-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-opsdashboard-operator.yaml
-#- ../../../../2-services/argocd/operators/ibm-platform-navigator.yaml
-#- ../../../../2-services/argocd/instances/ibm-platform-navigator-instance.yaml
+#- argocd/operators/ibm-ace-operator.yaml
+#- argocd/operators/ibm-apic-operator.yaml
+#- argocd/operators/ibm-aspera-operator.yaml
+#- argocd/operators/ibm-assetrepository-operator.yaml
+#- argocd/operators/ibm-cp4i-operators.yaml
+#- argocd/operators/ibm-datapower-operator.yaml
+#- argocd/operators/ibm-eventstreams-operator.yaml
+#- argocd/operators/ibm-mq-operator.yaml
+#- argocd/operators/ibm-opsdashboard-operator.yaml
+#- argocd/operators/ibm-platform-navigator.yaml
+#- argocd/instances/ibm-platform-navigator-instance.yaml
 
 # IBM Foundations / Common Services
-#- ../../../../2-services/argocd/operators/ibm-foundations.yaml
+#- argocd/operators/ibm-foundations.yaml
 
 # IBM Catalogs
-#- ../../../../2-services/argocd/operators/ibm-catalogs.yaml
+#- argocd/operators/ibm-catalogs.yaml
 
 # Required for IBM MQ
-#- ../../../../2-services/argocd/instances/openldap.yaml
+#- argocd/instances/openldap.yaml
 # Required for IBM ACE, IBM MQ
-#- ../../../../2-services/argocd/operators/cert-manager.yaml
-#- ../../../../2-services/argocd/instances/cert-manager-instance.yaml
+#- argocd/operators/cert-manager.yaml
+#- argocd/instances/cert-manager-instance.yaml
 
 # Sealed Secrets
-- ../../../../2-services/argocd/operators/sealed-secrets.yaml
-- ../../../../2-services/argocd/instances/sealed-secrets-instance.yaml
+- argocd/operators/sealed-secrets.yaml
+- argocd/instances/sealed-secrets-instance.yaml
 
 # CICD
 
 # Service Mesh
-#- ../../../../2-services/argocd/operators/elasticsearch.yaml
-#- ../../../../2-services/argocd/operators/jaeger.yaml
-#- ../../../../2-services/argocd/operators/kiali.yaml
-#- ../../../../2-services/argocd/operators/openshift-service-mesh.yaml
-#- ../../../../2-services/argocd/instances/openshift-service-mesh-instance.yaml
+#- argocd/operators/elasticsearch.yaml
+#- argocd/operators/jaeger.yaml
+#- argocd/operators/kiali.yaml
+#- argocd/operators/openshift-service-mesh.yaml
+#- argocd/instances/openshift-service-mesh-instance.yaml

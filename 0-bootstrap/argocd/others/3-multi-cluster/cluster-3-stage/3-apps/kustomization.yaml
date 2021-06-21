@@ -1,8 +1,8 @@
 resources:
-#- ../../../../3-apps/argocd/ace/stage.yaml
+#- argocd/ace/stage.yaml
 
-#- ../../../../3-apps/argocd/mq/stage.yaml
+#- argocd/mq/stage.yaml
 
-#- ../../../../3-apps/argocd/apic/stage.yaml
+#- argocd/apic/stage.yaml
 
-#- ../../../../3-apps/argocd/bookinfo/stage.yaml
+#- argocd/bookinfo/stage.yaml

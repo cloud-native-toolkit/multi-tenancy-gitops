@@ -1,18 +1,18 @@
 resources:
-- ../../../../1-infra/argocd/inactive/consolelink.yaml
-- ../../../../1-infra/argocd/inactive/consolenotification.yaml
-- ../../../../1-infra/argocd/inactive/namespace-ci.yaml
-- ../../../../1-infra/argocd/inactive/namespace-dev.yaml
-- ../../../../1-infra/argocd/inactive/namespace-staging.yaml
-- ../../../../1-infra/argocd/inactive/namespace-prod.yaml
-- ../../../../1-infra/argocd/inactive/namespace-istio-system.yaml
-- ../../../../1-infra/argocd/inactive/namespace-openldap.yaml
-- ../../../../1-infra/argocd/inactive/namespace-sealed-secrets.yaml
-- ../../../../1-infra/argocd/inactive/namespace-tools.yaml
-#- ../../../../1-infra/argocd/inactive/namespace-openshift-storage.yaml
-#- ../../../../1-infra/argocd/inactive/operator-ocs.yaml
-#- ../../../../1-infra/argocd/inactive/refarch-infraconfig.yaml
-#- ../../../../1-infra/argocd/inactive/refarch-machinesets.yaml
+- argocd/consolelink.yaml
+- argocd/consolenotification.yaml
+- argocd/namespace-ci.yaml
+- argocd/namespace-dev.yaml
+- argocd/namespace-staging.yaml
+- argocd/namespace-prod.yaml
+- argocd/namespace-istio-system.yaml
+- argocd/namespace-openldap.yaml
+- argocd/namespace-sealed-secrets.yaml
+- argocd/namespace-tools.yaml
+- argocd/namespace-openshift-storage.yaml
+- argocd/operator-ocs.yaml
+- argocd/refarch-infraconfig.yaml
+- argocd/refarch-machinesets.yaml
 
 
 

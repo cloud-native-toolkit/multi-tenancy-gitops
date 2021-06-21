@@ -1,9 +1,9 @@
 resources:
-#- ../../../../3-apps/argocd/ace/dev.yaml
+#- argocd/ace/dev.yaml
 
-#- ../../../../3-apps/argocd/mq/dev.yaml
+#- argocd/mq/dev.yaml
 
-#- ../../../../3-apps/argocd/apic/dev.yaml
+#- argocd/apic/dev.yaml
 
-#- ../../../../3-apps/argocd/bookinfo/dev.yaml
+#- argocd/bookinfo/dev.yaml
 
