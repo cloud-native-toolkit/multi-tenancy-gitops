@@ -62,7 +62,7 @@ spec:
   source:
     path: 0-bootstrap/argocd/others/1-shared-cluster/cluster-1-cicd-dev-stage-prod/1-infra
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: test-kustomize-06-20
+    targetRevision: kustomize
   syncPolicy:
     automated:
       prune: true
