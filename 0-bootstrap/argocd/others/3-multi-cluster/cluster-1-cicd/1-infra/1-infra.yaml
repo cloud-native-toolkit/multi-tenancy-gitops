@@ -5,7 +5,7 @@ metadata:
   name: infra
 spec:
   sourceRepos:
-  - https://github.com/csantanapr/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
   destinations:
   - namespace: ace
@@ -61,7 +61,7 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/others/3-multi-cluster/cluster-1-cicd/1-infra
-    repoURL: https://github.com/csantanapr/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
     targetRevision: test-kustomize-06-20
   syncPolicy:
     automated:
