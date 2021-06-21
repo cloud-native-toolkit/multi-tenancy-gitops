@@ -19,7 +19,7 @@ resources:
 #- ../../../../2-services/argocd/operators/ibm-catalogs.yaml
 
 # Required for IBM MQ
-- argocd/instances/openldap.yaml
+#- argocd/instances/openldap.yaml
 #- ../../../../2-services/argocd/instances/openldap.yaml
 # Required for IBM ACE, IBM MQ
 #- ../../../../2-services/argocd/operators/cert-manager.yaml
