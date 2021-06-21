@@ -5,7 +5,7 @@ resources:
 - argocd/consolenotification.yaml
 - argocd/namespace-ci.yaml
 - argocd/namespace-tools.yaml
-#- argocd/namespace-openldap.yaml
+- argocd/namespace-openldap.yaml
 #- ../../../../1-infra/argocd/consolelink.yaml
 #- ../../../../1-infra/argocd/consolenotification.yaml
 #- ../../../../1-infra/argocd/namespace-ci.yaml
