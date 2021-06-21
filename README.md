@@ -1,5 +1,10 @@
 # Cloud Native Toolkit Deployment Guides
 
+## Working with forks
+Fork this repo then rename git references using script
+```
+GIT_USER=<git org or user> ./scripts/set-gti-source.sh
+```
 
 ## Install OpenShfit GitOps (ArgoCD)
 To get started setup gitops operator and rbac on each cluster
