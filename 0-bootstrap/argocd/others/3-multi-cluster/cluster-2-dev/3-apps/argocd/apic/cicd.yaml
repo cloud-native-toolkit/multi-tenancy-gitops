@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps-apic-ci
+  annotations:
+    argocd.argoproj.io/sync-wave: "300"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: ci
+    server: https://kubernetes.default.svc
+  project: applications
+  source:
+    path: apic/config/cicd/overlays
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
