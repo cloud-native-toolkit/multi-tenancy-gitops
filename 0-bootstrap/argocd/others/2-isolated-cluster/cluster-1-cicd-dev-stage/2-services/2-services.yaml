@@ -5,7 +5,7 @@ metadata:
   name: services
 spec:
   sourceRepos:
-  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops.git
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
   destinations:
   - namespace: tools
@@ -84,7 +84,7 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/others/2-isolated-cluster/cluster-1-ci-dev-stage/2-services
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops.git
     targetRevision: kustomize
   syncPolicy:
     automated:
