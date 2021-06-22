@@ -18,9 +18,9 @@ oc extract secrets/openshift-gitops-cluster --keys=admin.password -n openshift-g
 
 - For OpenShift 4.6 use the following:
 ```
-oc apply -f setup/ocp47/
+oc apply -f setup/ocp46/
 while ! kubectl wait --for=condition=Established crd applications.argoproj.io; do sleep 30; done
-oc extract secrets/argocd-cluster --keys=admin.password -n openshift-gitops --to=-
+oc extract secrets/argocd-cluster-cluster --keys=admin.password -n openshift-gitops --to=-
 ```
 
 ## Install the ArgoCD Application Bootstrap
