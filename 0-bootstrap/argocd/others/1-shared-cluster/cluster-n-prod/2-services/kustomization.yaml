@@ -1,0 +1,38 @@
+resources:
+# IBM Software
+#- argocd/operators/ibm-ace-operator.yaml
+#- argocd/operators/ibm-apic-operator.yaml
+#- argocd/operators/ibm-aspera-operator.yaml
+#- argocd/operators/ibm-assetrepository-operator.yaml
+#- argocd/operators/ibm-cp4i-operators.yaml
+#- argocd/operators/ibm-datapower-operator.yaml
+#- argocd/operators/ibm-eventstreams-operator.yaml
+#- argocd/operators/ibm-mq-operator.yaml
+#- argocd/operators/ibm-opsdashboard-operator.yaml
+#- argocd/operators/ibm-platform-navigator.yaml
+#- argocd/instances/ibm-platform-navigator-instance.yaml
+
+# IBM Foundations / Common Services
+#- argocd/operators/ibm-foundations.yaml
+
+# IBM Catalogs
+#- argocd/operators/ibm-catalogs.yaml
+
+# Required for IBM MQ
+#- argocd/instances/openldap.yaml
+# Required for IBM ACE, IBM MQ
+#- argocd/operators/cert-manager.yaml
+#- argocd/instances/cert-manager-instance.yaml
+
+# Sealed Secrets
+- argocd/operators/sealed-secrets.yaml
+- argocd/instances/sealed-secrets-instance.yaml
+
+# CICD
+
+# Service Mesh
+#- argocd/operators/elasticsearch.yaml
+#- argocd/operators/jaeger.yaml
+#- argocd/operators/kiali.yaml
+#- argocd/operators/openshift-service-mesh.yaml
+#- argocd/instances/openshift-service-mesh-instance.yaml
