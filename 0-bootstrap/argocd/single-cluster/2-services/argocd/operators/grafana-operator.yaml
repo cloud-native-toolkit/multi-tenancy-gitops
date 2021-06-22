@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/grafana
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        grafana-operator:
+          subscriptions:
+            grafana:
+              name: grafana-operator
+              subscription:
+                channel: alpha
+                installPlanApproval: Automatic
+                name: grafana-operator
+                source: community-operators
+                sourceNamespace: openshift-marketplace      
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

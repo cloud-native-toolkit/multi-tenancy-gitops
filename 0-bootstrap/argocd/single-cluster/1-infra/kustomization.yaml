@@ -9,10 +9,10 @@ resources:
 - argocd/namespace-openldap.yaml
 - argocd/namespace-sealed-secrets.yaml
 - argocd/namespace-tools.yaml
-- argocd/namespace-openshift-storage.yaml
-- argocd/operator-ocs.yaml
-- argocd/refarch-infraconfig.yaml
-- argocd/refarch-machinesets.yaml
+#- argocd/namespace-openshift-storage.yaml
+#- argocd/operator-ocs.yaml
+#- argocd/refarch-infraconfig.yaml
+#- argocd/refarch-machinesets.yaml
 
 
 
