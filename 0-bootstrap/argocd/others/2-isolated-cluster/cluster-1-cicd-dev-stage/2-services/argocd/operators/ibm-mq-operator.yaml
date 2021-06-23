@@ -18,8 +18,17 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        ibm-mq-operator:
+          subscriptions:
+            ibmmq:
+              name: ibm-mq
+              subscription:
+                channel: v1.3-eus
+                installPlanApproval: Automatic
+                name: ibm-mq
+                source: ibm-operator-catalog
+                sourceNamespace: openshift-marketplace          
   syncPolicy:
     automated:
       prune: true

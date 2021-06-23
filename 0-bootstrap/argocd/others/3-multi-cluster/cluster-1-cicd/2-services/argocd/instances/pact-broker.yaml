@@ -18,8 +18,19 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        pact-broker:
+          database:
+            type: sqlite
+            name: pactbroker.sqlite
+
+          route:
+            enabled: true
+            termination: edge
+            insecure: Redirect
+
+          ingress:
+            enabled: false
   syncPolicy:
     automated:
       prune: true

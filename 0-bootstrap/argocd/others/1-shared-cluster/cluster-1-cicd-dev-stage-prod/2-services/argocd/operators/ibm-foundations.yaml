@@ -18,8 +18,17 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        ibm-common-services:
+          subscriptions:
+            subscription:
+              channel: stable-v1
+              config:
+                resources: {}
+              installPlanApproval: Automatic
+              name: ibm-common-service-operator
+              source: opencloud-operators
+              sourceNamespace: openshift-marketplace          
   syncPolicy:
     automated:
       prune: true

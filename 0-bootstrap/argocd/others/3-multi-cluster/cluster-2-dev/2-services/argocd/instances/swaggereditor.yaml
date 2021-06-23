@@ -18,8 +18,11 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        swaggereditor:
+          clusterType: "ocp4"
+          ingress: 
+            enabled: true
   syncPolicy:
     automated:
       prune: true

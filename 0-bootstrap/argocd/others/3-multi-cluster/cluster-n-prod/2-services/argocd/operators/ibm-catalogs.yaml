@@ -18,8 +18,30 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        ibm-catalogs:
+          catalogs:
+            commonservices:
+              name: opencloud-operators
+              catalog:
+                displayName: IBMCS Operators
+                publisher: IBM
+                sourceType: grpc
+                image: docker.io/ibmcom/ibm-common-service-catalog:latest
+                updateStrategy:
+                  registryPoll:
+                    interval: 45m
+
+            ibmoperators:
+              name: ibm-operator-catalog
+              catalog:
+                displayName: "IBM Operator Catalog"
+                publisher: IBM
+                sourceType: grpc
+                image: docker.io/ibmcom/ibm-operator-catalog
+                updateStrategy:
+                  registryPoll:
+                    interval: 45m          
   syncPolicy:
     automated:
       prune: true

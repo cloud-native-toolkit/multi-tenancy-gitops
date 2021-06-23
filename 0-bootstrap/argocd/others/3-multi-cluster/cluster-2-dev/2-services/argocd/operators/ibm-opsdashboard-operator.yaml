@@ -17,9 +17,18 @@ spec:
     path: operators/ibm-opsdashboard-operator
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
-    helm:
-      valueFiles:
-      - values.yaml
+     helm:
+      values: |
+        ibm-opsdashboard-operator:
+          subscriptions:
+            ibmopsdashboard:
+              name: ibm-opsdashboard
+              subscription:
+                channel: v2.1-eus
+                installPlanApproval: Automatic
+                name: ibm-integration-operations-dashboard
+                source: ibm-operator-catalog
+                sourceNamespace: openshift-marketplace          
   syncPolicy:
     automated:
       prune: true

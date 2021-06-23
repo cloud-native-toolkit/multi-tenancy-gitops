@@ -18,8 +18,17 @@ spec:
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
     helm:
-      valueFiles:
-      - values.yaml
+      values: |
+        ibm-aspera-operator:
+          subscriptions:
+            ibmaspera:
+              name: ibm-aspera
+              subscription:
+                channel: v1.2-eus
+                installPlanApproval: Automatic
+                name: aspera-hsts-operator
+                source: ibm-operator-catalog
+                sourceNamespace: openshift-marketplace          
   syncPolicy:
     automated:
       prune: true
