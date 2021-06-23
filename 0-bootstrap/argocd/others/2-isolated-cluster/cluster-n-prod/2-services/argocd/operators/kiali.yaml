@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kiali
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/kiali
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        kiali-operator:
+          clusterType: "ocp4"
+          ocpCatalog:
+            source: redhat-operators
+            channel: stable
+            name: kiali-ossm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

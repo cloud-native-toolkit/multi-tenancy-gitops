@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-platform-navigator
+  annotations:
+    argocd.argoproj.io/sync-wave: "220"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/ibm-platform-navigator
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        ibm-platform-navigator:
+          subscriptions:
+            platformnavigator:
+              name: ibm-platform-navigator
+              subscription:
+                channel: v4.1-eus
+                installPlanApproval: Automatic
+                name: ibm-integration-platform-navigator
+                source: ibm-operator-catalog
+                sourceNamespace: openshift-marketplace          
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

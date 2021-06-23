@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pact-broker
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/pact-broker
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        pact-broker:
+          database:
+            type: sqlite
+            name: pactbroker.sqlite
+
+          route:
+            enabled: true
+            termination: edge
+            insecure: Redirect
+
+          ingress:
+            enabled: false
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

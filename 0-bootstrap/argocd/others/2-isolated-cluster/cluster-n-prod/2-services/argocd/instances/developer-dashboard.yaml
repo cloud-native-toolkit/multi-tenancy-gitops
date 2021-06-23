@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: developer-dashboard
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/developer-dashboard
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        developer-dashboard:
+          clusterType: "ocp4"
+          ingressSubdomain: ""
+          tlsSecretName: ""
+          sso:
+            enabled: true
+          image:
+            repository: "quay.io/ibmgaragecloud/developer-dashboard"
+            tag: "v1.3.11"
+          ingress:
+            enabled: false
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

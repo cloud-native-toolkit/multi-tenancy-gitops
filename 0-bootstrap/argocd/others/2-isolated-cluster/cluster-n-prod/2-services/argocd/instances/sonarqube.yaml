@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarqube
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/sonarqube
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        service-account:
+          name: sonarqube-sonarqube
+          create: false
+          sccs: ["anyuid", "privileged"]
+
+        config-service-account:
+          name: sonarqube-config
+          roles:
+          - apiGroups:
+            - ''
+            resources:
+            - secrets
+            - configmaps
+            verbs:
+            - "*"
+
+        sonarqube:
+          image:
+            pullPolicy: "Always"
+          persistence:
+            enabled: false
+          serviceAccount:
+            create: true
+            name: "sonarqube-sonarqube"
+          podLabels:
+            app.kubernetes.io/part-of : sonarqube
+          postgresql:
+            enabled: true
+            serviceAccount:
+              enabled: true
+              name: sonarqube-sonarqube
+            persistence:
+              enabled: false
+            volumePermissions:
+              enabled: false
+            master:
+              label:
+                app.kubernetes.io/part-of : sonarqube
+              podLabels:
+                app.kubernetes.io/part-of : sonarqube
+
+        ocp-route:
+          nameOverride: "sonarqube"
+          targetPort: "http"
+          app: "sonarqube"
+          serviceName: "sonarqube-sonarqube"
+          termination: edge
+          insecurePolicy: Redirect
+
+        argocd-hook-job:
+          name: sonarqube-postsync
+          namespace: tools
+          hook:
+            enabled: true
+            hooktype: PostSync
+          hookdeletepolicy:
+            enabled: true
+            hookdeletepolicytype: HookSucceeded
+          serviceaccount: sonarqube-argocd-hook-job
+          roleaccess:
+            - verbs:
+                - create
+                - get
+                - list
+                - patch
+                - update
+              apiGroups:
+                - "*"
+              resources:
+                - secrets
+                - configmaps
+                - routes
+          init:
+            enabled: true
+            image: "quay.io/ibmgaragecloud/helm-kubectl"
+            tag: "3.2.3"
+            command: "bash"
+            args:
+              - "-c"
+              - |
+                URL=https://$(kubectl get route sonarqube -n tools -o jsonpath='{.spec.host}')
+                if [[ -z "$(kubectl get configmap sonarqube-config)" ]]; then
+                  kubectl create configmap sonarqube-config --from-literal=SONARQUBE_URL=${URL}
+                fi
+                if [[ -z "$(kubectl get secret sonarqube-access)" ]]; then
+                  kubectl create secret generic sonarqube-access --from-literal=SONARQUBE_USER=admin --from-literal=SONARQUBE_PASSWORD=admin --from-literal=SONARQUBE_URL="http://sonarqube-sonarqube.tools:9000"
+                fi
+          container:
+            image: "quay.io/ibmgaragecloud/nodejs"
+            tag: "latest"
+            command: "bash"
+            args:
+              - "-c"
+              - "npm i -g @ibmgaragecloud/cloud-native-toolkit-web-cli@$latest; $(npm config get prefix)/bin/igc-web setup-sonarqube --inCluster -n tools --debug"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
