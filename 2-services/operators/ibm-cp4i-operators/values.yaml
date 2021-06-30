@@ -1,1 +1,12 @@
 global: {}
+
+ibm-cp4i-operators:
+  subscriptions:
+    cloudpakforintegration:
+      name: ibm-cp-integration
+      subscription:
+        channel: v1.1-eus
+        installPlanApproval: Automatic
+        name: ibm-cp-integration
+        source: ibm-operator-catalog
+        sourceNamespace: openshift-marketplace

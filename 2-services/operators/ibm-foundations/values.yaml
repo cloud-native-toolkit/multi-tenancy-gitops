@@ -1,1 +1,12 @@
 global: {}
+
+ibm-common-services:
+  subscriptions:
+    subscription:
+      channel: stable-v1
+      config:
+        resources: {}
+      installPlanApproval: Automatic
+      name: ibm-common-service-operator
+      source: opencloud-operators
+      sourceNamespace: openshift-marketplace

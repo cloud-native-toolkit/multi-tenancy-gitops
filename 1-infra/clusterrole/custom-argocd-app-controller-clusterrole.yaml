@@ -44,11 +44,18 @@ rules:
     resources:
       - certmanagers
   - verbs:
-      - '*'
+      - create
+      - delete
+      - deletecollection
+      - patch
+      - update
     apiGroups:
       - 'cert-manager.io'
     resources:
       - clusterissuers
+      - certificates
+      - certificaterequests
+      - issuers       
   - verbs:
       - '*'
     apiGroups:

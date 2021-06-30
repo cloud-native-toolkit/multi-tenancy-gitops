@@ -1,1 +1,12 @@
 global: {}
+
+ibm-platform-navigator:
+  subscriptions:
+    platformnavigator:
+      name: ibm-platform-navigator
+      subscription:
+        channel: v4.1-eus
+        installPlanApproval: Automatic
+        name: ibm-integration-platform-navigator
+        source: ibm-operator-catalog
+        sourceNamespace: openshift-marketplace
