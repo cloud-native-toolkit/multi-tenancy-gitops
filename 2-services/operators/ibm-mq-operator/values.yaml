@@ -1,1 +1,12 @@
 global: {}
+
+ibm-mq-operator:
+  subscriptions:
+    ibmmq:
+      name: ibm-mq
+      subscription:
+        channel: v1.5
+        installPlanApproval: Automatic
+        name: ibm-mq
+        source: ibm-operator-catalog
+        sourceNamespace: openshift-marketplace

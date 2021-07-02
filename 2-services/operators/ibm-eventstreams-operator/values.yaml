@@ -1,1 +1,12 @@
 global: {}
+
+ibm-eventstreams-operator:
+  subscriptions:
+    ibmeventstreams:
+      name: ibm-eventstreams
+      subscription:
+        channel: v2.2-eus
+        installPlanApproval: Automatic
+        name: ibm-eventstreams
+        source: ibm-operator-catalog
+        sourceNamespace: openshift-marketplace
