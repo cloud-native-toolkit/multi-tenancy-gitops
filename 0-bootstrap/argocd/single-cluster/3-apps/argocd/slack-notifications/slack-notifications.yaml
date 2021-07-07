@@ -14,7 +14,7 @@ spec:
   source:
     path: slack-notifications
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
-    targetRevision: kustomize
+    targetRevision: master
     helm:
       values: |
         slack-notifications:

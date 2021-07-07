@@ -12,7 +12,7 @@ spec:
   source:
     path: namespaces/openshift-serverless
     repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
-    targetRevision: kustomize
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true
