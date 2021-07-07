@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sealed-secrets-instance
+  name: knative-eventing-instance
   annotations:
     argocd.argoproj.io/sync-wave: "250"
   labels:
-    gitops.tier.group: cntk
+    gitops.tier.group: serverless
 spec:
   destination:
-    namespace: sealed-secrets
+    namespace: knative-eventing
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: shared/config/tools/instances/sealed-secrets
-    repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
-    targetRevision: master
+    path: shared/config/tools/instances/knative-eventing
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
+    targetRevision: kustomize
   syncPolicy:
     automated:
       prune: true

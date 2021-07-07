@@ -6,7 +6,9 @@ metadata:
 spec:
   sourceRepos:
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+  - https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
@@ -31,6 +33,10 @@ spec:
   - namespace: openldap
     server: https://kubernetes.default.svc
   - namespace: instana-agent
+    server: https://kubernetes.default.svc
+  - namespace: openshift-serverless
+    server: https://kubernetes.default.svc
+  - namespace: knative-eventing
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
