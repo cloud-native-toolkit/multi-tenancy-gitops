@@ -43,7 +43,7 @@ spec:
 
           # Place sealed secret here for slack url
           secret:
-            encryptedSlackUrl: AgB/IMAnDtIcnR1L+CvP+r5/Zx/qrQQG9LLCrp0GSCDgb7c4n5bDgJq6JHOmI0pJd6LUWe+1mRhMPMPLxKDgFSzpnG0M4ZU5c4CQ2Lf39uleByh23OuuINZsaOXrFhmrM7R69l++PUU+lkNWp/7WKs6JzOrilyrwqYfjU6swptlb6QK3PW2AKONJl6+IiXU8zS1b5/sXvwW/b2CDBq3Friv0GHI6atOwIVMx9S0UzC2sejzP6NxZjHd5ATrJQuxwFVCegZZa0vlXZE5bIaDFzR7l0jxuYNM4qabXgyb1pnNiRigse4cwv18RAz70HUyb74C0UVKM+eTxBspd1ZUDqX+DrVIkV/g28NEidZdG4RK+ls1zoAlzxmxfdbQqcbaJBshkGu7PX491zlT9fo+Dbf057t+b1xO5232lNhd7VAeXmg/DB9i4xLQAX0ZSNBAORBZ6nLQ83ycbkdGq1M+IvNIfllZ6v8r7hNMTYS7tpd0/fdTwPgcouvsKjDfkfPNX5ANZV833vNO+iX6pPekYcQwovBEkdcaqbEw3tYIX9gQN5mwHbGIvwu8mMVCUfXZwjbRku5stRJ95OjKZNj7OKwrj0tEH5byrlyrCJvGwtReqR+4LTJPZ5GYoO1A+fPJS08vCHe+hxykgaqsOtvqQXxll/cl6pCqX0VHIdAT7Fu9x71F11rnJpQRXe+fbijPGnEOq6RPojupfeKwFHgHgtTLqzEmX7huQWwssPGVDanKAkwKkcdeU30/p6uBccouE2VQonuTI0a3ryxi5L8dLKkF9fSbci5IOIp6ei80pON3e
+            encryptedSlackUrl: encrypted_slack_url
 
           triggers: 
             - name: taskrun-success-trigger
