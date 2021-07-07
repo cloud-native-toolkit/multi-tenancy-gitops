@@ -5,7 +5,9 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-RJON-BUVMQX
+    license: L-RJON-BZFQU2
   mqDashboard: true
-  version: 2020.4.1-eus
+  version: 2021.2.1
+  storage:
+    class: ibmc-file-gold-gid
   replicas: 2

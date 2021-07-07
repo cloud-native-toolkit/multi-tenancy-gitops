@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trigger-test-pipeline-in-dev
+  namespace: dev
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+spec:
+  template:
+    spec:
+      serviceAccountName: pipeline
+      containers:
+      - name: tests-in-dev
+        image: quay.io/rhcanada/tkn-cli
+        command:
+          - tkn
+        args:
+          - -n
+          - dev
+          - pipeline
+          - start
+          - ibm-test-pipeline-for-dev-env
+          - --param
+          - git-url="https://github.com/cloud-native-toolkit/mq-infra.git"
+          - --param
+          - is-source-repo-private-key=id_create-customer-rest-v1
+          - --param
+          - git-revision="ha"
+          - --param
+          - argoAppName="ibm-mq-dev-instance"
+      restartPolicy: Never
+  backoffLimit: 0
