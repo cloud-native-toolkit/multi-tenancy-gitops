@@ -91,6 +91,14 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'triggers.tekton.dev'
+    resources:
+      - triggerbindings
+      - triggertemplates   
+      - eventlisteners      
+  - verbs:
+      - '*'
+    apiGroups:
       - 'maistra.io'
     resources:
       - servicemeshcontrolplanes
