@@ -4,6 +4,7 @@ metadata:
   name: cert-manager-instance
   annotations:
     argocd.argoproj.io/sync-wave: "250"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
   labels:
     gitops.tier.group: cntk
 spec:
