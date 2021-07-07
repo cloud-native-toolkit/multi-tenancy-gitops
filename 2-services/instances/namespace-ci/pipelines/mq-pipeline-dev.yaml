@@ -103,23 +103,23 @@ spec:
           value: "$(tasks.setup.results.image-url)"
         - name: image-to
           value: "$(tasks.setup.results.image-release):$(tasks.tag-release.results.tag)"
-    - name: img-scan
-      taskRef:
-        name: ibm-img-scan-v2-6-13
-      runAfter:
-        - img-release
-      params:
-        - name: image-url
-          value: $(tasks.img-release.results.image-url)
-        - name: scan-trivy
-          value: $(tasks.setup.results.scan-trivy)
-        - name: scan-ibm
-          value: $(tasks.setup.results.scan-ibm)
+    # - name: img-scan
+    #   taskRef:
+    #     name: ibm-img-scan-v2-6-13
+    #   runAfter:
+    #     - img-release
+    #   params:
+    #     - name: image-url
+    #       value: $(tasks.img-release.results.image-url)
+    #     - name: scan-trivy
+    #       value: $(tasks.setup.results.scan-trivy)
+    #     - name: scan-ibm
+    #       value: $(tasks.setup.results.scan-ibm)
     - name: helm-release
       taskRef:
         name: ibm-helm-release-v2-6-13
       runAfter:
-        - img-scan
+        - img-release
       params:
         - name: git-url
           value: "$(tasks.setup.results.git-url)"
