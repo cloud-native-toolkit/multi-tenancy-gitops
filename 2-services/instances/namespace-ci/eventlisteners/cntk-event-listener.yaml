@@ -1,0 +1,18 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  labels:
+    app: cnkt-event-listener
+  name: cnkt-event-listener
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - bindings:
+    - kind: TriggerBinding
+      ref: cnkt-trigger-binding
+    interceptors:
+    - cel:
+        filter: header.match('X-GitHub-Event', 'push') && body.ref == 'refs/heads/ha' && body.repository.full_name == 'cloud-native-toolkit/mq-infra'
+    name: mq-infra-dev
+    template:
+      ref: mq-infra-dev
