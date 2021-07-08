@@ -78,6 +78,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'mq.ibm.com'
+    resources:
+      - queuemanagers      
+  - verbs:
+      - '*'
+    apiGroups:
       - 'operators.coreos.com'
     resources:
       - subscriptions
