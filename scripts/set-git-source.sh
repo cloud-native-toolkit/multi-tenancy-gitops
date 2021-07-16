@@ -34,6 +34,15 @@ find ${SCRIPTDIR}/.. -name '*.yaml' -print0 |
       sed -i'.bak' -e "s/<cluster-domain>/$CLUSTER_DOMAIN/g" $File
       rm "${File}.bak"
     fi
+    if grep -q "kind: ConfigMap" "$File"; then
+      if grep -q "name: gitops-repo" "$File"; then
+        echo "$File"
+        sed -i'.bak' -e "s/<branch>/$GIT_BRANCH/g" $File
+        sed -i'.bak' -e "s/<github-org>/$GIT_USER/g" $File
+        sed -i'.bak' -e "s/<github-id>/$GIT_USER/g" $File
+        rm "${File}.bak"
+      fi
+    fi
   done
 
 echo "git commit and push changes now"
