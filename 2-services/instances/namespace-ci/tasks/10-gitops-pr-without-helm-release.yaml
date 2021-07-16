@@ -138,7 +138,7 @@ spec:
           VERSION="$(params.version)"
 
           if [[ -z "${GIT_HOST}" ]] || [[ -z "${GIT_ORG}" ]] || [[ -z "${GIT_REPO}" ]]; then
-              echo "GitOps repo has not been configured with confimap gitops-repo. Skipping trigger step"
+              echo "GitOps repo has not been configured with configmap gitops-repo. Skipping trigger step"
               exit 0
           fi
 
