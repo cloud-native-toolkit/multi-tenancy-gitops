@@ -1,19 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: knative-eventing-instance
+  name: openshift-serverless
   annotations:
-    argocd.argoproj.io/sync-wave: "250"
+    argocd.argoproj.io/sync-wave: "200"
   labels:
     gitops.tier.group: serverless
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: knative-eventing
+    namespace: openshift-operators
     server: https://kubernetes.default.svc
   project: services
   source:
-    path: shared/config/tools/instances/knative-eventing
-    repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+    path: operators/openshift-serverless
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
     targetRevision: master
   syncPolicy:
     automated:

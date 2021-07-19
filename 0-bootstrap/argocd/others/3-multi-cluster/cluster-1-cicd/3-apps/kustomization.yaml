@@ -6,3 +6,7 @@ resources:
 #- argocd/apic/cicd.yaml
 
 #- argocd/bookinfo/cicd.yaml
+
+# Slack Notifications
+#- argocd/slack-notifications/slack-notifications.yaml
+#- argocd/shared/config/openshift-pipelines/openshift-pipelines-config.yaml

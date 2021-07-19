@@ -36,3 +36,7 @@ resources:
 #- argocd/operators/kiali.yaml
 #- argocd/operators/openshift-service-mesh.yaml
 #- argocd/instances/openshift-service-mesh-instance.yaml
+
+# Openshift Serverless/Eventing
+#- argocd/operators/openshift-serverless.yaml
+#- argocd/instances/knative-eventing-instance.yaml

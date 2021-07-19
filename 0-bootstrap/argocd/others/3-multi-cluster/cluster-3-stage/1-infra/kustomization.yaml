@@ -11,6 +11,10 @@ resources:
 #- argocd/refarch-infraconfig.yaml
 #- argocd/refarch-machinesets.yaml
 
+# Openshift Serverless/Eventing
+#- argocd/namespace-openshift-serverless.yaml
+#- argocd/namespace-knative-serving.yaml
+#- argocd/namespace-knative-eventing.yaml
 
 
 

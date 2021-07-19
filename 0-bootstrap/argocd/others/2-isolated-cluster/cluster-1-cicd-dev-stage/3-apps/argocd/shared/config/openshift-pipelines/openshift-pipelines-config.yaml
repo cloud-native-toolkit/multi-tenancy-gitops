@@ -1,18 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: knative-eventing-instance
+  name: openshift-pipelines-config
   annotations:
-    argocd.argoproj.io/sync-wave: "250"
-  labels:
-    gitops.tier.group: serverless
+    argocd.argoproj.io/sync-wave: "300"
 spec:
   destination:
-    namespace: knative-eventing
+    namespace: openshift-pipelines
     server: https://kubernetes.default.svc
-  project: services
+  project: infra
   source:
-    path: shared/config/tools/instances/knative-eventing
+    path: shared/config/openshift-pipelines/openshift-pipelines-config
     repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
     targetRevision: master
   syncPolicy:
