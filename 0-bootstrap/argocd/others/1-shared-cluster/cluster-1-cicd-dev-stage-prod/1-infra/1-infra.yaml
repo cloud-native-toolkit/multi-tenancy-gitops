@@ -28,6 +28,16 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: instana-agent
     server: https://kubernetes.default.svc
+  - namespace: openshift-serverless
+    server: https://kubernetes.default.svc
+  - namespace: openshift-pipelines
+    server: https://kubernetes.default.svc
+  - namespace: knative-serving
+    server: https://kubernetes.default.svc
+  - namespace: knative-eventing
+    server: https://kubernetes.default.svc
+  - namespace: slack-notifications
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace

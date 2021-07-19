@@ -44,9 +44,9 @@ spec:
 
           secret:
             # provide name of the secret that contains slack url
-            name: slack_url
+            name: slack-secret
             # provide key of the secret that contains slack url
-            key: SLACK.URL
+            key: SLACK_URL
 
           triggers: 
             - name: taskrun-success-trigger

@@ -10,7 +10,7 @@ spec:
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: shared/config/openshift-pipelines/openshift-pipelines-config
+    path: shared/config/openshift-pipelines/configmap/openshift-pipelines-config
     repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
     targetRevision: master
   syncPolicy:
