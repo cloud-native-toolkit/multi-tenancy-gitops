@@ -21,6 +21,9 @@ spec:
     - name: app-type
       description: Application
       default: 3-apps/instances
+    - name: security
+      description: enable app security
+      default: "false"
   tasks:
     - name: setup
       taskRef:
@@ -102,6 +105,8 @@ spec:
           value: "$(tasks.setup.results.health-url)"
         - name: health-curl
           value: "$(tasks.setup.results.health-curl)"
+        - name: security
+          value: "$(params.security)"
     - name: tag-release
       taskRef:
         name: ibm-tag-release-v2-6-13

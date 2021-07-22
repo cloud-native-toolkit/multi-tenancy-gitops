@@ -28,6 +28,8 @@ spec:
       default: ""
     - name: app-name
       default: ""
+    - name: security
+      default: ""
     - name: deploy-ingress-type
       default: "route"
     - name: tools-image
@@ -98,7 +100,7 @@ spec:
               key: INGRESS_SUBDOMAIN
               optional: true
       securityContext:
-        privileged: true      
+        privileged: true
       script: |
           #!/usr/bin/env bash
           set -ex
@@ -188,7 +190,8 @@ spec:
           helm template ${RELEASE_NAME} ${CHART_PATH} \
               --namespace ${APP_NAMESPACE} \
               --set ${PREFIX}ingress.tlsSecretName="${TLS_SECRET_NAME}" \
-              --set ${PREFIX}ingress.subdomain="${INGRESS_SUBDOMAIN}" > ./release.yaml
+              --set ${PREFIX}ingress.subdomain="${INGRESS_SUBDOMAIN}" \
+              --set security="$(params.security)" > ./release.yaml
 
           echo -e "Generated release yaml for: ${APP_NAMESPACE}/${APP_NAME}"
           cat ./release.yaml
