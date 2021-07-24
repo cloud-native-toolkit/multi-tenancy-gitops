@@ -78,6 +78,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - 'mq.ibm.com'
+    resources:
+      - queuemanagers      
+  - verbs:
+      - '*'
+    apiGroups:
       - 'operators.coreos.com'
     resources:
       - subscriptions
@@ -88,6 +94,14 @@ rules:
     resources:
       - pipelines
       - tasks
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'triggers.tekton.dev'
+    resources:
+      - triggerbindings
+      - triggertemplates   
+      - eventlisteners      
   - verbs:
       - '*'
     apiGroups:
