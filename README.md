@@ -3,7 +3,7 @@
 ## Working with forks
 Fork this repo then rename git references using script
 ```
-GIT_USER=<git org or user> ./scripts/set-gti-source.sh
+GIT_USER=<git org or user> ./scripts/set-git-source.sh
 ```
 
 ## Install OpenShfit GitOps (ArgoCD)

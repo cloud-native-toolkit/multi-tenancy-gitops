@@ -14,3 +14,7 @@ resources:
 #- argocd/bookinfo/cicd.yaml
 #- argocd/bookinfo/dev.yaml
 #- argocd/bookinfo/stage.yaml
+
+# Slack Notifications
+#- argocd/slack-notifications/slack-notifications.yaml
+#- argocd/shared/config/openshift-pipelines/configmap/openshift-pipelines-config.yaml

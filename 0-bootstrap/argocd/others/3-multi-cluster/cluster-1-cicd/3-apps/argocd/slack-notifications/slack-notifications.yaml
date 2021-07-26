@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps-slack-notifications
+  annotations:
+    argocd.argoproj.io/sync-wave: "300"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: slack-notifications
+    server: https://kubernetes.default.svc
+  project: applications
+  source:
+    path: slack-notifications
+    repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+    targetRevision: master
+    helm:
+      values: |
+        slack-notifications:
+          replicaCount: 1
+
+          image:
+            # source code for image can be found at https://github.com/cloud-native-toolkit/slack-notifications
+            repository: quay.io/ibmgaragecloud/slack-notifications
+            pullPolicy: IfNotPresent
+            # Overrides the image tag whose default is the chart appVersion.
+            tag: latest
+
+          imagePullSecrets: []
+          nameOverride: ""
+          fullnameOverride: ""
+
+          podAnnotations: {}
+
+          container:
+            port: 8080
+
+          service:
+            port: 80
+
+          broker:
+            name: default
+
+          secret:
+            # provide name of the secret that contains slack url
+            name: slack-secret
+            # provide key of the secret that contains slack url
+            key: SLACK_URL
+
+          triggers: 
+            - name: taskrun-success-trigger
+              type: dev.tekton.event.taskrun.successful.v1
+            - name: taskrun-fail-trigger
+              type: dev.tekton.event.taskrun.failed.v1
+            - name: pipelinerun-success-trigger
+              type: dev.tekton.event.pipelinerun.successful.v1
+            - name: pipelinerun-fail-trigger
+              type: dev.tekton.event.pipelinerun.failed.v1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

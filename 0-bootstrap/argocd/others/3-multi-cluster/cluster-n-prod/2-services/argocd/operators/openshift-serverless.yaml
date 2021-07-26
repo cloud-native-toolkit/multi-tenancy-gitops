@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openshift-serverless
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+  labels:
+    gitops.tier.group: serverless
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: operators/openshift-serverless
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
+    targetRevision: master
+    helm:
+      values: |
+        openshift-serverless:
+          subscriptions:
+            openshiftserverless:
+              name: openshift-serverless-operator-rh
+              labels:
+                gitops.tier.group: serverless
+              subscription:
+                channel: stable
+                installPlanApproval: Automatic
+                name: serverless-operator
+                source: redhat-operators
+                sourceNamespace: openshift-marketplace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
