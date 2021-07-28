@@ -12,7 +12,7 @@ spec:
       ref: cnkt-trigger-binding
     interceptors:
     - cel:
-        filter: header.match('X-GitHub-Event', 'push') && body.ref == 'refs/heads/qm1-phemankita' && body.repository.full_name == 'phemankita/mq-infra'
+        filter: header.match('X-GitHub-Event', 'push') && body.ref == 'refs/heads/master' && body.repository.full_name == 'cloud-native-toolkit/mq-infra'
     name: mq-infra-dev
     template:
       ref: mq-infra-dev
