@@ -13,7 +13,7 @@ spec:
       default: master
     - name: scan-image
       description: Enable the pipeline to scan the image for vulnerabilities
-      default: "true"
+      default: "false"
     - name: environment
       description: environment
       default: namespace-dev
