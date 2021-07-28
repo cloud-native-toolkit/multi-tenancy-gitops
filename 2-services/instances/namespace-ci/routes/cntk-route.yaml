@@ -1,0 +1,20 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: el-cnkt-event-listener
+  namespace: ci
+  labels:
+    app: cnkt-event-listener
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: cnkt-event-listener
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  to:
+    kind: Service
+    name: el-cnkt-event-listener
+    weight: 100
+  port:
+    targetPort: http-listener
+  wildcardPolicy: None
