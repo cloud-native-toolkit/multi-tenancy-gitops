@@ -28,6 +28,10 @@ spec:
       default: ""
     - name: app-name
       default: ""
+    - name : security
+      default: ""
+    - name: ha
+      default: ""
     - name: deploy-ingress-type
       default: "route"
     - name: tools-image
@@ -174,7 +178,9 @@ spec:
           helm template ${RELEASE_NAME} ${CHART_PATH} \
               --namespace ${APP_NAMESPACE} \
               --set ${PREFIX}ingress.tlsSecretName="${TLS_SECRET_NAME}" \
-              --set ${PREFIX}ingress.subdomain="${INGRESS_SUBDOMAIN}" > ./release.yaml
+              --set ${PREFIX}ingress.subdomain="${INGRESS_SUBDOMAIN}" \
+              --set security="$(params.security)" \
+              --set ha="$(params.ha)" > ./release.yaml
 
           echo -e "Generated release yaml for: ${APP_NAMESPACE}/${APP_NAME}"
           cat ./release.yaml
@@ -209,7 +215,7 @@ spec:
             echo -n "${target}" | cut -f1 -d / | tee $(results.resource-type.path)
           done
       securityContext:
-        privileged: true          
+        privileged: true
     - name: health-check
       image: $(params.tools-image)
       script: |

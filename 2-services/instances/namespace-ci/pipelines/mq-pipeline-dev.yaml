@@ -13,13 +13,19 @@ spec:
       default: master
     - name: scan-image
       description: Enable the pipeline to scan the image for vulnerabilities
-      default: "true"
+      default: "false"
     - name: environment
       description: environment
       default: namespace-dev
     - name: app-type
       description: Service
       default: 2-services/instances
+    - name: security
+      description: Enable security for queueManager
+      default: "false"
+    - name: ha
+      description: Enable ha for queueManager
+      default: "false"
   tasks:
     - name: setup
       taskRef:
@@ -79,6 +85,10 @@ spec:
           value: "$(tasks.setup.results.deploy-ingress-type)"
         - name: tools-image
           value: "$(tasks.setup.results.tools-image)"
+        - name : security
+          value: "$(params.security)"
+        - name: ha
+          value: "$(params.ha)"
     - name: tag-release
       taskRef:
         name: ibm-tag-release-v2-6-13
