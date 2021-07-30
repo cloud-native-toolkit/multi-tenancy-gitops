@@ -16,3 +16,12 @@ spec:
     name: mq-infra-dev
     template:
       ref: mq-infra-dev
+  - bindings:
+    - kind: TriggerBinding
+      ref: cnkt-trigger-binding
+    interceptors:
+    - cel:
+        filter: header.match('X-GitHub-Event', 'push') && body.ref == 'refs/heads/master' && body.repository.full_name == 'cloud-native-toolkit/mq-spring-app'
+    name: mq-spring-app-dev
+    template:
+      name: mq-spring-app-dev

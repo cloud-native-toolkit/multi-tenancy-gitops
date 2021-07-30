@@ -1,0 +1,25 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  labels:
+    app: mq-spring-app-dev
+  name: mq-spring-app-dev
+spec:
+  params:
+  - description: The git revision
+    name: gitrevision
+  - description: The git repository url
+    name: gitrepositoryurl
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: mq-spring-app-dev-
+    spec:
+      params:
+      - name: git-url
+        value: $(tt.params.gitrepositoryurl)
+      - name: git-revision
+        value: $(tt.params.gitrevision)
+      pipelineRef:
+        name: mq-spring-app-dev
