@@ -1,0 +1,101 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-argo-tests
+  annotations:
+    description: Tests the app deployed by argocd in corresponding environments
+    app.openshift.io/description: Tests the app deployed by argocd in corresponding environments
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+    app.openshift.io/vcs-ref: master
+  labels:
+    version: 0.0.0
+spec:
+  params:
+    - name: source-dir
+      default: /source
+    - name: tools-image
+      default: quay.io/hemankita/argocd-cli:latest
+    - name: argoAppName
+      description: Name of the app on Argocd
+      type: string
+    - name: image-url
+      description: url of the image
+  results:
+    - name: image-url
+      description: The url of the image to be pushed
+  volumes:
+    - name: source
+      emptyDir: {}
+  stepTemplate:
+    volumeMounts:
+      - name: source
+        mountPath: $(params.source-dir)
+  steps:
+    - name: run-app-tests
+      image: $(params.tools-image)
+      env:
+        - name: ARGO_USER
+          valueFrom:
+            secretKeyRef:
+              name: argocd-access-creds
+              key: ARGOCD_USERNAME
+              optional: true
+        - name: ARGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: argocd-access-creds
+              key: ARGOCD_PASSWORD
+              optional: true
+        - name: ARGO_URL
+          valueFrom:
+            secretKeyRef:
+              name: argocd-access-creds
+              key: ARGOCD_URL
+              optional: true
+      script: |
+        #!/usr/bin/env bash
+        echo ${ARGO_URL}
+        argocd login ${ARGO_URL} --insecure --username ${ARGO_USER} --password ${ARGO_PASSWORD}
+        IMAGE_NAME=$(argocd app manifests $(params.argoAppName) | grep image: | sed 's/^.*: //')
+
+        # Checking if the image tags are up-to-date
+        echo ${IMAGE_NAME}
+        echo $(params.image-url)
+
+        IMAGE_SERVER_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $1}')"
+        IMAGE_REPOSITORY_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $3}' | awk -F : '{print $1}')"
+        IMAGE_VERSION_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $3}' | awk -F : '{print $2}')"
+
+        IMAGE_SERVER_REPO="$(echo "$(params.image-url)" | awk -F / '{print $1}')"
+        IMAGE_REPOSITORY_REPO="$(echo "$(params.image-url)" | awk -F / '{print $3}' | awk -F : '{print $1}')"
+        IMAGE_VERSION_REPO="$(echo "$(params.image-url)" | awk -F / '{print $3}' | awk -F : '{print $2}')"
+
+        if [ "${IMAGE_SERVER_ARGO}" = "${IMAGE_SERVER_REPO}" ] && [ "${IMAGE_REPOSITORY_ARGO}" = "${IMAGE_REPOSITORY_REPO}" ] && [ "${IMAGE_VERSION_ARGO}" = "${IMAGE_VERSION_REPO}" ]; then
+            echo "Synced !!! ... Deployment is up to date"
+        else
+            argocd app sync $(params.argoAppName)
+            until [[ "${IMAGE_SERVER_ARGO}" = "${IMAGE_SERVER_REPO}" && "${IMAGE_REPOSITORY_ARGO}" = "${IMAGE_REPOSITORY_REPO}" && "${IMAGE_VERSION_ARGO}" = "${IMAGE_VERSION_REPO}" ]]; do
+              echo "Syncing !!! ... Deployment is getting updated"
+              sleep 10
+              IMAGE_NAME=$(argocd app manifests $(params.argoAppName) | grep image: | sed 's/^.*: //')
+              IMAGE_SERVER_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $1}')"
+              IMAGE_REPOSITORY_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $3}' | awk -F : '{print $1}')"
+              IMAGE_VERSION_ARGO="$(echo "${IMAGE_NAME}" | awk -F / '{print $3}' | awk -F : '{print $2}')"
+            done
+        fi
+        echo -n "${IMAGE_NAME}" | tee $(results.image-url.path)
+        # Checking if the sync is finished
+        # echo "Checking if the sync is finished"
+        # APP_PHASE=$(argocd app wait $(params.argoAppName) | grep Phase | sed 's/^.*:              //g ')
+        # echo ${APP_PHASE}
+        # APP_HEALTH=$(argocd app wait $(params.argoAppName) | grep 'Health Status' | sed 's/^.*:      //g ')
+        # echo ${APP_HEALTH}
+        # until [ "${APP_PHASE}" = "Succeeded" ] && [ "${APP_HEALTH}" = "Healthy" ]; do
+        #   echo "Waiting for the app to come up on the environment"
+        #   sleep 10
+        # done
+        # if [ "${APP_PHASE}" = "Succeeded" ] && [ "${APP_HEALTH}" = "Healthy" ]; then
+        #   echo "$(params.argoAppName) is successfully updated ... and is now ready"
+        # fi
+      securityContext:
+        privileged: true
