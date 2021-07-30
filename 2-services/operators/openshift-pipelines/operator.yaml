@@ -4,7 +4,7 @@ metadata:
   name: openshift-pipelines-operator-rh
 spec:
   channel: stable
-  installPlanApproval: Manual
+  installPlanApproval: Automatic
   name: openshift-pipelines-operator-rh
   source: redhat-operators
   sourceNamespace: openshift-marketplace
