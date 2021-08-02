@@ -15,9 +15,19 @@ spec:
     - name: app-name
       description: Queuemanager / Application (mq-infra or mq-spring-app)
   tasks:
+    - name: dev-instance-tests
+      taskRef:
+        name: ibm-functional-test
+      params:
+        - name: app-name
+          value: "$(params.app-name)"
+        - name: src-environment
+          value: "$(params.src-environment)"
     - name: gitops
       taskRef:
         name: ibm-gitops-with-pr
+      runAfter:
+        - functional-tests
       params:
         - name: app-name
           value: "$(params.app-name)"
