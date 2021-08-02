@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: custom-tekton-test-pipeline-sa
+rules:
+- apiGroups:
+  - "apps"
+  resources:
+  - statefulsets
+  - deployment
+  verbs:
+  - get
+  - list
+  - watch
