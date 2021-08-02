@@ -1,76 +1,26 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: ibm-test-pipeline
+  name: ibm-mq-promote-dev-stage
   annotations:
     app.openshift.io/runtime: test
 spec:
   params:
-    - name: git-url
-      description: The url for the queuemanager git repository
-    - name: git-revision
-      description: The git revision (branch, tag, or sha) that should be built
-      default: master
-    - name: scan-image
-      description: Enable the pipeline to scan the image for vulnerabilities
-      default: "false"
     - name: src-environment
       description: environment (namespace-dev or namespace-staging)
     - name: dest-environment
       description: environment (namespace-staging or namespace-prod)
     - name: app-type
       description: Services / Application (2-services/instances or 3-apps/instances)
-    - name: argoAppName
-      description: Name of the application deployed by argocd in dev namespace (ibm-mq-dev-instance or mq-quarkus-app-dev)
+    - name: app-name
+      description: Queuemanager / Application (mq-infra or mq-spring-app)
   tasks:
-    - name: setup
-      taskRef:
-        name: ibm-setup-v2-6-13
-      params:
-        - name: git-url
-          value: $(params.git-url)
-        - name: git-revision
-          value: $(params.git-revision)
-        - name: scan-image
-          value: $(params.scan-image)
-    - name: img-info
-      taskRef:
-        name: ibm-img-info-extract
-      runAfter:
-        - setup
-      params:
-        - name: git-url
-          value: "$(tasks.setup.results.git-url)"
-        - name: git-revision
-          value: "$(tasks.setup.results.git-revision)"
-        - name: source-dir
-          value: "$(tasks.setup.results.source-dir)"
-        - name: image-from
-          value: "$(tasks.setup.results.image-url)"
-        - name: image-to
-          value: "$(tasks.setup.results.image-release)"
-    - name: dev-instance-tests
-      taskRef:
-        name: ibm-argo-tests
-      runAfter:
-        - img-info
-      params:
-        - name: image-url
-          value: "$(tasks.img-info.results.image-url)"
-        - name: argoAppName
-          value: "$(params.argoAppName)"
     - name: gitops
       taskRef:
         name: ibm-gitops-with-pr
-      runAfter:
-        - dev-instance-tests
       params:
         - name: app-name
-          value: "$(tasks.setup.results.app-name)"
-        - name: version
-          value: "$(tasks.img-info.results.image-tag)"
-        - name: tools-image
-          value: "$(tasks.setup.results.tools-image)"
+          value: "$(params.app-name)"
         - name: src-environment
           value: "$(params.src-environment)"
         - name: dest-environment
