@@ -29,7 +29,7 @@ spec:
       taskRef:
         name: ibm-gitops-with-pr
       runAfter:
-        - functional-tests
+        - dev-instance-tests
       params:
         - name: app-name
           value: "$(params.app-name)"
