@@ -8,8 +8,10 @@ spec:
   params:
     - name: src-environment
       description: environment (namespace-dev or namespace-staging)
+      default: namespace-dev
     - name: dest-environment
       description: environment (namespace-staging or namespace-prod)
+      default: namespace-staging
     - name: app-type
       description: Services / Application (2-services/instances or 3-apps/instances)
     - name: app-name
