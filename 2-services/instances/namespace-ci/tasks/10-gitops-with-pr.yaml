@@ -13,8 +13,6 @@ spec:
   params:
     - name: app-name
       default: ""
-    - name: version
-      default: ""
     - name: src-environment
       default: ""
     - name: dest-environment
@@ -59,18 +57,6 @@ spec:
           valueFrom:
             secretKeyRef:
               name: git-credentials
-              key: password
-              optional: true
-        - name: GIT_USERNAME_CD
-          valueFrom:
-            secretKeyRef:
-              name: gitops-cd-secret
-              key: username
-              optional: true
-        - name: GIT_PASSWORD_CD
-          valueFrom:
-            secretKeyRef:
-              name: gitops-cd-secret
               key: password
               optional: true
         - name: GIT_PARENT_DIR
@@ -146,7 +132,6 @@ spec:
           fi
 
           YAML_FILE="$(params.yaml)"
-          VERSION="$(params.version)"
 
           if [[ -z "${GIT_HOST}" ]] || [[ -z "${GIT_ORG}" ]] || [[ -z "${GIT_REPO}" ]]; then
               echo "GitOps repo has not been configured with confimap gitops-repo. Skipping trigger step"
@@ -154,16 +139,15 @@ spec:
           fi
 
           set +x
-          if [[ -n "${GIT_USERNAME_CD}" ]]; then
-            GIT_AUTH_USER="${GIT_USERNAME_CD}"
-            GIT_AUTH_PWD="${GIT_PASSWORD_CD}"
-          elif [[ -n "${GIT_USERNAME}" ]]; then
+
+          if [[ -n "${GIT_USERNAME}" ]]; then
             GIT_AUTH_USER="${GIT_USERNAME}"
             GIT_AUTH_PWD="${GIT_PASSWORD}"
           else
             echo "Credentials for GitOps repo not set in secret gitops-cd-secret or git-credentials"
             exit 1
           fi
+
           set -x
 
           BRANCH_CMD=""
@@ -228,6 +212,8 @@ spec:
             echo "GitOps repo configured but unable to update application config"
             exit 1
           fi
+
+          VERSION="$(grep 'version:' ./$(params.app-type)/$(params.src-environment)/$(params.app-name)/requirements.yaml | awk -F ": " '{print $2}')"
 
           if [[ $(git status -s | wc -l) -eq 0 ]]; then
             echo "No changes"
