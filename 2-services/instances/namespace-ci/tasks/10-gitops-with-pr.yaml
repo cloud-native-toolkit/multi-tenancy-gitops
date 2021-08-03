@@ -192,7 +192,7 @@ spec:
             # push changes to git
             git status
             git add "${SUBDIR_DEST}/"
-            git commit -m "Cloudnative toolkit pipeline updates ${APP_NAME}" --amend --no-edit --signoff
+            git commit -m "Cloudnative toolkit pipeline updates ${APP_NAME}" --no-edit --signoff
 
             git push origin cntk-ci-pipeline-${APP_NAME}-${APP_VERSION}
 
