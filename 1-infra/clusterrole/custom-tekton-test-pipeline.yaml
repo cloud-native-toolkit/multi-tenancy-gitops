@@ -5,9 +5,11 @@ metadata:
 rules:
 - apiGroups:
   - "apps"
+  - "route.openshift.io"
   resources:
   - statefulsets
-  - deployment
+  - deployments
+  - routes
   verbs:
   - get
   - list

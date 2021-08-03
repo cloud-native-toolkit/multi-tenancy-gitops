@@ -164,72 +164,39 @@ spec:
           set -x
           cd gitops_cd
 
-          if [[ -d "${SUBDIR_DEST}" ]]; then
-            echo "${SUBDIR_DEST} is present"
-          else
-            echo "Creating first time chart using ${SUBDIR_DEST}"
-            # create directory
-            mkdir -p "${SUBDIR_DEST}"
-
-            # WARNING: Do not indent the cat commands below
-
-          cat <<EOF >"${SUBDIR_DEST}/Chart.yaml"
-          apiVersion: v2
-          version: 0.1.0
-          name: ${APP_NAME}
-          description: Chart to configure ArgoCD with the ${APP_NAME} project and its applications
-          EOF
-
-          cat <<EOF >"${SUBDIR_DEST}/${YAML_FILE}"
-          dependencies:
-            - name: ${APP_NAME}
-              version: ${VERSION}
-              repository: >-
-                ${HELM_URL}
-          EOF
-
-          cat <<EOF >"${SUBDIR_DEST}/values.yaml"
-          global: {}
-          ${APP_NAME}:
-            replicaCount: 1
-          EOF
-          fi
-
-          if [[ -f "${SUBDIR_DEST}/${YAML_FILE}" ]]; then
-            if cmp -s -- "${SUBDIR_SRC}/${YAML_FILE}" "${SUBDIR_DEST}/${YAML_FILE}"; then
-              echo "files contents are identical"
-            else
-              echo "Requirements before update"
-              cat "${SUBDIR_DEST}/${YAML_FILE}"
-
-              rm "${SUBDIR_DEST}/${YAML_FILE}"
-              mv "${SUBDIR_SRC}/${YAML_FILE}" "${SUBDIR_DEST}/${YAML_FILE}"
-
-              echo "Requirements after update"
-              cat "${SUBDIR_DEST}/${YAML_FILE}"
-            fi
-          else
-            echo "GitOps repo configured but unable to update application config"
-            exit 1
-          fi
-
           VERSION="$(grep 'version:' ./$(params.app-type)/$(params.src-environment)/$(params.app-name)/requirements.yaml | awk -F ": " '{print $2}')"
+
+          files=$(ls ${SUBDIR_DEST} | wc -l)
+
+          if [[ -d "${SUBDIR_DEST}" && ${files} -ge 3 ]]; then
+            echo "${SUBDIR_DEST} is present and files are existing"
+            rm -rf ${SUBDIR_DEST}/${YAML_FILE} && cp -r ${SUBDIR_SRC}/${YAML_FILE} ${SUBDIR_DEST}/${YAML_FILE}
+          else
+            if [[ -d "${SUBDIR_DEST}" && ${files} -lt 3 ]]; then
+              echo "${SUBDIR_DEST} is present but files are not existing"
+              rm -rf ${SUBDIR_DEST}
+            else
+              echo "Creating first time chart using ${SUBDIR_DEST}"
+            fi
+            cp -r ${SUBDIR_SRC} ${PARENT_DIR_DEST}/.
+          fi
+
+          APP_VERSION="$(git rev-parse HEAD | cut -c 1-8)"
 
           if [[ $(git status -s | wc -l) -eq 0 ]]; then
             echo "No changes"
             exit 0
           else
-            git checkout -b cntk-ci-pipeline-${APP_NAME}-${VERSION}
+            git checkout -b cntk-ci-pipeline-${APP_NAME}-${APP_VERSION}
 
             # push changes to git
+            git status
             git add "${SUBDIR_DEST}/"
-            git commit -m "Cloudnative toolkit pipeline updates ${APP_NAME} to ${VERSION}" --amend --no-edit --signoff
-            git remote rm origin
+            git commit -m "Cloudnative toolkit pipeline updates ${APP_NAME}" --amend --no-edit --signoff
 
-            git remote add origin ${GIT_URL} > /dev/null 2>&1
-            git push origin cntk-ci-pipeline-${APP_NAME}-${VERSION}
+            git push origin cntk-ci-pipeline-${APP_NAME}-${APP_VERSION}
 
             GIT_PUSH_URL="${PROTOCOL}://api.github.com/repos/${GIT_ORG}/${GIT_REPO}/pulls"
-            curl -u ${GIT_AUTH_USER}:${GIT_AUTH_PWD} -d '{"title":"PR to promote to '$(params.dest-environment)'","base":"'${GIT_BRANCH}'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${APP_NAME}'-'${VERSION}'"}' ${GIT_PUSH_URL}
+            curl -u ${GIT_AUTH_USER}:${GIT_AUTH_PWD} -d '{"title":"PR to promote to '$(params.dest-environment)' for '$(params.app-name)'","base":"'${GIT_BRANCH}'", "head":"'${GIT_ORG}':cntk-ci-pipeline-'${APP_NAME}'-'${APP_VERSION}'"}' ${GIT_PUSH_URL}
 
           fi
