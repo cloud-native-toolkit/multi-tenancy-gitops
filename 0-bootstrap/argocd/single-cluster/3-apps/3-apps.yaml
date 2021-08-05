@@ -7,6 +7,7 @@ spec:
   sourceRepos:
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps.git
+  - https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -17,6 +18,8 @@ spec:
   - namespace: prod
     server: https://kubernetes.default.svc
   - namespace: slack-notifications
+    server: https://kubernetes.default.svc
+  - namespace: openshift-pipelines
     server: https://kubernetes.default.svc
   roles:
   # A role which provides read-only access to all applications in the project
