@@ -114,6 +114,17 @@ spec:
           set -ex
 
           APP_NAME="$(params.app-name)"
+
+          if [[ "${APP_NAME}" = "mq-infra" ]]; then
+            APP_TYPE="2-services/instances"
+          elif [[ "${APP_NAME}" = "mq-spring-app" ]]; then
+            APP_TYPE="3-apps/instances"
+          else
+            APP_TYPE="App type does not exist"
+          fi
+
+          ENV=$(echo $(params.environment) | cut -d "-" -f2)
+
           SUBDIR="$(params.subdir)"
           if [[ -z "${SUBDIR}" ]]; then
             SUBDIR="${APP_NAME}"
@@ -197,6 +208,10 @@ spec:
           version: 0.1.0
           name: ${APP_NAME}
           description: Chart to configure ArgoCD with the ${APP_NAME} project and its applications
+          dependencies:
+            - name: argocd-hook-job
+              version: 0.1.4
+              repository: https://ibm-garage-cloud.github.io/toolkit-charts/
           EOF
 
           cat <<EOF >"${SUBDIR}/${YAML_FILE}"
@@ -205,12 +220,54 @@ spec:
               version: ${VERSION}
               repository: >-
                 ${HELM_URL}
+            - name: argocd-hook-job
+              version: 0.1.4
+              repository: >-
+                https://cloud-native-toolkit.github.io/toolkit-charts/
           EOF
 
           cat <<EOF >"${SUBDIR}/values.yaml"
           global: {}
           ${APP_NAME}:
             replicaCount: 1
+          argocd-hook-job:
+            name: postsync-trigger-for-${ENV}
+            namespace: ci
+            hook:
+              enabled: true
+              hooktype: PostSync
+            hookdeletepolicy:
+              enabled: true
+              hookdeletepolicytype: HookSucceeded
+            serviceaccount: pipeline-hook-argocd-hook-job
+            roleaccess:
+              - verbs:
+                  - '*'
+                apiGroups:
+                  - 'tekton.dev'
+                resources:
+                  - pipelines
+                  - tasks
+            init:
+              enabled: false
+            container:
+              image: "quay.io/rhcanada/tkn-cli"
+              tag: "latest"
+              command: "tkn"
+              args:
+                - -n
+                - ci
+                - pipeline
+                - start
+                - ibm-mq-promote-dev-stage
+                - --param
+                - src-environment="namespace-dev"
+                - --param
+                - dest-environment="namespace-staging"
+                - --param
+                - app-type="${APP_TYPE}"
+                - --param
+                - app-name="${APP_NAME}"
           EOF
 
 
