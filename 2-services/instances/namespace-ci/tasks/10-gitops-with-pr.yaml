@@ -100,6 +100,7 @@ spec:
           set -ex
 
           APP_NAME="$(params.app-name)"
+          APP_TYPE="$(params.app-type)"
           SUBDIR="$(params.subdir)"
 
           if [[ -z "${SUBDIR}" ]]; then
@@ -164,21 +165,143 @@ spec:
           set -x
           cd gitops_cd
 
-          VERSION="$(grep 'version:' ./$(params.app-type)/$(params.src-environment)/$(params.app-name)/requirements.yaml | awk -F ": " '{print $2}')"
+          VERSION="$(grep 'version:' ./$(params.app-type)/$(params.src-environment)/$(params.app-name)/requirements.yaml | awk 'NR==1{print $2}')"
+          HELM_URL="$(grep 'repository:' ./$(params.app-type)/$(params.src-environment)/$(params.app-name)/requirements.yaml | awk 'NR==1{print $2}')"
 
           files=$(ls ${SUBDIR_DEST} | wc -l)
 
-          if [[ -d "${SUBDIR_DEST}" && ${files} -ge 3 ]]; then
-            echo "${SUBDIR_DEST} is present and files are existing"
-            rm -rf ${SUBDIR_DEST}/${YAML_FILE} && cp -r ${SUBDIR_SRC}/${YAML_FILE} ${SUBDIR_DEST}/${YAML_FILE}
-          else
-            if [[ -d "${SUBDIR_DEST}" && ${files} -lt 3 ]]; then
-              echo "${SUBDIR_DEST} is present but files are not existing"
-              rm -rf ${SUBDIR_DEST}
+          if [[ "$(params.dest-environment)" = "namespace-staging" ]]; then
+            ENV=$(echo $(params.dest-environment) | cut -d "-" -f2)
+            echo ${ENV}
+            if [[ -d "${SUBDIR_DEST}" && ${files} -ge 3 ]]; then
+              echo "${SUBDIR_DEST} is present and files are existing"
+              rm -rf ${SUBDIR_DEST}/${YAML_FILE} && cp -r ${SUBDIR_SRC}/${YAML_FILE} ${SUBDIR_DEST}/${YAML_FILE}
             else
-              echo "Creating first time chart using ${SUBDIR_DEST}"
+              if [[ -d "${SUBDIR_DEST}" && ${files} -lt 3 ]]; then
+                echo "${SUBDIR_DEST} is present but files are not existing"
+                rm -rf ${SUBDIR_DEST}
+              else
+                echo "Creating first time chart using ${SUBDIR_DEST}"
+              fi
+
+              # create directory
+              mkdir -p "${SUBDIR_DEST}"
+
+              # WARNING: Do not indent the cat commands below
+
+          cat <<EOF >"${SUBDIR_DEST}/Chart.yaml"
+          apiVersion: v2
+          version: 0.1.0
+          name: ${APP_NAME}
+          description: Chart to configure ArgoCD with the ${APP_NAME} project and its applications
+          dependencies:
+            - name: argocd-hook-job
+              version: 0.1.4
+              repository: https://cloud-native-toolkit.github.io/toolkit-charts/
+          EOF
+
+          cat <<EOF >"${SUBDIR_DEST}/${YAML_FILE}"
+          dependencies:
+            - name: ${APP_NAME}
+              version: ${VERSION}
+              repository: ${HELM_URL}
+            - name: argocd-hook-job
+              version: 0.1.4
+              repository: https://cloud-native-toolkit.github.io/toolkit-charts/
+          EOF
+
+          cat <<EOF >"${SUBDIR_DEST}/values.yaml"
+          global: {}
+          ${APP_NAME}:
+            replicaCount: 1
+          argocd-hook-job:
+            name: postsync-trigger-for-${ENV}
+            namespace: ci
+            hook:
+              enabled: true
+              hooktype: PostSync
+            hookdeletepolicy:
+              enabled: true
+              hookdeletepolicytype: HookSucceeded
+            serviceaccount: pipeline-hook-argocd-hook-job
+            roleaccess:
+              - verbs:
+                  - '*'
+                apiGroups:
+                  - 'tekton.dev'
+                resources:
+                  - pipelines
+                  - tasks
+            init:
+              enabled: false
+            container:
+              image: "quay.io/rhcanada/tkn-cli"
+              tag: "latest"
+              command: "tkn"
+              args:
+                - -n
+                - ci
+                - pipeline
+                - start
+                - ibm-mq-promote-stage-prod
+                - --param
+                - src-environment="namespace-staging"
+                - --param
+                - dest-environment="namespace-prod"
+                - --param
+                - app-type="${APP_TYPE}"
+                - --param
+                - app-name="${APP_NAME}"
+          EOF
+
             fi
-            cp -r ${SUBDIR_SRC} ${PARENT_DIR_DEST}/.
+          elif [[ "$(params.dest-environment)" = "namespace-prod" ]]; then
+            if [[ -d "${SUBDIR_DEST}" && ${files} -ge 3 ]]; then
+              echo "${SUBDIR_DEST} is present and files are existing"
+              rm -rf ${SUBDIR_DEST}/${YAML_FILE}
+
+          cat <<EOF >"${SUBDIR_DEST}/${YAML_FILE}"
+          dependencies:
+            - name: ${APP_NAME}
+              version: ${VERSION}
+              repository: >-
+                ${HELM_URL}
+          EOF
+
+            else
+              if [[ -d "${SUBDIR_DEST}" && ${files} -lt 3 ]]; then
+                echo "${SUBDIR_DEST} is present but files are not existing"
+                rm -rf ${SUBDIR_DEST}
+              else
+                echo "Creating first time chart using ${SUBDIR_DEST}"
+              fi
+              # create directory
+              mkdir -p "${SUBDIR_DEST}"
+
+              # WARNING: Do not indent the cat commands below
+          cat <<EOF >"${SUBDIR_DEST}/Chart.yaml"
+          apiVersion: v2
+          version: 0.1.0
+          name: ${APP_NAME}
+          description: Chart to configure ArgoCD with the ${APP_NAME} project and its applications
+          EOF
+
+          cat <<EOF >"${SUBDIR_DEST}/${YAML_FILE}"
+          dependencies:
+            - name: ${APP_NAME}
+              version: ${VERSION}
+              repository: >-
+                ${HELM_URL}
+          EOF
+
+          cat <<EOF >"${SUBDIR_DEST}/values.yaml"
+          global: {}
+          ${APP_NAME}:
+            replicaCount: 1
+          EOF
+            fi
+          else
+            echo "Destination environment does not exist"
           fi
 
           APP_VERSION="$(git rev-parse HEAD | cut -c 1-8)"
