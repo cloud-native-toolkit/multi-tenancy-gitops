@@ -159,7 +159,7 @@ spec:
           value: $(tasks.helm-release.results.helm-url)
         - name: tools-image
           value: "$(tasks.setup.results.tools-image)"
-        - name: environment
-          value: "$(params.environment)"
         - name: app-type
           value: "$(params.app-type)"
+        - name: dest-environment
+          value: "$(params.environment)"
