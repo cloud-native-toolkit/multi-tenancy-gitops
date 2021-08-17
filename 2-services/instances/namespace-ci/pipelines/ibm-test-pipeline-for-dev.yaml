@@ -16,6 +16,9 @@ spec:
       description: Services / Application (2-services/instances or 3-apps/instances)
     - name: app-name
       description: Queuemanager / Application (mq-infra or mq-spring-app)
+    - name: git-pr
+      description: Enable the pipeline to do a PR for the gitops repo
+      default: "true"
   tasks:
     - name: dev-instance-tests
       taskRef:
@@ -39,3 +42,5 @@ spec:
           value: "$(params.dest-environment)"
         - name: app-type
           value: "$(params.app-type)"
+        - name: git-pr
+          value: "$(params.git-pr)"

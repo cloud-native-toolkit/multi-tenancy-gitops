@@ -26,6 +26,9 @@ spec:
     - name: ha
       description: Enable ha for queueManager
       default: "false"
+    - name: git-pr
+      description: Enable the pipeline to do a PR for the gitops repo
+      default: "false"
   tasks:
     - name: setup
       taskRef:
@@ -163,3 +166,5 @@ spec:
           value: "$(params.app-type)"
         - name: dest-environment
           value: "$(params.environment)"
+        - name: git-pr
+          value: "$(params.git-pr)"

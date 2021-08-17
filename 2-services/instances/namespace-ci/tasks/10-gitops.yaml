@@ -31,6 +31,8 @@ spec:
       default: "requirements.yaml"
     - name: helm-url
       default: ""
+    - name: git-pr
+      default: "false"
     - name: tools-image
       default: quay.io/ibmgaragecloud/ibmcloud-dev:v2.0.4
   volumes:
@@ -269,7 +271,7 @@ spec:
           if [[ $(git status -s | wc -l) -eq 0 ]]; then
             echo "No changes"
             exit 0
-          elif [[ -z "${SUBDIR_SRC}" ]]; then
+          elif [[ "$(params.git-pr)" = "false" ]]; then
             git add "${SUBDIR_DEST}/"
             git commit -m "Updates ${APP_NAME} to ${VERSION}"
             git push -v
