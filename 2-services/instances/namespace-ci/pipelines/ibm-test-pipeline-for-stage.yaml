@@ -1,23 +1,23 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: ibm-mq-promote-dev-stage
+  name: ibm-mq-promote-stage-prod
   annotations:
     app.openshift.io/runtime: test
 spec:
   params:
     - name: src-environment
       description: environment
-      default: namespace-dev
+      default: namespace-staging
     - name: dest-environment
       description: environment
-      default: namespace-staging
+      default: namespace-prod
     - name: app-type
       description: Services / Application (2-services/instances or 3-apps/instances)
     - name: app-name
       description: Queuemanager / Application (mq-infra or mq-spring-app)
   tasks:
-    - name: dev-instance-tests
+    - name: stage-instance-tests
       taskRef:
         name: ibm-functional-test
       params:
@@ -29,7 +29,7 @@ spec:
       taskRef:
         name: ibm-gitops
       runAfter:
-        - dev-instance-tests
+        - stage-instance-tests
       params:
         - name: app-name
           value: "$(params.app-name)"
