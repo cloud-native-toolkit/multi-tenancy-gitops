@@ -1,9 +1,0 @@
-apiVersion: argoproj.io/v1alpha1
-kind: ArgoCD
-metadata:
- name: argocd #name of the Argo CD instance
- namespace: pz-gitops #namespace where you want to deploy argocd instance
-spec:
- server:
-   route:
-     enabled: true #creates an openshift route to access Argo CD UI

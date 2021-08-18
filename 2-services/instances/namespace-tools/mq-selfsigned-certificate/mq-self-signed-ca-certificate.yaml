@@ -9,7 +9,7 @@ spec:
   isCA: true
   dnsNames:
     - >- 
-      *.
+      *.<cluster-domain>
   secretName: mq-self-signed-ca-cert
   issuerRef:
     group: cert-manager.io
