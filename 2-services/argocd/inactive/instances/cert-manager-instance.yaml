@@ -13,8 +13,8 @@ spec:
   project: services
   source:
     path: 2-services/instances/cert-manager
-    repoURL: https://github.com/poonamzham/multi-tenancy-gitops
-    targetRevision: demo-mq-v2-poonamzham
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true

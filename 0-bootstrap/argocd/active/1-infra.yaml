@@ -5,7 +5,7 @@ metadata:
   name: infra
 spec:
   sourceRepos:
-  - https://github.com/poonamzham/multi-tenancy-gitops
+  - https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -74,8 +74,8 @@ spec:
   project: default
   source:
     path: 1-infra/argocd/active
-    repoURL: https://github.com/poonamzham/multi-tenancy-gitops
-    targetRevision: demo-mq-v2-poonamzham
+    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true
