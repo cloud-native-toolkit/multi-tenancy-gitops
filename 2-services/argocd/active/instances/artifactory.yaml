@@ -15,8 +15,8 @@ spec:
   project: services
   source:
     path: 2-services/instances/artifactory
-    repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git
-    targetRevision: master
+    repoURL: https://github.com/poonamzham/multi-tenancy-gitops
+    targetRevision: demo-mq-v2-poonamzham
     helm:
       valueFiles:
       - values.yaml
