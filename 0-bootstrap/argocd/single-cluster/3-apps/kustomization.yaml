@@ -1,8 +1,8 @@
 resources:
-- argocd/ace/cicd.yaml
-- argocd/ace/dev.yaml
-- argocd/ace/stage.yaml
-- argocd/ace/prod.yaml
+#- argocd/ace/cicd.yaml
+#- argocd/ace/dev.yaml
+#- argocd/ace/stage.yaml
+#- argocd/ace/prod.yaml
 
 #- argocd/mq/cicd.yaml
 #- argocd/mq/dev.yaml
@@ -19,7 +19,7 @@ resources:
 #- argocd/bookinfo/stage.yaml
 #- argocd/bookinfo/prod.yaml
 
-- argocd/soapserver/soapserver.yaml
+#- argocd/soapserver/soapserver.yaml
 
 patches:
 - target:

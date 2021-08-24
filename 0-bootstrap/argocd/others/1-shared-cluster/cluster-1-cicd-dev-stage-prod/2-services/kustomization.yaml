@@ -1,6 +1,6 @@
 resources:
 # IBM Software
-- argocd/operators/ibm-ace-operator.yaml
+#- argocd/operators/ibm-ace-operator.yaml
 #- argocd/operators/ibm-apic-operator.yaml
 #- argocd/operators/ibm-aspera-operator.yaml
 #- argocd/operators/ibm-assetrepository-operator.yaml
@@ -11,16 +11,16 @@ resources:
 #- argocd/operators/ibm-opsdashboard-operator.yaml
 #- argocd/operators/ibm-process-mining-operator.yaml
 #- argocd/instances/ibm-process-mining-instance.yaml
-- argocd/operators/ibm-platform-navigator.yaml
-- argocd/instances/ibm-platform-navigator-instance.yaml
+#- argocd/operators/ibm-platform-navigator.yaml
+#- argocd/instances/ibm-platform-navigator-instance.yaml
 
 # IBM Foundations / Common Services
-- argocd/operators/ibm-foundations.yaml
-- argocd/operators/ibm-automation-foundation-core-operator.yaml
+#- argocd/operators/ibm-foundations.yaml
+#- argocd/operators/ibm-automation-foundation-core-operator.yaml
 
 
 # IBM Catalogs
-- argocd/operators/ibm-catalogs.yaml
+#- argocd/operators/ibm-catalogs.yaml
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
@@ -29,7 +29,7 @@ resources:
 #- argocd/instances/cert-manager-instance.yaml
 
 # Sealed Secrets
-- argocd/instances/sealed-secrets.yaml
+#- argocd/instances/sealed-secrets.yaml
 
 # CICD
 #- argocd/operators/grafana-operator.yaml
