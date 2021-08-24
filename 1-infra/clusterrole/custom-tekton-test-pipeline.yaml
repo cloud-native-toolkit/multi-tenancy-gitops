@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: custom-tekton-test-pipeline-sa
+rules:
+- apiGroups:
+  - "apps"
+  - "route.openshift.io"
+  resources:
+  - statefulsets
+  - deployments
+  - routes
+  verbs:
+  - get
+  - list
+  - watch

@@ -1,0 +1,123 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibm-functional-test
+  annotations:
+    description: Perfrom functional tests
+    app.openshift.io/description: Functional tests
+    app.openshift.io/vcs-uri: https://github.com/IBM/ibm-garage-tekton-tasks
+    app.openshift.io/vcs-ref: master
+  labels:
+    version: 0.0.0
+spec:
+  params:
+  - name: src-environment
+    default: ""
+  - name: app-name
+    default: ""
+  steps:
+  - name: wait-till-deployment
+    image: quay.io/openshift/origin-cli:latest
+    script: |
+      set -e
+      SLEEP_TIME_SEC=10
+      RETRIES=20
+
+      if [[ "$(params.src-environment)" = "namespace-dev" ]]; then
+        SRC_ENV="dev"
+      elif [[ "$(params.src-environment)" = "namespace-staging" ]]; then
+        SRC_ENV="staging"
+      elif [[ "$(params.src-environment)" = "namespace-prod" ]]; then
+        SRC_ENV="prod"
+      else
+        echo "Please check ... Environment you specified does not exist"
+      fi
+
+      wait_until() {
+        condition=$1
+        message=$2
+        retries=$RETRIES
+        until $condition || [[ "$retries" -eq 0 ]]; do
+          retries=$((retries - 1))
+          sleep $SLEEP_TIME_SEC
+        done
+        if [[ "$retries" -eq 0 ]]; then
+          echo $message
+          exit 1
+        fi
+      }
+
+      resolve_deployment() {
+          deployment=$(oc -n ${SRC_ENV} get deploy -l app.kubernetes.io/instance=mq-spring-app-dev -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null)
+      }
+
+      resolve_statefulset() {
+          statefulset=$(oc -n ${SRC_ENV} get statefulset -l app.kubernetes.io/instance=qm-dev -o jsonpath='{$.items[0].metadata.name}' 2>/dev/null)
+      }
+
+      if [[ $(params.app-name) = "mq-infra" ]]; then
+        oc -n ${SRC_ENV} get statefulset
+        wait_until resolve_statefulset "Could not find statefulset"
+        oc -n ${SRC_ENV} rollout status statefulset $statefulset
+      elif [[ $(params.app-name) = "mq-spring-app" ]]; then
+        oc -n ${SRC_ENV} get deploy
+        wait_until resolve_deployment "Could not find deployment"
+        oc -n ${SRC_ENV} rollout status deployment $deployment
+      else
+        echo "App you are looking for does not exist"
+        exit 1
+      fi
+  - name: resolve-route
+    image: quay.io/openshift/origin-cli:latest
+    script: |
+      #!/bin/bash
+      set -e
+      SLEEP_TIME_SEC=10
+      RETRIES=20
+
+      if [[ "$(params.src-environment)" = "namespace-dev" ]]; then
+        SRC_ENV="dev"
+      elif [[ "$(params.src-environment)" = "namespace-staging" ]]; then
+        SRC_ENV="staging"
+      elif [[ "$(params.src-environment)" = "namespace-prod" ]]; then
+        SRC_ENV="prod"
+      else
+        echo "Please check ... Environment you specified does not exist"
+      fi
+
+      wait_until() {
+        condition=$1
+        message=$2
+        retries=$RETRIES
+        until $condition || [[ "$retries" -eq 0 ]]; do
+          retries=$((retries - 1))
+          sleep $SLEEP_TIME_SEC
+        done
+        if [[ "$retries" -eq 0 ]]; then
+          echo $message
+          exit 1
+        fi
+      }
+
+      url_is_ready() {
+        url=$1
+        curl -s \
+          https://$url 2>/dev/null
+      }
+
+      if [[ $(params.app-name) = "mq-infra" ]]; then
+        echo "This is a QueueManager ... Skipping this step"
+      elif [[ $(params.app-name) = "mq-spring-app" ]]; then
+        route=$(oc -n ${SRC_ENV} get route mq-spring-app -o jsonpath='{.spec.host}')
+        echo -n $route > /shared/route.txt
+        wait_until "url_is_ready $route/" "Route is not set up"
+      else
+        echo "App you are looking for does not exist"
+        exit 1
+      fi
+    volumeMounts:
+    - mountPath: /shared
+      name: shared-volume
+  volumes:
+  - emptyDir: {}
+    name: shared-volume
