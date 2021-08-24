@@ -10,8 +10,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/argocd/others/2-isolated-cluster/cluster-n-prod
-    repoURL: https://github.com/csantanapr-test-gitops/multi-tenancy-gitops-ace.git
-    targetRevision: ocp47-2021-2
+    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    targetRevision: ${GIT_BRANCH}
   syncPolicy:
     automated:
       prune: true

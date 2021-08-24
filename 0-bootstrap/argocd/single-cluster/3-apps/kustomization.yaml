@@ -29,8 +29,8 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: https://github.com/csantanapr-test-gitops/multi-tenancy-gitops-apps.git
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
     - op: add
       path: /spec/source/targetRevision
-      value: ocp47-2021-2
+      value: ${GIT_BRANCH}
 

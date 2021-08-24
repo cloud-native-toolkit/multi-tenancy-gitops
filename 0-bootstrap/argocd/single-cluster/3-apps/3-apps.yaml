@@ -54,8 +54,8 @@ spec:
   project: applications
   source:
     path: 0-bootstrap/argocd/single-cluster/3-apps
-    repoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-ace.git
-    targetRevision: kustomize
+    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    targetRevision: ${GIT_BRANCH}
   syncPolicy:
     automated:
       prune: true

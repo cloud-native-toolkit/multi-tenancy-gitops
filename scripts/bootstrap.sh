@@ -54,7 +54,12 @@ CP_EXAMPLES=${CP_EXAMPLES:-true}
 
 GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/argocd/single-cluster/bootstrap.yaml}
 
-GITOPS_BRANCH=${GITOPS_BRANCH:-ocp47-2021-2}
+GIT_BASEURL=${GIT_BASEURL:-https://github.com}
+GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
+GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
+GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
+GITOPS_BRANCH=${GITOPS_BRANCH:-master}
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 
@@ -220,17 +225,17 @@ metadata:
 data:
   map.yaml: |-
     map:
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-ace.git
-      originRepoUrL: https://github.com/${GIT_ORG}/multi-tenancy-gitops-ace.git
+    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS}
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
       originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra.git
-      originRepoUrL: https://github.com/${GIT_ORG}/multi-tenancy-gitops-infra.git
+    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_INFRA}
+      originRepoUrL: https://github.com/${GIT_ORG}/${GIT_GITOPS_INFRA}
       originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services.git
-      originRepoUrL: https://github.com/${GIT_ORG}/multi-tenancy-gitops-services.git
+    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_SERVICES}
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
       originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
-      originRepoUrL: https://github.com/${GIT_ORG}/multi-tenancy-gitops-apps.git
+    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_APPLICATIONS}
+      originRepoUrL: ${GIT_BASEURL}${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
       originBranch: ${GITOPS_BRANCH}
 EOF
 
