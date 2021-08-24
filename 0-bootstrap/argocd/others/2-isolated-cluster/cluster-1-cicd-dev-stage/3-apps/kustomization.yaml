@@ -1,0 +1,28 @@
+resources:
+#- argocd/ace/cicd.yaml
+#- argocd/ace/dev.yaml
+#- argocd/ace/stage.yaml
+
+#- argocd/mq/cicd.yaml
+#- argocd/mq/dev.yaml
+#- argocd/mq/stage.yaml
+
+#- argocd/apic/cicd.yaml
+#- argocd/apic/dev.yaml
+#- argocd/apic/stage.yaml
+
+#- argocd/bookinfo/cicd.yaml
+#- argocd/bookinfo/dev.yaml
+#- argocd/bookinfo/stage.yaml
+patches:
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=applications"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: https://github.com/csantanapr-test-gitops/multi-tenancy-gitops-apps.git
+    - op: add
+      path: /spec/source/targetRevision
+      value: ocp47-2021-2

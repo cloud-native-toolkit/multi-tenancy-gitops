@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-foundational-services-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "220"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: ibm-common-services
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/ibm-common-services-instance
+    helm:
+      values: |
+        ibm-common-services-instance:
+          ibmcommonservices:
+            name: common-service
+            spec:
+              size: small
+

@@ -1,7 +1,0 @@
-global: {}
-kiali-operator:
-  clusterType: "ocp4"
-  ocpCatalog:
-    source: redhat-operators
-    channel: stable
-    name: kiali-ossm

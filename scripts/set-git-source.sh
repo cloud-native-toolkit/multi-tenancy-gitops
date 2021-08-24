@@ -13,18 +13,19 @@ GIT_REPO=${GIT_REPO:-multi-tenancy-gitops.git}
 GIT_BASEURL=${GIT_BASEURL:-https://github.com}
 GIT_HOST=${GIT_HOST:-github.com}
 GIT_BRANCH=${GIT_BRANCH:-master}
+GIT_FROM_BRANCH=${GIT_FROM_BRANCH:-master}
 
 
 echo "Setting source git to ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}"
 
-find ${SCRIPTDIR}/.. -name '*.yaml' -print0 | 
-  while IFS= read -r -d '' File; do 
+find ${SCRIPTDIR}/../0-bootstrap -name '*.yaml' -print0 |
+  while IFS= read -r -d '' File; do
     if grep -q "kind: Application\|kind: AppProject" "$File"; then
       echo "$File"
       sed -i'.bak' -e "s#repoURL: https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git#repoURL: ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}#" $File
       sed -i'.bak' -e "s#repoURL: github.com/cloud-native-toolkit/multi-tenancy-gitops.git#repoURL: ${GIT_HOST}/${GIT_USER}/${GIT_REPO}#" $File
       sed -i'.bak' -e "s#- https://github.com/cloud-native-toolkit/multi-tenancy-gitops.git#- ${GIT_BASEURL}/${GIT_USER}/${GIT_REPO}#" $File
-      sed -i'.bak' -e "s#targetRevision: master#targetRevision: ${GIT_BRANCH}#" $File
+      sed -i'.bak' -e "s#targetRevision: ${GIT_FROM_BRANCH}#targetRevision: ${GIT_BRANCH}#" $File
       rm "${File}.bak"
     fi
   done

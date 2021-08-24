@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap-dev
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 0-bootstrap/argocd/others/3-multi-cluster/cluster-1-dev
+    repoURL: https://github.com/csantanapr-test-gitops/multi-tenancy-gitops-ace.git
+    targetRevision: ocp47-2021-2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
