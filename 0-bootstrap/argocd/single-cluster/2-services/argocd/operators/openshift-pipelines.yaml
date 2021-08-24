@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openshift-pipelines
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: operators/openshift-pipelines
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

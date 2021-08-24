@@ -1,0 +1,21 @@
+resources:
+#- argocd/ace/dev.yaml
+
+#- argocd/mq/dev.yaml
+
+#- argocd/apic/dev.yaml
+
+#- argocd/bookinfo/dev.yaml
+
+patches:
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=applications"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+    - op: add
+      path: /spec/source/targetRevision
+      value: ${GIT_BRANCH}
