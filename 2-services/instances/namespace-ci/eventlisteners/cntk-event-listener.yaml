@@ -24,4 +24,4 @@ spec:
         filter: header.match('X-GitHub-Event', 'push') && body.ref == 'refs/heads/master' && body.repository.full_name == 'cloud-native-toolkit/mq-spring-app'
     name: mq-spring-app-dev
     template:
-      name: mq-spring-app-dev
+      ref: mq-spring-app-dev
