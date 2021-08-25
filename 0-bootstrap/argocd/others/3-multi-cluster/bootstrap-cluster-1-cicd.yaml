@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 0-bootstrap/argocd/others/3-multi-cluster/cluster-1-cicd
+    path: 0-bootstrap/others/3-multi-cluster/cluster-1-cicd
     repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
     targetRevision: ${GIT_GITOPS_BRANCH}
   syncPolicy:
