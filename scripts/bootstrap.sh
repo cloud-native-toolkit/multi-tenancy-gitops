@@ -52,8 +52,9 @@ fi
 
 CP_EXAMPLES=${CP_EXAMPLES:-true}
 ACE_SCENARIO=${ACE_SCENARIO:-true}
+ACE_BOM_PATH=${ACE_BOM_PATH:-scripts/bom/ace}
 
-GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster/bootstrap.yaml}
+GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster}
 
 GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_BASEURL=${GIT_BASEURL:-https://github.com}
@@ -270,7 +271,7 @@ argocd_git_override () {
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
   pushd ${OUTPUT_DIR}
-  oc apply -n openshift-gitops -f gitops-0-bootstrap/${GITOPS_PROFILE}
+  oc apply -n openshift-gitops -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
   popd
 }
 
@@ -316,6 +317,26 @@ init_sealed_secrets () {
   echo "Intializing sealed secrets with file ${SEALED_SECRET_KEY_FILE}"
   oc new-project sealed-secrets || true
   oc apply -f ${SEALED_SECRET_KEY_FILE}
+
+}
+
+ace_bom_bootstrap () {
+
+  echo "Applying ACE BOM"
+
+  pushd ${OUTPUT_DIR}
+
+  cp -a gitops-0-bootstrap/${ACE_BOM_PATH}/ gitops-0-bootstrap/${GITOPS_PROFILE}/
+
+  git --no-pager diff
+
+  git add .
+
+  git commit -m "Deploy Cloud Pak ACE"
+
+  git push origin
+
+  popd
 
 }
 
@@ -376,7 +397,16 @@ apply_argocd_git_override_configmap
 
 argocd_git_override
 
+# Setup BOM
+if [[ "${ACE_SCENARIO}" == "true" ]]; then
+  echo "Bootstrap Cloud Pak for ACE"
+
+  ace_bom_bootstrap
+
+fi
+
 deploy_bootstrap_argocd
+
 
 # Setup of apps repo
 
