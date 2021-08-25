@@ -9,7 +9,6 @@
     - https://github.com/cloud-native-toolkit/multi-tenancy-gitops  <== this repository
     - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra
     - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services
-    - https://github.com/cloud-native-toolkit/multi-tenancy-gitops-apps
 1. Install OpenShift GitOps Operator and ClusterRoles and deploy an instance
     ```bash
     oc apply -f setup/ocp47/
