@@ -85,7 +85,7 @@ fork_repos () {
     fi
     cd gitops-0-bootstrap
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
     cd ..
 
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
