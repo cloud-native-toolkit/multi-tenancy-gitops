@@ -45,7 +45,7 @@
 1. We deploy IBM Operator to the `tools` namespace, create the namespace and create container registry secret using your IBM ENTITLEMENT KEY. Log in to [MyIBM Container Software Library](https://myibm.ibm.com/products-services/containerlibrary) with the IBMid and password that is associated with the entitled software. In the Container software library tile, verify your entitlement on the View library page, and then go to **Get entitlement key** to retrieve the key.
     ```bash
     oc new-project tools || true
-    oc create secret docker-registry ibm-entitlement-key \
+    oc create secret docker-registry ibm-entitlement-key -n tools \
     --docker-username=cp \
     --docker-password="<entitlement_key>" \
     --docker-server=cp.icr.io
