@@ -53,7 +53,7 @@ fi
 CP_EXAMPLES=${CP_EXAMPLES:-true}
 ACE_SCENARIO=${ACE_SCENARIO:-true}
 
-GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/argocd/single-cluster/bootstrap.yaml}
+GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster/bootstrap.yaml}
 
 GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_BASEURL=${GIT_BASEURL:-https://github.com}

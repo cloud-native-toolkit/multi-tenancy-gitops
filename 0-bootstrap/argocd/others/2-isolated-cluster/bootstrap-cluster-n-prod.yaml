@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: 0-bootstrap/argocd/others/2-isolated-cluster/cluster-n-prod
+    path: 0-bootstrap/others/2-isolated-cluster/cluster-n-prod
     repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
     targetRevision: ${GIT_GITOPS_BRANCH}
   syncPolicy:

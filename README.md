@@ -23,12 +23,12 @@
     ```
 1. Apply ArgoCD Bootstrap Application
     ```bash
-    oc apply -f 0-bootstrap/argocd/single-cluster/bootstrap.yaml
+    oc apply -f 0-bootstrap/single-cluster/bootstrap.yaml
     ```
 1. Deploy ArgoCD Applications for each layer by uncommenting the lines in `kustomization.yaml` files
-    - 0-bootstrap/argocd/single-cluster/1-infra/kustomization.yaml
-    - 0-bootstrap/argocd/single-cluster/2-services/kustomization.yaml
-    - 0-bootstrap/argocd/single-cluster/1-apps/kustomization.yaml
+    - 0-bootstrap/single-cluster/1-infra/kustomization.yaml
+    - 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    - 0-bootstrap/single-cluster/1-apps/kustomization.yaml
 1. Commit and push changes to your git repository
 
 
