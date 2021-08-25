@@ -6,7 +6,7 @@ metadata:
   labels:
     gitops.tier.layer: infra
 spec:
-  sourceRepos: []
+  sourceRepos: [] # Populated by kustomize patches in 1-infra/kustomization.yaml
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -63,7 +63,7 @@ spec:
     namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: infra
-  source:
+  source: # repoURL  and targetRevision populated by kustomize patches in 1-infra/kustomization.yaml
     path: 0-bootstrap/argocd/single-cluster/1-infra
   syncPolicy:
     automated:

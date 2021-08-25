@@ -6,10 +6,10 @@ resources:
 #- argocd/namespace-dev.yaml
 #- argocd/namespace-staging.yaml
 #- argocd/namespace-prod.yaml
-#- argocd/namespace-sealed-secrets.yaml
-#- argocd/namespace-tools.yaml
 #- argocd/namespace-istio-system.yaml
 #- argocd/namespace-openldap.yaml
+#- argocd/namespace-sealed-secrets.yaml
+#- argocd/namespace-tools.yaml
 #- argocd/namespace-openshift-storage.yaml
 #- argocd/operator-ocs.yaml
 #- argocd/refarch-infraconfig.yaml
@@ -25,5 +25,4 @@ patches:
       value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_BRANCH}
-
+      value: ${GIT_GITOPS_INFRA_BRANCH}

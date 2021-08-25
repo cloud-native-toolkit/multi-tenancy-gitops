@@ -51,15 +51,21 @@ if [[ ! -f ${SEALED_SECRET_KEY_FILE} ]]; then
 fi
 
 CP_EXAMPLES=${CP_EXAMPLES:-true}
+ACE_SCENARIO=${ACE_SCENARIO:-true}
 
 GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/argocd/single-cluster/bootstrap.yaml}
 
+GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_BASEURL=${GIT_BASEURL:-https://github.com}
 GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
+GIT_GITOPS_INFRA_BRANCH=${GIT_GITOPS_INFRA_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
+GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
-GITOPS_BRANCH=${GITOPS_BRANCH:-master}
+GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
+
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 
@@ -71,7 +77,7 @@ fork_repos () {
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-ace -q .name || true)
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-ace" ]]; then
       echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit-demos/multi-tenancy-gitops-ace --clone --org ${GIT_ORG} --remote
+      gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
       mv multi-tenancy-gitops-ace gitops-0-bootstrap-ace
     elif [[ ! -d gitops-0-bootstrap-ace ]]; then
       echo "Fork found, repo not cloned, cloning repo"
@@ -93,7 +99,7 @@ fork_repos () {
     fi
     cd gitops-1-infra
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
     cd ..
 
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
@@ -107,7 +113,7 @@ fork_repos () {
     fi
     cd gitops-2-services
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
     cd ..
 
     if [[ "${CP_EXAMPLES}" == "true" ]]; then
@@ -124,22 +130,24 @@ fork_repos () {
       fi
       cd gitops-3-apps
       git remote set-url --push upstream no_push
-      git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+      git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
       cd ..
 
-      GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
-      if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
-        echo "Fork not found, creating fork and cloning"
-        gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
-        mv ace-customer-details src-ace-app-customer-details
-      elif [[ ! -d src-ace-app-customer-details ]]; then
-        echo "Fork found, repo not cloned, cloning repo"
-        gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
+      if [[ "${ACE_SCENARIO}" == "true" ]]; then
+        GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
+        if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
+          echo "Fork not found, creating fork and cloning"
+          gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
+          mv ace-customer-details src-ace-app-customer-details
+        elif [[ ! -d src-ace-app-customer-details ]]; then
+          echo "Fork found, repo not cloned, cloning repo"
+          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
+        fi
+        cd src-ace-app-customer-details
+        git remote set-url --push upstream no_push
+        git checkout master || git checkout --track origin/master
+        cd ..
       fi
-      cd src-ace-app-customer-details
-      git remote set-url --push upstream no_push
-      git checkout master || git checkout --track origin/${GITOPS_BRANCH}
-      cd ..
 
     fi
 
@@ -225,18 +233,18 @@ metadata:
 data:
   map.yaml: |-
     map:
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS}
+    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}'
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_INFRA}
-      originRepoUrL: https://github.com/${GIT_ORG}/${GIT_GITOPS_INFRA}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_SERVICES}
+      originBranch: ${GIT_GITOPS_BRANCH}
+    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}'
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+      originBranch: ${GIT_GITOPS_INFRA_BRANCH}
+    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}'
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
+    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}'
       originRepoUrL: ${GIT_BASEURL}${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GITOPS_BRANCH}
+      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
 popd
@@ -372,8 +380,8 @@ deploy_bootstrap_argocd
 
 # Setup of apps repo
 
-if [[ "${CP_EXAMPLES}" == "true" ]]; then
-  echo "Bootstrap Cloud Pak examples"
+if [[ "${CP_EXAMPLES}" == "true" ]] && [[ "${ACE_SCENARIO}" == "true" ]]; then
+  echo "Bootstrap Cloud Pak examples for ACE"
 
   ace_apps_bootstrap
 
