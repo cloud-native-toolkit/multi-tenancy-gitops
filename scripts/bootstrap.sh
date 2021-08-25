@@ -246,6 +246,9 @@ data:
     - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
       originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
 popd
