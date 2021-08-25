@@ -3,7 +3,7 @@
 - This repository shows the reference architecture for gitops directory structure for more info https://cloudnativetoolkit.dev/learning/gitops-int/gitops-with-cloud-native-toolkit
 
 
-### Working with this repository
+## Working with this repository
 
 1. Create new repositories using these git repositories as templates
     - https://github.com/cloud-native-toolkit/multi-tenancy-gitops  <== this repository
@@ -44,7 +44,7 @@
     ```
 1. We deploy IBM Operator to the `tools` namespace, create the namespace and create container registry secret using your IBM ENTITLEMENT KEY. Log in to [MyIBM Container Software Library](https://myibm.ibm.com/products-services/containerlibrary) with the IBMid and password that is associated with the entitled software. In the Container software library tile, verify your entitlement on the View library page, and then go to **Get entitlement key** to retrieve the key.
     ```bash
-    oc new-project tools
+    oc new-project tools || true
     oc create secret docker-registry ibm-entitlement-key \
     --docker-username=cp \
     --docker-password="<entitlement_key>" \
@@ -59,8 +59,9 @@
     oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'
     oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-
     ```
+<details><summary>Deploying IBM Cloud Pak for Integration with ACE capability</summary>
 
-### Deploying IBM Cloud Pak for Integration with ACE capability
+## Deploying IBM Cloud Pak for Integration with ACE capability
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml` uncomment the lines:
     ```yaml
     - argocd/consolenotification.yaml
@@ -93,3 +94,63 @@
     oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
     oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
     ```
+</details>
+
+<details><summary>Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability</summary>
+
+### Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability
+
+### Prerequisites
+1. Install the OpenShift CLI `oc`, [download latest oc](https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/) version 4.7 or 4.8
+1. Create [Github](https://github.com) account
+1. Install the Github `gh` CLI and login https://github.com/cli/cli
+1. Create a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch
+1. Generate a [GitHub Personal Access Token (PAT)](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with the following scopes
+    - [ ] repo
+        - [x] public_repo
+    - [ ] admin:repo_hook
+        - [x] write:repo_hook
+    <details>
+    <summary> View screen capture of scopes required </summary>
+
+    ![GitHub Token Scopes](doc/images/github-webhook.png)
+
+    </details>
+
+
+### Deploy the ACE operator and its pre-requisites
+- Make sure you are logged in OpenShift with admin rights
+    ```bash
+    oc login ...
+    ```
+
+- Log in with the Github CLI
+    ```bash
+    gh auth login
+    ```
+
+- Setup a local git directory to clone all the git repositories
+    ```bash
+    mkdir -p ace-production
+    ```
+
+- Make sure you are connected to the correct OpenShift cluster
+    ```bash
+    oc whoami --show-console
+    ```
+
+- Run the bootstrap script, specify the git user `GIT_USER`, the git org `GIT_ORG`,the IBM Entitlement key value `GIT_TOKEN` and the output directory to clone all repos `OUTPUT_DIR`.You can use `DEBUG=true` for verbose output.
+    ```bash
+    curl -sfL https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops/master/scripts/bootstrap.sh | \
+    GIT_USER=$REPLACE_WITH_GIT_USER \
+    GIT_ORG=$REPLACE_WITH_GIT_ORG \
+    IBM_ENTITLEMENT_KEY="<entitlement_key>" \
+    ACE_SCENARIO=true \
+    OUTPUT_DIR=ace-production \
+    sh
+    ```
+- You can open the output directory containing all the git repositories with VSCode
+    ```bash
+    code ace-production
+    ```
+</details>
