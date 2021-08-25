@@ -300,7 +300,7 @@ set_pull_secret () {
     exit 1
   fi
   oc new-project ${CP_DEFAULT_TARGET_NAMESPACE} || true
-  oc create secret docker-registry ibm-entitlement-key \
+  oc create secret docker-registry ibm-entitlement-key -n ${CP_DEFAULT_TARGET_NAMESPACE} \
   --docker-username="${IBM_CP_IMAGE_REGISTRY_USER}" \
   --docker-password="${IBM_ENTITLEMENT_KEY}" \
   --docker-server="${IBM_CP_IMAGE_REGISTRY}" || true
