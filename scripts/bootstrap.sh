@@ -74,16 +74,16 @@ fork_repos () {
 
     pushd ${OUTPUT_DIR}
 
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-ace -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-ace" ]]; then
+    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
+    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
       echo "Fork not found, creating fork and cloning"
       gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-ace gitops-0-bootstrap-ace
-    elif [[ ! -d gitops-0-bootstrap-ace ]]; then
+      mv multi-tenancy-gitops gitops-0-bootstrap
+    elif [[ ! -d gitops-0-bootstrap ]]; then
       echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-ace gitops-0-bootstrap-ace
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
     fi
-    cd gitops-0-bootstrap-ace
+    cd gitops-0-bootstrap
     git remote set-url --push upstream no_push
     git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
     cd ..
@@ -172,7 +172,7 @@ install_pipelines () {
 install_argocd () {
     echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
     pushd ${OUTPUT_DIR}
-    oc apply -f gitops-0-bootstrap-ace/setup/ocp47/
+    oc apply -f gitops-0-bootstrap/setup/ocp47/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
     while ! oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
     popd
@@ -190,7 +190,7 @@ create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
     pushd ${OUTPUT_DIR}
 
-    oc apply -f gitops-0-bootstrap-ace/setup/ocp47/argocd-instance/ -n openshift-gitops
+    oc apply -f gitops-0-bootstrap/setup/ocp47/argocd-instance/ -n openshift-gitops
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
     popd
 }
@@ -270,7 +270,7 @@ argocd_git_override () {
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
   pushd ${OUTPUT_DIR}
-  oc apply -n openshift-gitops -f gitops-0-bootstrap-ace/${GITOPS_PROFILE}
+  oc apply -n openshift-gitops -f gitops-0-bootstrap/${GITOPS_PROFILE}
   popd
 }
 
