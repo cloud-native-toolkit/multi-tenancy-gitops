@@ -343,7 +343,7 @@ print_urls_passwords () {
     echo " "
     echo "To get the ArgoCD URL and admin password:"
     echo "-----"
-    echo "oc get route -n openshift-gitops openshift-gitops-cntk-cluster -o template --template='https://{{.spec.host}}'"
+    echo "oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'"
     echo "oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-"
     echo "-----"
 }
