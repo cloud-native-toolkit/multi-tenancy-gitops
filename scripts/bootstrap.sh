@@ -324,9 +324,9 @@ ace_bom_bootstrap () {
 
   echo "Applying ACE BOM"
 
-  pushd ${OUTPUT_DIR}
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
 
-  cp -a gitops-0-bootstrap/${ACE_BOM_PATH}/ gitops-0-bootstrap/${GITOPS_PROFILE}/
+  cp -a ${ACE_BOM_PATH}/ ${GITOPS_PROFILE}/
 
   git --no-pager diff
 
