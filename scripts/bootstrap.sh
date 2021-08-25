@@ -51,15 +51,22 @@ if [[ ! -f ${SEALED_SECRET_KEY_FILE} ]]; then
 fi
 
 CP_EXAMPLES=${CP_EXAMPLES:-true}
+ACE_SCENARIO=${ACE_SCENARIO:-true}
+ACE_BOM_PATH=${ACE_BOM_PATH:-scripts/bom/ace}
 
-GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/argocd/single-cluster/bootstrap.yaml}
+GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster}
 
+GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_BASEURL=${GIT_BASEURL:-https://github.com}
 GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
+GIT_GITOPS_INFRA_BRANCH=${GIT_GITOPS_INFRA_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
+GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
-GITOPS_BRANCH=${GITOPS_BRANCH:-master}
+GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
+
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 
@@ -68,18 +75,18 @@ fork_repos () {
 
     pushd ${OUTPUT_DIR}
 
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-ace -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-ace" ]]; then
+    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
+    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
       echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit-demos/multi-tenancy-gitops-ace --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-ace gitops-0-bootstrap-ace
-    elif [[ ! -d gitops-0-bootstrap-ace ]]; then
+      gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
+      mv multi-tenancy-gitops gitops-0-bootstrap
+    elif [[ ! -d gitops-0-bootstrap ]]; then
       echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-ace gitops-0-bootstrap-ace
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
     fi
-    cd gitops-0-bootstrap-ace
+    cd gitops-0-bootstrap
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
     cd ..
 
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
@@ -93,7 +100,7 @@ fork_repos () {
     fi
     cd gitops-1-infra
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
     cd ..
 
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
@@ -107,7 +114,7 @@ fork_repos () {
     fi
     cd gitops-2-services
     git remote set-url --push upstream no_push
-    git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+    git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
     cd ..
 
     if [[ "${CP_EXAMPLES}" == "true" ]]; then
@@ -124,22 +131,24 @@ fork_repos () {
       fi
       cd gitops-3-apps
       git remote set-url --push upstream no_push
-      git checkout ${GITOPS_BRANCH} || git checkout --track origin/${GITOPS_BRANCH}
+      git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
       cd ..
 
-      GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
-      if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
-        echo "Fork not found, creating fork and cloning"
-        gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
-        mv ace-customer-details src-ace-app-customer-details
-      elif [[ ! -d src-ace-app-customer-details ]]; then
-        echo "Fork found, repo not cloned, cloning repo"
-        gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
+      if [[ "${ACE_SCENARIO}" == "true" ]]; then
+        GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
+        if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
+          echo "Fork not found, creating fork and cloning"
+          gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
+          mv ace-customer-details src-ace-app-customer-details
+        elif [[ ! -d src-ace-app-customer-details ]]; then
+          echo "Fork found, repo not cloned, cloning repo"
+          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
+        fi
+        cd src-ace-app-customer-details
+        git remote set-url --push upstream no_push
+        git checkout master || git checkout --track origin/master
+        cd ..
       fi
-      cd src-ace-app-customer-details
-      git remote set-url --push upstream no_push
-      git checkout master || git checkout --track origin/${GITOPS_BRANCH}
-      cd ..
 
     fi
 
@@ -164,7 +173,7 @@ install_pipelines () {
 install_argocd () {
     echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
     pushd ${OUTPUT_DIR}
-    oc apply -f gitops-0-bootstrap-ace/setup/ocp47/
+    oc apply -f gitops-0-bootstrap/setup/ocp47/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
     while ! oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
     popd
@@ -182,7 +191,7 @@ create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
     pushd ${OUTPUT_DIR}
 
-    oc apply -f gitops-0-bootstrap-ace/setup/ocp47/argocd-instance/ -n openshift-gitops
+    oc apply -f gitops-0-bootstrap/setup/ocp47/argocd-instance/ -n openshift-gitops
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
     popd
 }
@@ -225,18 +234,21 @@ metadata:
 data:
   map.yaml: |-
     map:
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS}
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_INFRA}
-      originRepoUrL: https://github.com/${GIT_ORG}/${GIT_GITOPS_INFRA}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_SERVICES}
+      originBranch: ${GIT_GITOPS_BRANCH}
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+      originBranch: ${GIT_GITOPS_INFRA_BRANCH}
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
-      originBranch: ${GITOPS_BRANCH}
-    - upstreamRepoURL: ${GIT_BASEURL}/cloud-native-toolkit/${GIT_GITOPS_APPLICATIONS}
-      originRepoUrL: ${GIT_BASEURL}${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GITOPS_BRANCH}
+      originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
 popd
@@ -262,7 +274,7 @@ argocd_git_override () {
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
   pushd ${OUTPUT_DIR}
-  oc apply -n openshift-gitops -f gitops-0-bootstrap-ace/${GITOPS_PROFILE}
+  oc apply -n openshift-gitops -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
   popd
 }
 
@@ -311,6 +323,26 @@ init_sealed_secrets () {
 
 }
 
+ace_bom_bootstrap () {
+
+  echo "Applying ACE BOM"
+
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
+
+  cp -a ${ACE_BOM_PATH}/ ${GITOPS_PROFILE}/
+
+  git --no-pager diff
+
+  git add .
+
+  git commit -m "Deploy Cloud Pak ACE"
+
+  git push origin
+
+  popd
+
+}
+
 ace_apps_bootstrap () {
   echo "Github user/org is ${GIT_ORG}"
 
@@ -335,7 +367,7 @@ print_urls_passwords () {
     echo " "
     echo "To get the ArgoCD URL and admin password:"
     echo "-----"
-    echo "oc get route -n openshift-gitops openshift-gitops-cntk-cluster -o template --template='https://{{.spec.host}}'"
+    echo "oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'"
     echo "oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-"
     echo "-----"
 }
@@ -368,12 +400,21 @@ apply_argocd_git_override_configmap
 
 argocd_git_override
 
+# Setup BOM
+if [[ "${ACE_SCENARIO}" == "true" ]]; then
+  echo "Bootstrap Cloud Pak for ACE"
+
+  ace_bom_bootstrap
+
+fi
+
 deploy_bootstrap_argocd
+
 
 # Setup of apps repo
 
-if [[ "${CP_EXAMPLES}" == "true" ]]; then
-  echo "Bootstrap Cloud Pak examples"
+if [[ "${CP_EXAMPLES}" == "true" ]] && [[ "${ACE_SCENARIO}" == "true" ]]; then
+  echo "Bootstrap Cloud Pak examples for ACE"
 
   ace_apps_bootstrap
 
