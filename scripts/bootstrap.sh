@@ -362,15 +362,6 @@ ace_apps_bootstrap () {
 
 print_urls_passwords () {
 
-echo "The ArgoCD URL and admin password:"
-oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'
-oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-
-echo "----"
-echo "The Cloud Pak console and admin password"
-oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
-oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
-
-
     echo "# Openshift Console UI: $(oc whoami --show-console)"
     echo "# "
     echo "# Openshift ArgoCD/GitOps UI: $(oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}')"
