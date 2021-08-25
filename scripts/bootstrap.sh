@@ -42,17 +42,10 @@ fi
 mkdir -p "${OUTPUT_DIR}"
 
 
-SEALED_SECRET_KEY_FILE=${SEALED_SECRET_KEY_FILE:-~/Downloads/sealed-secrets-ibm-demo-key.yaml}
-
-if [[ ! -f ${SEALED_SECRET_KEY_FILE} ]]; then
-  echo "File Not Found: ${SEALED_SECRET_KEY_FILE}"
-
-  exit 1
-fi
-
-CP_EXAMPLES=${CP_EXAMPLES:-true}
-ACE_SCENARIO=${ACE_SCENARIO:-true}
+CP_EXAMPLES=${CP_EXAMPLES:-false}
+ACE_SCENARIO=${ACE_SCENARIO:-false}
 ACE_BOM_PATH=${ACE_BOM_PATH:-scripts/bom/ace}
+CP_DEFAULT_TARGET_NAMESPACE=${CP_DEFAULT_TARGET_NAMESPACE:-tools}
 
 GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster}
 
@@ -69,6 +62,7 @@ GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
 
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
+IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
 
 fork_repos () {
     echo "Github user/org is ${GIT_ORG}"
@@ -154,15 +148,6 @@ fork_repos () {
 
     popd
 
-}
-
-
-
-init_sealed_secrets () {
-    echo "Intializing sealed secrets with file ${SEALED_SECRET_KEY_FILE}"
-    oc new-project sealed-secrets || true
-
-    oc apply -f ${SEALED_SECRET_KEY_FILE}
 }
 
 install_pipelines () {
@@ -280,6 +265,7 @@ deploy_bootstrap_argocd () {
 
 
 update_pull_secret () {
+  # Only applicable when workers reload automatically
   if [[ -z "${IBM_ENTITLEMENT_KEY}" ]]; then
     echo "Please pass the environment variable IBM_ENTITLEMENT_KEY"
     exit 1
@@ -295,7 +281,7 @@ update_pull_secret () {
   #ls -l ${WORKDIR}/.dockerconfigjson
 
   # merge a new entry into existing file
-  oc registry login --registry="${IBM_CP_IMAGE_REGISTRY}" --auth-basic="cp:${IBM_ENTITLEMENT_KEY}" --to=${WORKDIR}/.dockerconfigjson
+  oc registry login --registry="${IBM_CP_IMAGE_REGISTRY}" --auth-basic="${IBM_CP_IMAGE_REGISTRY_USER}:${IBM_ENTITLEMENT_KEY}" --to=${WORKDIR}/.dockerconfigjson
   #cat ${WORKDIR}/.dockerconfigjson
 
   # write back into cluster, but is better to save it to gitops repo :-)
@@ -307,15 +293,20 @@ update_pull_secret () {
   #oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=${WORKDIR}/.dockerconfigjson  --dry-run=client -o yaml
 }
 
-init_sealed_secrets () {
+set_pull_secret () {
 
-  SEALED_SECRET_KEY_FILE=${SEALED_SECRET_KEY_FILE:-~/Downloads/sealed-secrets-ibm-demo-key.yaml}
-
-  if [[ ! -f ${SEALED_SECRET_KEY_FILE} ]]; then
-    echo "File Not Found: ${SEALED_SECRET_KEY_FILE}"
-    echo "Please pass the environment variable SEALED_SECRET_KEY_FILE and make sure it points to an existing file"
+  if [[ -z "${IBM_ENTITLEMENT_KEY}" ]]; then
+    echo "Please pass the environment variable IBM_ENTITLEMENT_KEY"
     exit 1
   fi
+  oc new-project ${CP_DEFAULT_TARGET_NAMESPACE} || true
+  oc create secret docker-registry ibm-entitlement-key \
+  --docker-username="${IBM_CP_IMAGE_REGISTRY_USER}" \
+  --docker-password="${IBM_ENTITLEMENT_KEY}" \
+  --docker-server="${IBM_CP_IMAGE_REGISTRY}" || true
+}
+
+init_sealed_secrets () {
 
   echo "Intializing sealed secrets with file ${SEALED_SECRET_KEY_FILE}"
   oc new-project sealed-secrets || true
@@ -329,8 +320,13 @@ ace_bom_bootstrap () {
 
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
 
-  cp -a ${ACE_BOM_PATH}/ ${GITOPS_PROFILE}/
-
+  cp -a ${ACE_BOM_PATH}/1-infra/ ${GITOPS_PROFILE}/1-infra/
+  cp -a ${ACE_BOM_PATH}/2-services/ ${GITOPS_PROFILE}/2-services/
+  # Setup of apps repo
+  if [[ "${CP_EXAMPLES}" == "true" ]]; then
+    echo "Applying ACE BOM with Apps"
+    cp -a ${ACE_BOM_PATH}/3-apps/ ${GITOPS_PROFILE}/3-apps/
+  fi
   git --no-pager diff
 
   git add .
@@ -372,7 +368,7 @@ print_urls_passwords () {
     echo "oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-"
     echo "# -----"
     echo "# The Cloud Pak console and admin password"
-    echo "oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'"
+    echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
     echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
     echo "# -----"
 
@@ -382,11 +378,14 @@ print_urls_passwords () {
 
 fork_repos
 
+if [[ -n "${IBM_ENTITLEMENT_KEY}" ]]; then
+  update_pull_secret
+  set_pull_secret
+fi
 
-# Only applicable when workers reload automatically
-# update_pull_secret
-
-init_sealed_secrets
+if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
+  init_sealed_secrets
+fi
 
 install_pipelines
 
@@ -409,22 +408,15 @@ argocd_git_override
 # Setup BOM
 if [[ "${ACE_SCENARIO}" == "true" ]]; then
   echo "Bootstrap Cloud Pak for ACE"
-
   ace_bom_bootstrap
-
+  # Setup of apps repo
+  if [[ "${CP_EXAMPLES}" == "true" ]]; then
+    echo "Bootstrap Cloud Pak examples for ACE"
+    ace_apps_bootstrap
+  fi
 fi
 
 deploy_bootstrap_argocd
-
-
-# Setup of apps repo
-
-if [[ "${CP_EXAMPLES}" == "true" ]] && [[ "${ACE_SCENARIO}" == "true" ]]; then
-  echo "Bootstrap Cloud Pak examples for ACE"
-
-  ace_apps_bootstrap
-
-fi
 
 print_urls_passwords
 
