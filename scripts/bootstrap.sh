@@ -303,7 +303,7 @@ set_pull_secret () {
   oc create secret docker-registry ibm-entitlement-key \
   --docker-username="${IBM_CP_IMAGE_REGISTRY_USER}" \
   --docker-password="${IBM_ENTITLEMENT_KEY}" \
-  --docker-server="${IBM_CP_IMAGE_REGISTRY}"
+  --docker-server="${IBM_CP_IMAGE_REGISTRY}" || true
 }
 
 init_sealed_secrets () {
@@ -380,6 +380,7 @@ fork_repos
 
 if [[ -n "${IBM_ENTITLEMENT_KEY}" ]]; then
   update_pull_secret
+  set_pull_secret
 fi
 
 if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
