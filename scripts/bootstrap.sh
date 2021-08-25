@@ -233,16 +233,16 @@ metadata:
 data:
   map.yaml: |-
     map:
-    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}'
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
       originBranch: ${GIT_GITOPS_BRANCH}
-    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}'
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
       originBranch: ${GIT_GITOPS_INFRA_BRANCH}
-    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}'
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
       originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
       originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
-    - upstreamRepoURL: '${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}'
+    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
       originRepoUrL: ${GIT_BASEURL}${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
       originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
