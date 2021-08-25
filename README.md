@@ -27,7 +27,7 @@
     ```
 1. Run script to replace the git url and branch to your git organization where you created the git repositories
     ```bash
-    GIT_ORG=acme-org GIT_BRANCH=master ./script/set-git-sources.sh
+    GIT_ORG=acme-org GIT_BRANCH=master ./scripts/set-git-source.sh
     ```
 1. Select a profile and delete the others from the `0-bootstrap` directory. For example `single-cluster`
     ```bash
