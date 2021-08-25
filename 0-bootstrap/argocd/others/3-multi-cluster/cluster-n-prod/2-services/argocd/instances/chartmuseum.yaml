@@ -14,7 +14,7 @@ spec:
     namespace: tools
     server: 'https://kubernetes.default.svc'
   project: services
-  source:
+  source: # repoURL  and targetRevision populated by kustomize patches in 2-services/kustomization.yaml
     path: instances/chartmuseum
     helm:
       values: |

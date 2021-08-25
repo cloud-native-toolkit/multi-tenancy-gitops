@@ -19,7 +19,8 @@ resources:
 #- argocd/bookinfo/stage.yaml
 #- argocd/bookinfo/prod.yaml
 
-- argocd/soapserver/soapserver.yaml
+#- argocd/soapserver/soapserver.yaml
+
 patches:
 - target:
     group: argoproj.io
@@ -31,4 +32,4 @@ patches:
       value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_BRANCH}
+      value: ${GIT_GITOPS_APPLICATIONS_BRANCH}

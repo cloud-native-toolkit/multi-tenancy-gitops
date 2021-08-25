@@ -6,7 +6,7 @@ metadata:
   labels:
     gitops.tier.layer: applications
 spec:
-  sourceRepos: []
+  sourceRepos: []  # Populated by kustomize patches in 3-apps/kustomization.yaml
   destinations:
   - namespace: ci
     server: https://kubernetes.default.svc
@@ -52,10 +52,8 @@ spec:
     namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: applications
-  source:
+  source: # repoURL  and targetRevision populated by kustomize patches in 3-apps/kustomization.yaml
     path: 0-bootstrap/argocd/single-cluster/3-apps
-    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-    targetRevision: ${GIT_BRANCH}
   syncPolicy:
     automated:
       prune: true

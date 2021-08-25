@@ -11,7 +11,7 @@ spec:
   source:
     path: 0-bootstrap/argocd/single-cluster
     repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-    targetRevision: ${GIT_BRANCH}
+    targetRevision: ${GIT_GITOPS_BRANCH}
   syncPolicy:
     automated:
       prune: true
