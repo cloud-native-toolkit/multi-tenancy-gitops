@@ -374,7 +374,7 @@ print_urls_passwords () {
     echo "# The Cloud Pak console and admin password"
     echo "oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'"
     echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
-    echo "-----"
+    echo "# -----"
 
 }
 
