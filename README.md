@@ -59,6 +59,12 @@
     oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'
     oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-
     ```
+1. After everything is installed get the Cloud Pak console and admin password
+    ```bash
+    oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
+    oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
+    ```
+
 <details><summary>Deploying IBM Cloud Pak for Integration with ACE capability</summary>
 
 ## Deploying IBM Cloud Pak for Integration with ACE capability
@@ -96,26 +102,6 @@
     ```
 </details>
 
-<details><summary>Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability</summary>
-
-### Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability
-
-### Prerequisites
-1. Install the OpenShift CLI `oc`, [download latest oc](https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/) version 4.7 or 4.8
-1. Create [Github](https://github.com) account
-1. Install the Github `gh` CLI and login https://github.com/cli/cli
-1. Create a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch
-1. Generate a [GitHub Personal Access Token (PAT)](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) with the following scopes
-    - [ ] repo
-        - [x] public_repo
-    - [ ] admin:repo_hook
-        - [x] write:repo_hook
-    <details>
-    <summary> View screen capture of scopes required </summary>
-
-    ![GitHub Token Scopes](doc/images/github-webhook.png)
-
-    </details>
 
 
 ### Deploy the ACE operator and its pre-requisites
@@ -153,4 +139,15 @@
     ```bash
     code ace-production
     ```
+1. To get the ArgoCD/GitOps URL and admin password:
+    ```bash
+    oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'
+    oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-
+    ```
+1. After everything is installed get the Cloud Pak console and admin password
+    ```bash
+    oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
+    oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
+    ```
+
 </details>
