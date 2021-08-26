@@ -103,6 +103,9 @@
 </details>
 
 
+<details><summary>Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability</summary>
+
+## Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability
 
 ### Deploy the ACE operator and its pre-requisites
 - Make sure you are logged in OpenShift with admin rights
