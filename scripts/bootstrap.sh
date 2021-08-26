@@ -90,7 +90,7 @@ fork_repos () {
       mv multi-tenancy-gitops-infra gitops-1-infra
     elif [[ ! -d gitops-1-infra ]]; then
       echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-1-infra
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra gitops-1-infra
     fi
     cd gitops-1-infra
     git remote set-url --push upstream no_push
@@ -104,7 +104,7 @@ fork_repos () {
       mv multi-tenancy-gitops-services gitops-2-services
     elif [[ ! -d gitops-2-services ]]; then
       echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-2-services
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services gitops-2-services
     fi
     cd gitops-2-services
     git remote set-url --push upstream no_push
