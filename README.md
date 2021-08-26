@@ -33,7 +33,7 @@
     ```bash
     GITOPS_PROFILE="0-bootstrap/single-cluster"
     ```
-1. Deploy ArgoCD Applications for each layer by uncommenting the lines in `kustomization.yaml` files. See the section bellow to see examples on which ArgoCD Apps to uncomment.
+1. Deploy ArgoCD Applications for each layer by uncommenting the lines in `kustomization.yaml` files. See the section bellow [Selecting ArgoCD apps to deploy](#selecting-argocd-apps-to-deploy) to see examples on which ArgoCD Apps to uncomment.
     - ${GITOPS_PROFILE}/1-infra/kustomization.yaml
     - ${GITOPS_PROFILE}/2-services/kustomization.yaml
 1. Commit and push changes to your git repository
@@ -65,9 +65,10 @@
     oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
     ```
 
+### Selecting ArgoCD apps to deploy
 <details><summary>Deploying IBM Cloud Pak for Integration with ACE capability</summary>
 
-## Deploying IBM Cloud Pak for Integration with ACE capability
+### Deploying IBM Cloud Pak for Integration with ACE capability
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml` uncomment the lines:
     ```yaml
     - argocd/consolenotification.yaml
@@ -95,17 +96,13 @@
     storage:
         class: managed-nfs-storage
     ```
-1. After everything is installed get the Cloud Pak console and admin password
-    ```bash
-    oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
-    oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
-    ```
 </details>
 
 
+### QuickStarts
 <details><summary>Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability</summary>
 
-## Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability
+### Experimental: QuickStart IBM Cloud Pak for Integration with ACE capability
 
 ### Deploy the ACE operator and its pre-requisites
 - Make sure you are logged in OpenShift with admin rights
@@ -131,7 +128,6 @@
 - Run the bootstrap script, specify the git user `GIT_USER`, the git org `GIT_ORG`,the IBM Entitlement key value `GIT_TOKEN` and the output directory to clone all repos `OUTPUT_DIR`.You can use `DEBUG=true` for verbose output.
     ```bash
     curl -sfL https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops/master/scripts/bootstrap.sh | \
-    GIT_USER=$REPLACE_WITH_GIT_USER \
     GIT_ORG=$REPLACE_WITH_GIT_ORG \
     IBM_ENTITLEMENT_KEY="<entitlement_key>" \
     ACE_SCENARIO=true \
