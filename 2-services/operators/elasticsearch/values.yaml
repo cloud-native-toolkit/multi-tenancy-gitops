@@ -1,8 +1,0 @@
-global: {}
-elasticsearch-operator:
-  clusterType: "ocp4"
-  ocpCatalog:
-    source: redhat-operators
-    channel: "4.6"
-    name: elasticsearch-operator
-

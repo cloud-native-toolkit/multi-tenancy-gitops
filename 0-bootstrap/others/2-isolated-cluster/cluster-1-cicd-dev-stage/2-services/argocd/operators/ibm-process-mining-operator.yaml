@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-process-mining-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "230"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/ibm-process-mining
+    helm:
+      values: |
+        ibm-process-mining-operator:
+          subscriptions:
+            ibmprocessmining:
+              name: ibm-process-mining
+              subscription:
+                channel: v1.0
+                installPlanApproval: Automatic
+                name: ibm-automation-processmining
+                source: ibm-automation-processminings
+                sourceNamespace: openshift-marketplace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

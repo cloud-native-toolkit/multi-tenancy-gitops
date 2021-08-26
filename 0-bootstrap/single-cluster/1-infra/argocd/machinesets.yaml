@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: machinesets
+  labels:
+    gitops.tier.layer: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: machinesets
+    helm:
+      values: |
+        refarch-machinesets:
+          infrastructureId: "rosa-east-2-zv89m"
+          cloudProvider:
+            name: "aws" # set to aws, azure or vsphere
+            managed: false
+          aws:
+            region: us-east-1
+            zones:
+            - us-east-1a
+            - us-east-1b
+            - us-east-1c
+            image: ami-01ea0772949cb189a
+            infraNodes:
+              nodeCount: 1
+              volumeSize: 120
+              volumeType: gp2
+              instanceType: m5.xlarge
+            storageNodes:
+              nodeCount: 1
+              volumeSize: 120
+              volumeType: gp2
+              instanceType: m5.4xlarge
+            cloudpakNodes:
+              nodeCount: 0
+              volumeSize: 120
+              volumeType: gp2
+              instanceType: m5.xlarge
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

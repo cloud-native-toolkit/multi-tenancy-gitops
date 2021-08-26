@@ -1,0 +1,232 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: custom-argocd-cluster-argocd-application-controller
+rules:
+  - verbs:
+      - '*'
+    apiGroups:
+      - ''
+    resources:
+      - pods
+      - services
+      - services/finalizers
+      - endpoints
+      - events
+      - configmaps
+      - secrets
+      - serviceaccounts
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'triggers.tekton.dev'
+    resources:
+      - eventlisteners
+      - triggerbindings
+      - triggertemplates
+  - verbs:
+      - '*'
+    apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'route.openshift.io'
+    resources:
+      - routes
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'security.openshift.io'
+    resources:
+      - securitycontextconstraints
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'operator.cert-manager.io'
+    resources:
+      - certmanagers
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'cert-manager.io'
+    resources:
+      - clusterissuers
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'bitnami.com'
+    resources:
+      - sealedsecretcontrollers
+      - sealedsecrets
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'integreatly.org'
+    resources:
+      - grafanas
+      - grafanadatasources
+      - grafanadashboards
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'networking.k8s.io'
+    resources:
+      - networkpolicies
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'integration.ibm.com'
+    resources:
+      - platformnavigators
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'operators.coreos.com'
+    resources:
+      - subscriptions
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'tekton.dev'
+    resources:
+      - pipelines
+      - tasks
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'maistra.io'
+    resources:
+      - servicemeshcontrolplanes
+      - servicemeshmembers
+      - servicemeshmemberrolls
+  - verbs:
+      - '*'
+    apiGroups:
+      - 'networking.istio.io'
+    resources:
+      - virtualservices
+      - gateways
+      - destinationrules
+  - verbs:
+      - create
+      - list
+    apiGroups:
+      - ''
+    resources:
+      - events
+  - verbs:
+      - '*'
+    apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - jobs
+  - verbs:
+      - '*'
+    apiGroups:
+      - argoproj.io
+    resources:
+      - applications
+      - appprojects
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - '*'
+    resources:
+      - '*'
+  - verbs:
+      - get
+      - list
+    nonResourceURLs:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - operators.coreos.com
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - operator.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - user.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - config.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - console.openshift.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - ''
+    resources:
+      - namespaces
+      - persistentvolumeclaims
+      - persistentvolumes
+      - configmaps
+  - verbs:
+      - '*'
+    apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - storage.k8s.io
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - appconnect.ibm.com
+    resources:
+      - integrationservers
+      - dashboards
+      - configurations
+  - verbs:
+      - '*'
+    apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+  - verbs:
+      - '*'
+    apiGroups:
+      - processmining.ibm.com
+    resources:
+      - processminings
+  - verbs:
+      - '*'
+    apiGroups:
+      - operator.ibm.com
+    resources:
+      - commonservices
+  - verbs:
+      - '*'
+    apiGroups:
+      - mq.ibm.com
+    resources:
+      - queuemanagers
