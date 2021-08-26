@@ -33,7 +33,7 @@
     ```bash
     GITOPS_PROFILE="0-bootstrap/single-cluster"
     ```
-1. Deploy ArgoCD Applications for each layer by uncommenting the lines in `kustomization.yaml` files. See the section bellow to see examples on which ArgoCD Apps to uncomment.
+1. Deploy ArgoCD Applications for each layer by uncommenting the lines in `kustomization.yaml` files. See the section bellow [Selecting ArgoCD apps to deploy](#selecting-argocd-apps-to-deploy) to see examples on which ArgoCD Apps to uncomment.
     - ${GITOPS_PROFILE}/1-infra/kustomization.yaml
     - ${GITOPS_PROFILE}/2-services/kustomization.yaml
 1. Commit and push changes to your git repository
