@@ -13,9 +13,9 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [CLI tools](#cli-tools)
     - [IBM Entitlement Key](#ibm-entitlement-key)    
 - [Setup git repositories](#setup-git-repositories)
-- [Select resources to deploy](#select-resources-to-deploy)
 - [Install and configure OpenShift GitOps](#install-and-configure-openshift-gitops)
 - [Bootstrap the OpenShift cluster](#bootstrap-the-openshift-cluster)
+- [Select resources to deploy](#select-resources-to-deploy)
 - [Troubleshooting](doc/troubleshooting.md)
 - [FAQ](doc/faq.md)
 
@@ -62,33 +62,23 @@ The reference architecture for this GitOps workflow can be found [here](https://
 
 ### Tasks: 
 1. Create a new GitHub Organization using instructions from this [GitHub documentation](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch). 
-2. From each template repository, click the `Use this template` button and create a copy of the repository in the new GitHub Organization.
+2. From each template repository, click the `Use this template` button and create a copy of the repository in your new GitHub Organization.
     ![Create repository from a template](doc/images/git-repo-template-button.png)
-3. Run script to replace the git url and branch to your git organization where you created the git repositories
+3. Clone the repositories locally. 
     ```bash
-    GIT_ORG=<GitHub Organization> GIT_BRANCH=master ./scripts/set-git-source.sh
+    mkdir -p gitops-repos
+    cd gitops-repos
+    # Clone using SSH
+    git clone git@github.com:<GIT_ORG>/multi-tenancy-gitops.git
+    git clone git@github.com:<GIT_ORG>/multi-tenancy-gitops-infra.git
+    git clone git@github.com:<GIT_ORG>/multi-tenancy-gitops-services.git
     ```
-
-
-## Select resources to deploy
-- Select the K8s resources to deploy in the [infrastructure](0-bootstrap/single-cluster/1-infra/kustomization.yaml) and [services](0-bootstrap/single-cluster/2-services/kustomization.yaml) layers.
-- Recipes are available and additional ones will be made available in the **doc** directory. 
-    - [ACE recipe](doc/ace-recipe.md)
-    - [MQ recipe](doc/mq-recipe.md)
-    - [Process Mining recipe](doc/process-mining-recipe.md)
-
-### Tasks: 
-1. Select a profile and delete the others from the `0-bootstrap` directory.  If this is your first usage of the gitops workflow, Use the `single-cluster`.
+3. Update the default Git URl and branch references in your `multi-tenancy-gitops` repository by running the provided script `./scripts/set-git-source.sh` script.
     ```bash
-    GITOPS_PROFILE="0-bootstrap/single-cluster"
-    ```
-2. Review the `Infrastructure` layer [kustomization.yaml](0-bootstrap/single-cluster/1-infra/kustomization.yaml) and un-comment the resources to deploy.  
-3. Review the `Services` layer [kustomization.yaml](0-bootstrap/single-cluster/2-services/kustomization.yaml) and un-comment the resources to deploy.  
-4. Commit and push changes to your git repository
-    ```bash
-    git add .
-    git commit -m "intial boostrap setup"
-    git push origin
+    cd multi-tenancy-gitops
+    GIT_ORG=<GIT_ORG> GIT_BRANCH=master ./scripts/set-git-source.sh
+    git commit -m "Update Git URl and branch references"
+    git push origin master
     ```
 
 
@@ -115,11 +105,12 @@ The reference architecture for this GitOps workflow can be found [here](https://
 
 
 ## Bootstrap the OpenShift cluster 
-- The bootstrap YAML follows the [app of apps pattern](https://argoproj.github.io/argo-cd/operator-manual/cluster-bootstrapping/#app-of-apps-pattern) to deploy the `infrastructure` and `services` resources declared in the kustomization YAMLs. 
+- The bootstrap YAML follows the [app of apps pattern](https://argoproj.github.io/argo-cd/operator-manual/cluster-bootstrapping/#app-of-apps-pattern). 
 
 ### Tasks: 
-1. Apply ArgoCD Bootstrap Application
+1. Select a profile and delete the others from the `0-bootstrap` directory.  If this is your first usage of the gitops workflow, use the `single-cluster` profile and deploy the ArgoCD Bootstrap Application.
     ```bash
+    GITOPS_PROFILE="0-bootstrap/single-cluster"
     oc apply -f ${GITOPS_PROFILE}/bootstrap.yaml
     ```
 2. Retrieve the ArgoCD/GitOps URL and admin password:
@@ -127,8 +118,39 @@ The reference architecture for this GitOps workflow can be found [here](https://
     oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'
     oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-
     ```
-3. If an IBM Cloud Pak is installed, retrieve the console URL and admin password.
+
+
+## Select resources to deploy
+- Clone the `multi-tenancy-gitops` repository in your Git Organization if you have not already done so and select the K8s resources to deploy in the [infrastructure](0-bootstrap/single-cluster/1-infra/kustomization.yaml) and [services](0-bootstrap/single-cluster/2-services/kustomization.yaml) layers. 
+- Existing recipes are available and additional ones will be made available in the **doc** directory. 
+    - [ACE recipe](doc/ace-recipe.md)
+    - [MQ recipe](doc/mq-recipe.md)
+    - [Process Mining recipe](doc/process-mining-recipe.md)
+
+### Tasks: 
+1. Select a profile and delete the others from the `0-bootstrap` directory.  If this is your first usage of the gitops workflow, Use the `single-cluster` profile.
     ```bash
+    GITOPS_PROFILE="0-bootstrap/single-cluster"
+    ```
+2. Review the `Infrastructure` layer [kustomization.yaml](0-bootstrap/single-cluster/1-infra/kustomization.yaml) and un-comment the resources to deploy.  
+3. Review the `Services` layer [kustomization.yaml](0-bootstrap/single-cluster/2-services/kustomization.yaml) and un-comment the resources to deploy.  
+4. Commit and push changes to your git repository
+    ```bash
+    git add .
+    git commit -m "intial boostrap setup"
+    git push origin
+    ```
+5. If an IBM Cloud Pak is installed, retrieve the Platform Navigator console URL and admin password.
+    ```bash
+    # Verify the Common Services instance has been deployed successfully
+    oc get commonservice common-service -n ibm-common-services -o=jsonpath='{.status.phase}'
+    # Expected output = Succeeded
+
+    # Verify the Platform Navigator instance has been deployed successfully
+    oc get platformnavigator -n tools -o=jsonpath='{ .items[*].status.conditions[].status }'
+    # Expected output = True
+    
+    # 
     oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
     oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
     ```
