@@ -405,6 +405,8 @@ apply_argocd_git_override_configmap
 
 argocd_git_override
 
+deploy_bootstrap_argocd
+
 # Setup BOM
 if [[ "${ACE_SCENARIO}" == "true" ]]; then
   echo "Bootstrap Cloud Pak for ACE"
@@ -415,8 +417,6 @@ if [[ "${ACE_SCENARIO}" == "true" ]]; then
     ace_apps_bootstrap
   fi
 fi
-
-deploy_bootstrap_argocd
 
 print_urls_passwords
 
