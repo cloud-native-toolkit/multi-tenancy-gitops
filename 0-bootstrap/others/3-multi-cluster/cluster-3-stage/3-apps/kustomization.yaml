@@ -19,8 +19,6 @@ resources:
 #- argocd/bookinfo/stage.yaml
 #- argocd/bookinfo/prod.yaml
 
-#- argocd/soapserver/soapserver.yaml
-
 patches:
 - target:
     group: argoproj.io
