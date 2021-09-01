@@ -24,7 +24,7 @@
     - argocd/operators/ibm-catalogs.yaml
     - argocd/instances/sealed-secrets.yaml
     ```
-1. Edit the Platform Navigator instance and specify a storage class that supports  ReadWriteMany (RWX) `${GITOPS_PROFILE}/2-services/instances/ibm-platform-navigator-instance.yaml`
+1. Edit the Platform Navigator instance and specify a storage class that supports  ReadWriteMany (RWX) `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-platform-navigator-instance.yaml`
     ```yaml
     storage:
         class: managed-nfs-storage
