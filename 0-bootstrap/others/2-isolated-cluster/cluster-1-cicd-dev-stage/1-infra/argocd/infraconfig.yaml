@@ -19,11 +19,11 @@ spec:
       values: |
         refarch-infraconfig:
           cloudProvider:
-            name: "aws" # set to aws or vsphere,
-            managed: "false" # set to true for ARO or ROSA
+            name: "${PLATFORM}" # set to aws or vsphere,
+            managed: "${MANAGED}" # set to true for ARO or ROSA
           argo:
             namespace: openshift-gitops
-            serviceAccount: argocd-cluster-argocd-application-controller
+            serviceAccount: openshift-gitops-cntk-argocd-application-controller
           registry:
             storageClassName: ocs-storagecluster-cephfs
             replicas: 2
