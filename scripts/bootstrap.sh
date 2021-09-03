@@ -150,6 +150,101 @@ fork_repos () {
 
 }
 
+check_infra () {
+  echo "Applying Infrastructure updates"
+
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  ocpversion=$(oc get clusterversion version | grep -v NAME | awk '{print $2}')
+  a=( ${ocpversion//./ } )  
+  majorVer="${a[0]}.${a[1]}" 
+  installconfig=$(oc get configmap cluster-config-v1 -n kube-system -o jsonpath='{.data.install-config}')
+  if echo $installconfig|grep 'api.openshift.com/managed';then
+     managed1=$(echo "${installconfig}" | grep "api.openshift.com\/managed" | cut -d":" -f2  )
+     managed=${managed1:-"false"}
+  else
+     managed="false"
+  fi
+
+  infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
+  platform=$(echo "${installconfig}" | grep -A1 "platform:" | grep -v "platform:" | head -1 | cut -d":" -f1 | xargs)
+  if [[ "${platform}" == "vsphere" ]]; then 
+    vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
+    VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
+    VS_DATACENTER=$(echo "${vsconfig}" | grep "datacenter" | cut -d":" -f2 | xargs)
+    VS_DATASTORE=$(echo "${vsconfig}" | grep "defaultDatastore" | cut -d":" -f2 | xargs)
+    VS_CLUSTER=$(echo "${vsconfig}" | grep "cluster" | cut -d":" -f2 | xargs)
+    VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
+  else
+    region=$(echo "${installconfig}" | grep "region:" | cut -d":" -f2  | xargs)
+    if [[ "$platform" == "aws"  ]]; then
+      image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A1 "${region}" | grep hvm | cut -d'"' -f4)
+    elif [[ "$platform" == "azure"  ]]; then
+      image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A3 "azure" | grep '"image"' | cut -d'"' -f4)
+    elif [[ "$platform" == "gcp"  ]]; then
+      image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A3 "gcp" | grep '"image"' | cut -d'"' -f4)
+    fi
+  fi
+  # platform=$(oc get -o jsonpath='{.status.platform}' infrastructure cluster | tr [:upper:] [:lower:])
+
+  ms=$(grep "machinesets.yaml" kustomization.yaml | grep -v "^#" | wc -l)
+
+  if [ $ms -eq 1 ]; then
+    # edit argocd/machinesets.yaml
+    sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
+    sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
+    sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
+    if [[ "${platform}" == "vsphere" ]]; then 
+      sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
+      sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
+      sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
+      sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
+      sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
+    else
+      sed -i'.bak' -e "s#\${REGION}#${region}#" argocd/machinesets.yaml
+      sed -i'.bak' -e "s#\${IMAGE_NAME}#${image}#" argocd/machinesets.yaml
+    fi
+
+    rm argocd/machinesets.yaml.bak
+  fi
+
+  ms=$(grep "infraconfig.yaml" kustomization.yaml | grep -v "^#" | wc -l)
+
+  if [ $ms -eq 1 ]; then
+    # edit argocd/infraconfig.yaml
+    sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/infraconfig.yaml
+    sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/infraconfig.yaml
+    rm argocd/infraconfig.yaml.bak
+  fi
+
+  ms=$(grep "\/storage.yaml" kustomization.yaml | grep -v "^#" | wc -l)
+
+  if [ $ms -eq 1 ]; then
+    # edit argocd/storage.yaml
+    newChannel="stable-${majorVer}" 
+    defsc=$(oc get sc | grep default | awk '{print $1}')
+    if [[ "$platform" == "aws" ]]; then
+      storageClass=${defsc:-"gp2"}
+    elif [[ "$platform" == "azure" ]]; then
+      storageClass=${defsc:-"managed-premium"}
+    elif [[ "$platform" == "gcp" ]]; then
+      storageClass=${defsc:-"standard"}
+    fi
+
+    sed -i.bak "s#\${CHANNEL}#${newChannel}#" argocd/storage.yaml
+    sed -i.bak "s#\${STORCLASS}#${storageClass}#" argocd/storage.yaml
+    rm argocd/storage.yaml.bak
+  fi
+
+  git add .
+
+  git commit -m "Editing infrastructure definitions"
+
+  git push origin
+
+  popd
+}
+
 install_pipelines () {
   echo "Installing OpenShift Pipelines Operator"
   oc apply -n openshift-operators -f https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops-services/master/operators/openshift-pipelines/operator.yaml
@@ -386,6 +481,8 @@ fi
 if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
   init_sealed_secrets
 fi
+
+check_infra
 
 install_pipelines
 

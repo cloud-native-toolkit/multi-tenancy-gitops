@@ -209,6 +209,19 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - machineconfiguration.openshift.io
+    resources:
+      - machineconfigpools
+      - containerruntimeconfigs
+  - verbs:
+      - '*'
+    apiGroups:
+      - tuned.openshift.io
+    resources:
+      - tuneds
+  - verbs:
+      - '*'
+    apiGroups:
       - apiextensions.k8s.io
     resources:
       - customresourcedefinitions
@@ -218,6 +231,18 @@ rules:
       - processmining.ibm.com
     resources:
       - processminings
+  - verbs:
+      - '*'
+    apiGroups:
+      - ocs.openshift.io
+    resources:
+      - storageclusters
+  - verbs:
+      - '*'
+    apiGroups:
+      - imageregistry.operator.openshift.io
+    resources:
+      - configs
   - verbs:
       - '*'
     apiGroups:
