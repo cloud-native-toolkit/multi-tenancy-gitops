@@ -70,9 +70,7 @@
 - Run the bootstrap script: specify the git org `GIT_ORG`, and the output directory to clone all repos `OUTPUT_DIR`. (Note: you can also specify the git user `GIT_USER`, the IBM Entitlement key value `IBM_ENTITLEMENT_KEY` and others if you are deploying additional features). You can use `DEBUG=true` for verbose output.
     ```bash
     curl -sfL https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops/master/scripts/bootstrap.sh | \
-    GIT_ORG=$GIT_ORG \
-    OUTPUT_DIR=infra-production \
-    bash
+    DEBUG=true GIT_ORG=$GIT_ORG OUTPUT_DIR=infra-production bash
     ```
 
 - To get the ArgoCD/GitOps URL and admin password:
