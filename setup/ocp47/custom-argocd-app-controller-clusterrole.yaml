@@ -230,3 +230,9 @@ rules:
       - mq.ibm.com
     resources:
       - queuemanagers
+  - verbs:
+      - '*'
+    apiGroups:
+      - icp4a.ibm.com
+    resources:
+      - icp4aclusters
