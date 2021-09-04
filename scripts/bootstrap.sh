@@ -374,6 +374,58 @@ print_urls_passwords () {
 
 }
 
+get_rwx_storage_class () {
+
+  DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-managed-nfs-storage}
+  OCS_RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
+
+  if [[ -n "${RWX_STORAGE_CLASS}" ]]; then
+    echo "RWX Storage class specified to ${RWX_STORAGE_CLASS}"
+    return 0
+  fi
+  set +e
+  oc get sc -o jsonpath='{.items[*].metadata.name}' | grep "${OCS_RWX_STORAGE_CLASS}"
+  OC_SC_OCS_CHECK=$?
+  set -e
+  if [[ ${OC_SC_OCS_CHECK} -eq 0 ]]; then
+    echo "Found OCS RWX storage class"
+    RWX_STORAGE_CLASS="${OCS_RWX_STORAGE_CLASS}"
+    return 0
+  fi
+  RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS}
+}
+
+set_rwx_storage_class () {
+
+  if [[ ${RWX_STORAGE_CLASS} = ${DEFAULT_RWX_STORAGE_CLASS} ]]; then
+    echo "Using default RWX storage managed-nfs-storage skipping override"
+    return 0
+  fi
+
+  echo "Replacing ${DEFAULT_RWX_STORAGE_CLASS} with ${RWX_STORAGE_CLASS} storage class "
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
+
+  find . -name '*.yaml' -print0 |
+    while IFS= read -r -d '' File; do
+      if grep -q "${DEFAULT_RWX_STORAGE_CLASS}" "$File"; then
+        #echo "$File"
+        sed -i'.bak' -e "s#${DEFAULT_RWX_STORAGE_CLASS}#${RWX_STORAGE_CLASS}#" $File
+        rm "${File}.bak"
+      fi
+    done
+
+  git --no-pager diff
+
+  git add .
+
+  git commit -m "Change RWX storage class to ${RWX_STORAGE_CLASS}"
+
+  git push origin
+
+  popd
+}
+
+
 # main
 
 fork_repos
@@ -404,6 +456,10 @@ create_argocd_git_override_configmap
 apply_argocd_git_override_configmap
 
 argocd_git_override
+
+# Set RWX storage
+get_rwx_storage_class
+set_rwx_storage_class
 
 deploy_bootstrap_argocd
 
