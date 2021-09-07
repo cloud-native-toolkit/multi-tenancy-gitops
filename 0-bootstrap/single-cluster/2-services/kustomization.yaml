@@ -42,6 +42,7 @@ resources:
 #- argocd/instances/pact-broker.yaml
 # In OCP 4.7+ we need to install openshift-pipelines and possibly privileged scc to the pipeline serviceaccount
 #- argocd/operators/openshift-pipelines.yaml
+#- argocd/instances/ci-scc.yaml
 
 
 # Service Mesh
