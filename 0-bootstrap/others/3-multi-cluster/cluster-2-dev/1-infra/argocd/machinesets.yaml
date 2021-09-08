@@ -18,32 +18,22 @@ spec:
     helm:
       values: |
         refarch-machinesets:
-          infrastructureId: "rosa-east-2-zv89m"
+          infrastructureId: "${INFRASTRUCTURE_ID}"
+          # cloudProvider.name set to aws, azure or vsphere
           cloudProvider:
-            name: "aws" # set to aws, azure or vsphere
-            managed: false
-          aws:
-            region: us-east-1
-            zones:
-            - us-east-1a
-            - us-east-1b
-            - us-east-1c
-            image: ami-01ea0772949cb189a
-            infraNodes:
-              nodeCount: 1
-              volumeSize: 120
-              volumeType: gp2
-              instanceType: m5.xlarge
-            storageNodes:
-              nodeCount: 1
-              volumeSize: 120
-              volumeType: gp2
-              instanceType: m5.4xlarge
-            cloudpakNodes:
-              nodeCount: 0
-              volumeSize: 120
-              volumeType: gp2
-              instanceType: m5.xlarge
+            name: "${PLATFORM}" 
+            managed: ${MANAGED}
+          # only for "aws" or "azure" maybe "gcp"
+          cloud:
+            region: ${REGION}
+            image: ${IMAGE_NAME}
+          # only for "vsphere" - ignored for other
+          vsphere:
+            networkName: ${VS_NETWORK}
+            datacenter: ${VS_DATACENTER}
+            datastore: ${VS_DATASTORE} 
+            cluster: ${VS_CLUSTER} 
+            server: ${VS_SERVER} 
   syncPolicy:
     automated:
       prune: true

@@ -150,6 +150,14 @@ fork_repos () {
 
 }
 
+check_infra () {
+   if [[ "${ADD_INFRA}" == "yes" ]]; then 
+     pushd ${OUTPUT_DIR}/gitops-0-bootstrap
+       source ./scripts/infra-mod.sh
+     popd
+   fi
+}
+
 install_pipelines () {
   echo "Installing OpenShift Pipelines Operator"
   oc apply -n openshift-operators -f https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops-services/master/operators/openshift-pipelines/operator.yaml
@@ -437,6 +445,8 @@ fi
 if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
   init_sealed_secrets
 fi
+
+check_infra
 
 install_pipelines
 

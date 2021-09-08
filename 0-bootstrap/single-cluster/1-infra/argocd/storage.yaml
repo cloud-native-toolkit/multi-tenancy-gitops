@@ -18,10 +18,9 @@ spec:
     helm:
       values: |
         ocs-operator:
-          ocs:
-            channel: stable-4.6
-            sizeGiB: 512
-            storageClass: gp2
+          channel: ${CHANNEL}
+          sizeGiB: 512
+          storageClass: ${STORCLASS}
   syncPolicy:
     automated:
       prune: true
