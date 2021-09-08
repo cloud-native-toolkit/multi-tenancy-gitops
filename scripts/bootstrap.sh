@@ -153,7 +153,7 @@ fork_repos () {
 check_infra () {
    if [[ "${ADD_INFRA}" == "yes" ]]; then 
      pushd ${OUTPUT_DIR}/gitops-0-bootstrap
-       bash ./scripts/infra-mod.sh
+       source ./scripts/infra-mod.sh
      popd
    fi
 }
