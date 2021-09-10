@@ -11,9 +11,9 @@ resources:
 - argocd/namespace-sealed-secrets.yaml
 - argocd/namespace-tools.yaml
 #- argocd/namespace-openshift-storage.yaml
-#- argocd/operator-ocs.yaml
-#- argocd/refarch-infraconfig.yaml
-#- argocd/refarch-machinesets.yaml
+#- argocd/storage.yaml
+#- argocd/infraconfig.yaml
+#- argocd/machinesets.yaml
 patches:
 - target:
     group: argoproj.io
