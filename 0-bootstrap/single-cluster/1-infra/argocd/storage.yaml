@@ -21,9 +21,9 @@ spec:
           channel: ${CHANNEL}
           sizeGiB: 512
           storageClass: ${STORCLASS}
-        argo:
-          namespace: openshift-gitops
-          serviceAccount: openshift-gitops-cntk-argocd-application-controller
+          argo:
+            namespace: openshift-gitops
+            serviceAccount: openshift-gitops-cntk-argocd-application-controller
   syncPolicy:
     automated:
       prune: true
