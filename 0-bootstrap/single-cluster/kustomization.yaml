@@ -17,6 +17,13 @@ patches:
 - target:
     group: argoproj.io
     kind: AppProject
+  patch: |-
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${HELM_REPOURL}
+- target:
+    group: argoproj.io
+    kind: AppProject
     labelSelector: "gitops.tier.layer=infra"
   patch: |-
     - op: add

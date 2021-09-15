@@ -18,6 +18,7 @@ resources:
 #- argocd/operators/ibm-foundations.yaml
 #- argocd/instances/ibm-foundational-services-instance.yaml
 #- argocd/operators/ibm-automation-foundation-core-operator.yaml
+#- argocd/operators/ibm-automation-foundation-operator.yaml
 
 # IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
@@ -63,3 +64,19 @@ patches:
     - op: add
       path: /spec/source/targetRevision
       value: ${GIT_GITOPS_SERVICES_BRANCH}
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=services,gitops.tier.source=helm"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${HELM_REPOURL}
+- target:
+    name: ibm-automation-foundation-operator
+  patch: |-
+    - op: add
+      path: /spec/source/helm/parameters/-
+      value:
+        name: spec.channel
+        value: v1.1
