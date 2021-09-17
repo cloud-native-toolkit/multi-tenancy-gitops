@@ -6,6 +6,7 @@ resources:
 #- argocd/namespace-dev.yaml
 #- argocd/namespace-staging.yaml
 #- argocd/namespace-prod.yaml
+#- argocd/namespace-cloudpak.yaml
 #- argocd/namespace-istio-system.yaml
 #- argocd/namespace-openldap.yaml
 #- argocd/namespace-sealed-secrets.yaml
