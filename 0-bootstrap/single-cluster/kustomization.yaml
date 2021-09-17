@@ -13,7 +13,14 @@ patches:
       value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_BRANCH}
+      value: ${GIT_GITOPS_BRANCH}
+- target:
+    group: argoproj.io
+    kind: AppProject
+  patch: |-
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${HELM_REPOURL}
 - target:
     group: argoproj.io
     kind: AppProject
