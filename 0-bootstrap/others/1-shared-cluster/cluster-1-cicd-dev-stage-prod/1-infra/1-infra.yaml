@@ -22,6 +22,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: ibm-common-services
     server: https://kubernetes.default.svc
+  - namespace: cloudpak
+    server: https://kubernetes.default.svc
   - namespace: istio-system
     server: https://kubernetes.default.svc
   - namespace: openldap
@@ -36,7 +38,7 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openshift-monitoring
     server: https://kubernetes.default.svc
-  - namespace: openshift-cluster-node-tuning-operator 
+  - namespace: openshift-cluster-node-tuning-operator
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
