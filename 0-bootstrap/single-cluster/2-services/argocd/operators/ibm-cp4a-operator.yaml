@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cp4a-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "230"
+  labels:
+    gitops.tier.group: cloudpak
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: cloudpak
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    path: operators/ibm-cp4a-operator/overlays/v21.2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
