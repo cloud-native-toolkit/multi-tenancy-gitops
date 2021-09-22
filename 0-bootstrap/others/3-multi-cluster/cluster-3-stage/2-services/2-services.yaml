@@ -12,6 +12,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: ibm-common-services
     server: https://kubernetes.default.svc
+  - namespace: cloudpak
+    server: https://kubernetes.default.svc
   - namespace: redhat-operators
     server: https://kubernetes.default.svc
   - namespace: openshift-operators
