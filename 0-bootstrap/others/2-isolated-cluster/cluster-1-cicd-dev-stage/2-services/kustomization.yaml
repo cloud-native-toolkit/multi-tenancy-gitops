@@ -13,6 +13,7 @@ resources:
 #- argocd/instances/ibm-process-mining-instance.yaml
 #- argocd/operators/ibm-platform-navigator.yaml
 #- argocd/instances/ibm-platform-navigator-instance.yaml
+#- argocd/operators/ibm-cp4a-operator.yaml
 
 # IBM Foundations / Common Services
 #- argocd/operators/ibm-foundations.yaml

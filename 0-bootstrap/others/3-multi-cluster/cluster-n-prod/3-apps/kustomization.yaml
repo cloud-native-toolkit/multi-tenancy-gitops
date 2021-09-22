@@ -21,6 +21,8 @@ resources:
 
 #- argocd/soapserver/soapserver.yaml
 
+#- argocd/cp4a/cp4a.yaml
+
 patches:
 - target:
     group: argoproj.io
