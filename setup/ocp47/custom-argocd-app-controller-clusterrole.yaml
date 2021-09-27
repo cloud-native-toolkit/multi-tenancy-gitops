@@ -261,3 +261,10 @@ rules:
       - icp4a.ibm.com
     resources:
       - icp4aclusters
+  - apiGroups:              # API Connect
+      - apiconnect.ibm.com  # API Connect specific API groups
+      - datapower.ibm.com   # DataPower specific API groups
+    resources:
+      - '*'
+    verbs:
+      - '*' 
