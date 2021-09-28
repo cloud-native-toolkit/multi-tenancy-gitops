@@ -8,16 +8,20 @@ The reference architecture for this GitOps workflow can be found [here](https://
 
 
 ## Table of contents
-- [Pre-requisites](#pre-requisites)
+- [Cloud Native Toolkit - GitOps Production Deployment Guide](#cloud-native-toolkit---gitops-production-deployment-guide)
+  - [Table of contents](#table-of-contents)
+  - [Pre-requisites](#pre-requisites)
     - [Red Hat OpenShift cluster](#red-hat-openshift-cluster)
     - [CLI tools](#cli-tools)
-    - [IBM Entitlement Key](#ibm-entitlement-key)    
-- [Setup git repositories](#setup-git-repositories)
-- [Install and configure OpenShift GitOps](#install-and-configure-openshift-gitops)
-- [Bootstrap the OpenShift cluster](#bootstrap-the-openshift-cluster)
-- [Select resources to deploy](#select-resources-to-deploy)
-- [Troubleshooting](doc/troubleshooting.md)
-- [FAQ](doc/faq.md)
+    - [IBM Entitlement Key](#ibm-entitlement-key)
+  - [Setup git repositories](#setup-git-repositories)
+    - [Tasks:](#tasks)
+  - [Install and configure OpenShift GitOps](#install-and-configure-openshift-gitops)
+    - [Tasks:](#tasks-1)
+  - [Bootstrap the OpenShift cluster](#bootstrap-the-openshift-cluster)
+    - [Tasks:](#tasks-2)
+  - [Select resources to deploy](#select-resources-to-deploy)
+    - [Tasks:](#tasks-3)
 
 
 ## Pre-requisites
@@ -125,6 +129,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
 - Existing recipes are available and additional ones will be made available in the **doc** directory. 
     - [ACE recipe](doc/ace-recipe.md)
     - [MQ recipe](doc/mq-recipe.md)
+    - [APIC recipe](doc/apic-recipe.md)
     - [Process Mining recipe](doc/process-mining-recipe.md)
 
 ### Tasks: 
