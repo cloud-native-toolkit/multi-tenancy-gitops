@@ -32,3 +32,4 @@ spec:
                 license: L-RJON-BZEP9N
               version: 10.0.3.0-ifix1
               profile: n3xc14.m48
+              storageClassName: ibmc-block-gold
