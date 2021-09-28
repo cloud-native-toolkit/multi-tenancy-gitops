@@ -2,7 +2,7 @@ resources:
 # IBM Software
 #- argocd/operators/ibm-ace-operator.yaml
 - argocd/operators/ibm-apic-operator.yaml
-#- argocd/operators/ibm-apic-instance.yaml
+- argocd/instances/ibm-apic-instance.yaml
 #- argocd/operators/ibm-aspera-operator.yaml
 #- argocd/operators/ibm-assetrepository-operator.yaml
 #- argocd/operators/ibm-cp4i-operators.yaml
