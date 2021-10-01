@@ -1,5 +1,7 @@
 resources:
 # IBM Software
+
+## Cloud Pak for Integration
 #- argocd/operators/ibm-ace-operator.yaml
 #- argocd/operators/ibm-apic-operator.yaml
 #- argocd/instances/ibm-apic-instance.yaml
@@ -10,20 +12,28 @@ resources:
 #- argocd/operators/ibm-eventstreams-operator.yaml
 #- argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
-#- argocd/operators/ibm-process-mining-operator.yaml
-#- argocd/instances/ibm-process-mining-instance.yaml
 #- argocd/operators/ibm-platform-navigator.yaml
 #- argocd/instances/ibm-platform-navigator-instance.yaml
-#- argocd/operators/ibm-cp4a-operator.yaml
 
-# IBM Foundations / Common Services
+## Cloud Pak for Business Automation
+#- argocd/operators/ibm-cp4a-operator.yaml
+#- argocd/operators/ibm-process-mining-operator.yaml
+#- argocd/instances/ibm-process-mining-instance.yaml
+
+## Cloud Pak for Data
+#- argocd/operators/ibm-cpd-platform-operator.yaml
+#- argocd/operators/ibm-cpd-scheduling-operator.yaml
+#- argocd/instances/ibm-cpd-instance.yaml
+
+## IBM Foundational Services / Common Services
 #- argocd/operators/ibm-foundations.yaml
 #- argocd/instances/ibm-foundational-services-instance.yaml
 #- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
 
-# IBM Catalogs
+## IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
+
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
@@ -45,7 +55,6 @@ resources:
 #- argocd/instances/pact-broker.yaml
 # In OCP 4.7+ we need to install openshift-pipelines and possibly privileged scc to the pipeline serviceaccount
 #- argocd/operators/openshift-pipelines.yaml
-
 
 # Service Mesh
 #- argocd/operators/elasticsearch.yaml

@@ -267,4 +267,16 @@ rules:
     resources:
       - '*'
     verbs:
-      - '*' 
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
+      - operator.ibm.com
+    resources:
+      - operandrequests
+  - verbs:
+      - '*'
+    apiGroups:
+      - cpd.ibm.com
+    resources:
+      - ibmcpds
