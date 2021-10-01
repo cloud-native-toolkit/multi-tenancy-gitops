@@ -132,6 +132,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [MQ recipe](doc/mq-recipe.md)
     - [API Connect recipe](doc/apic-recipe.md)
     - [Process Mining recipe](doc/process-mining-recipe.md)
+    - [Cloud Pak for Data](doc/cp4d-platform-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
 
 ### Tasks:
@@ -153,7 +154,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     oc get commonservice common-service -n ibm-common-services -o=jsonpath='{.status.phase}'
     # Expected output = Succeeded
 
-    # Verify the Platform Navigator instance has been deployed successfully
+    # [Optional] If selected, verify the Platform Navigator instance has been deployed successfully
     oc get platformnavigator -n tools -o=jsonpath='{ .items[*].status.conditions[].status }'
     # Expected output = True
 
