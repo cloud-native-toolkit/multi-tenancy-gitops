@@ -148,17 +148,4 @@ The reference architecture for this GitOps workflow can be found [here](https://
     git commit -m "initial bootstrap setup"
     git push origin
     ```
-5. If an IBM Cloud Pak is installed, retrieve the Platform Navigator console URL and admin password.
-    ```bash
-    # Verify the Common Services instance has been deployed successfully
-    oc get commonservice common-service -n ibm-common-services -o=jsonpath='{.status.phase}'
-    # Expected output = Succeeded
-
-    # [Optional] If selected, verify the Platform Navigator instance has been deployed successfully
-    oc get platformnavigator -n tools -o=jsonpath='{ .items[*].status.conditions[].status }'
-    # Expected output = True
-
-    #
-    oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
-    oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
-    ```
+5. Validate the recipe was deployed correctly following the `Validation` section in the recipe.
