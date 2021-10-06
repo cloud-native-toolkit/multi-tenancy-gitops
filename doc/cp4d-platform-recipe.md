@@ -18,3 +18,21 @@
     - argocd/operators/ibm-catalogs.yaml
     - argocd/instances/sealed-secrets.yaml
     ```
+
+### Validation
+1. Get the status of the control plane (lite-cr)
+    ```
+    oc get ZenService lite-cr -n tools -o jsonpath="{.status.zenStatus}{'\n'}"
+    ```
+
+    Cloud Pak for Data control plane is ready when the command returns `Completed`. If the command returns another status, wait for some more time and rerun the command.
+
+1. Get the URL of the Cloud Pak for Data web client and open it in a browser.
+    ```
+    echo https://`oc get ZenService lite-cr -n tools -o jsonpath="{.status.url}{'\n'}"`
+    ```
+
+1. The credentials for logging into the Cloud Pak for Data web client are `admin/<password>` where password is stored in a secret.
+    ```
+    oc extract secret/admin-user-details -n tools --keys=initial_admin_password --to=-
+    ```
