@@ -280,3 +280,15 @@ rules:
       - cpd.ibm.com
     resources:
       - ibmcpds
+  - verbs:
+      - '*'
+    apiGroups:
+      - ocp.spp.ibm.com
+    resources:
+      - IBMSPP
+  - verbs:
+      - '*'
+    apiGroups:
+      - konveyor.openshift.io
+    resources:
+      - Velero
