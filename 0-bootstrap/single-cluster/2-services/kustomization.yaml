@@ -67,8 +67,8 @@ resources:
 #- argocd/instances/instana-agent.yaml
 
 # Spectrum Protect Plus
-#- argocd/operators/spp-catalogh.yaml
-#- argocd/operators/spp-operator.yaml
+- argocd/operators/spp-catalog.yaml
+- argocd/operators/spp-operator.yaml
 #- argocd/instances/spp-instance.yaml
 #- argocd/operators/oadp-operator.yaml
 #- argocd/instances/oadp-instance.yaml
