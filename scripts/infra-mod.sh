@@ -72,7 +72,7 @@ else
 fi
 
 infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
-platform=$(echo "${installconfig}" | grep -A1 "platform:" | grep -v "platform:" | head -1 | cut -d":" -f1 | xargs)
+platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
 shopt -s extglob
 if [[ $platform == @(aws|azure|vsphere) ]]; then
     echo "Platform ${platform} is valid"
