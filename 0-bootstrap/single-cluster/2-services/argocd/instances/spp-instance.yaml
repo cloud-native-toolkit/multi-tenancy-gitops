@@ -1,0 +1,143 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: spp-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "220"
+  labels:
+    gitops.tier.group: spp
+    gitops.tier.layer: services
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: spp
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/spp-instance
+    helm:
+      values: |
+        spp-instance:
+          spp:
+            name: ibmspp
+            spec:
+              available_versions:
+              - aws_hypervisor: sha256:c74bca7db1259a110327d4fb95c29fbea8ab7ec380b0752b636eaf9594f653a7
+                aws_hypervisor-tag: 10.1.8.306
+                aws_storage: sha256:9e862d55a710bcd3bf512f1e2becb8d50e7dcc356f490703e5e8cd6c51d672af
+                aws_storage-tag: 10.1.8.306
+                build_epoch: "1631288342370"
+                build_time: September 10 03:39:02 PM 2021
+                kc: sha256:6ccf7006bea93f918ff618fbab37cc3cee9e7ed3f6f25cc2d506052f6c04097a
+                kc-tag: 10.1.8.368
+                manager: sha256:51d9d2755110531681155ef52d62c087038ff21b06d42870fd5a576e62033e13
+                manager-tag: 10.1.8.22
+                nodejs: sha256:281f19541a876daeb4727d60f7271f4655e1602f6ebfd95393f9cd133c90ae8e
+                nodejs-tag: 10.1.8.266
+                product_name: Spectrum Protect Plus
+                spp: sha256:c15f38d31438da5ea52aa12b7cdbefe6ed0da053a1473b9686e2cd68aacd6b8d
+                spp-tag: 10.1.8.595
+                ui: sha256:26b113eb6394ec768f5d1bfcc6e2f8d0c99a74861a271f24f7adaec0e3f09fb1
+                ui-tag: 10.1.8.639
+                vadp: sha256:8dadd4789c1bfc2cc9bb4641d0ed124ce7f720c903a905f85fd4663a3921be48
+                vadp-tag: 10.1.8.287
+                version: 10.1.8.4124
+              hostAliases: []
+              hostname: ibmspp.apps.vbudi-main-001.cp.fyre.ibm.com
+              image_pull_secret: ibmspp-image-secret
+              license:
+                accept: true
+              manager:
+                name: spp-manager
+                service: sppmanager
+              mongodbregistry: registry.access.redhat.com/rhscl
+              nginxregistry: registry.redhat.io/rhscl
+              plugins:
+                aws_hypervisor:
+                  name: spp-awsec2
+                  service: awsec2
+                aws_storage:
+                  name: spp-awsebs
+                  service: awsebs
+                logging:
+                  mount_path: /opt/platform/log
+                  size: 10Gi
+                  volume: log-pv-volume
+                mongo:
+                  image: registry.access.redhat.com/rhscl/mongodb-36-rhel7
+                  name: spp-plugins-mongo
+                  service: mongo
+                  version: latest
+                redis:
+                  image: redis-5-rhel7
+                  name: spp-plugins-redis
+                  service: redis
+                  version: latest
+              postgresqlregistry: registry.redhat.io/rhel8
+              prod: true
+              redisregistry: registry.redhat.io/rhscl
+              registry: cp.icr.io/cp/sppserver
+              security_context: true
+              service_account: ibm-spp
+              spp:
+                kc:
+                  image: spp-kc
+                  name: sppkc
+                  service: kc
+                mongo:
+                  image: mongodb-36-rhel7
+                  instances:
+                  - name: sppdbmongo
+                    service: mng
+                    size: 50Gi
+                  - name: sppdbmongo2
+                    service: mngcat
+                    size: 100Gi
+                  mount_path: /var/lib/mongodb/data
+                  version: latest
+                nodejs:
+                  image: spp-node
+                  name: sppnodejs
+                  service: nodejs
+                  size: 10Gi
+                postgres:
+                  image: postgresql-96
+                  name: sppdbpostgres
+                  service: pg
+                  size: 10Gi
+                  version: latest
+                proxy:
+                  config: spp-proxy-config
+                  image: nginx-116-rhel7
+                  name: spp-proxy
+                  service: sppproxy
+                  version: latest
+                ui:
+                  image: spp-uinginx
+                  name: sppui
+                  service: ui
+                vadp:
+                  image: spp-vadp
+                  name: sppvadp
+                  service: vadp
+                  size: 10Gi
+                virgo:
+                  image: spp
+                  limits:
+                    cpu: 4000m
+                    memory: 8Gi
+                  log:
+                    name: spp-log
+                    size: 10Gi
+                  lucene:
+                    name: virgo-lucene
+                    size: 150Gi
+                  name: sppvirgo
+                  service: spp
+              storage_class_name: ocs-storagecluster-cephfs
+              tls_secret: spp-tls
+              usesameregistryforredhat: false
+              version: 10.1.8.4124
