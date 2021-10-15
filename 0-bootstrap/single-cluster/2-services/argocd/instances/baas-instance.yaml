@@ -8,6 +8,11 @@ metadata:
     gitops.tier.group: spp
     gitops.tier.layer: services
 spec:
+  ignoreDifferences:
+  - kind: Serviceaccount
+    jsonPointers:
+    - /imagePullSecrets
+    - /secrets
   syncPolicy:
     automated:
       prune: true
@@ -52,3 +57,5 @@ spec:
           imageRegistryNamespace: sppc
           minioStorageClass: ocs-storagecluster-cephfs
           veleroNamespace: spp-velero
+          tm:
+            replicas: 3
