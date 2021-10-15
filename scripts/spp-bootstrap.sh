@@ -137,6 +137,7 @@ collect_info() {
 build_spp_instance() {
     pushd ${SCRIPTDIR}/../0-bootstrap/single-cluster/2-services/argocd/instances
     # Editing spp-instance.yaml
+    echo "Working on spp-instance.yaml"
     oc get packagemanifest -n openshift-marketplace spp-operator -o yaml | \
       yq '.status.channels[0].currentCSVDesc.annotations."alm-examples"' -r | \
       jq .[] | yq -y | \
@@ -147,7 +148,6 @@ build_spp_instance() {
       sed "s/storage_class_name: standard/storage_class_name: ${STORCLASS}/g" | \
       sed -n '/^spec:/,$p' | \
       sed 's/^/            /'> ibmspp.y1
-    cat spp-instance.yaml | sed -n '/^            spec:/q;p' | sed '/^$/d' > ibmspp.y0
     cat spp-instance.yaml | sed -n '/^            spec:/q;p' | sed '/^$/d' > ibmspp.y0
     echo "          ibmsppsecret:" > ibmspp.y2
     echo "            data:" >> ibmspp.y2
@@ -161,8 +161,17 @@ build_spp_instance() {
       sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
       grep -v "encryptedData:" | sed 's/^/          /g' >> ibmspp.y2
 
-    cat ibmspp.y0  ibmspp.y1 ibmspp.y2 > spp-instance.yaml
-    rm ibmspp.* tmp-secret.yaml
+    echo "          sppadmin:" > ibmspp.y3
+    echo "            data:" >> ibmspp.y3
+    oc create secret generic sppadmin --from-literal adminPassword=${ADMINPW} --from-literal adminUser=${ADMINUSER} --dry-run=client -n spp > tmp-sppadmin.yaml
+    kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-sppadmin.yaml | \
+      sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
+      grep -v "encryptedData:" | sed 's/^/          /g' >> ibmspp.y3
+      
+    cat ibmspp.y0  ibmspp.y1 ibmspp.y2 ibmspp.y3 > spp-instance.yaml
+    rm ibmspp.* tmp-*.yaml
+    echo "SPP instance configured"
+
     popd
 }
 
@@ -173,14 +182,13 @@ build_baas() {
     #rm ibm-spectrum-protect-plus-prod-${BAAS_HELM_VERSION}.tgz
     #rm -rf ibm-spectrum-protect-plus-prod
     #cp ibm-spectrum-protect-plus-prod/ibm_cloud_pak/pak_extensions/crds/baas.io_baasreqs_crd.yaml .
-        
+    echo "Working on baas-instance.yaml"
     cat baas-instance.yaml | sed -n '/^          baassecret:/q;p' | sed '/^$/d' > baas.00
 
     cat - > baas.01 << EOF
           baassecret:
             data:
 EOF
-
     oc create secret generic baas-secret --dry-run=client -o yaml --namespace baas \
         --from-literal='baasadmin='"${ADMINUSER}"'' \
         --from-literal='baaspassword='"${ADMINPW}"'' \
@@ -188,24 +196,29 @@ EOF
         --from-literal='datamoverpassword='"${ADMINPW}"'' \
         --from-literal='miniouser='"${ADMINUSER}"'' \
         --from-literal='miniopassword='"${ADMINPW}"'' > tmp-baas-secret.yaml
-    kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-baas-secret.yaml > baas-secret.yaml
-    cat baas-secret.yaml | sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | grep -v "encryptedData:" | sed 's/^/          /g' > baas.02
+    kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-baas-secret.yaml | \
+      sed -n '/^  encryptedData:/,$p' | \
+      sed -n '/^  template:/q;p' | \
+      grep -v "encryptedData:" | \
+      sed 's/^/          /g' >> baas.01
 
-    cat - > baas.03 << EOF
+    cat - > baas.02 << EOF
           baasregistrysecret:
             data:
 EOF
-
     oc create secret docker-registry baas-registry-secret \
         --docker-username=cp \
         --docker-server="cp.icr.io/cp" \
         --docker-password=${IBM_ENTITLEMENT_KEY} \
         --docker-email="spp@us.ibm.com" \
         -n baas --dry-run=client -o yaml > tmp-baas-registry-secret.yaml
-    kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-baas-registry-secret.yaml > baas-registry-secret.yaml
-    cat baas-registry-secret.yaml | sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | grep -v "encryptedData:" | sed 's/^/          /g' > baas.04
+    kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-baas-registry-secret.yaml | \
+      sed -n '/^  encryptedData:/,$p' | \
+      sed -n '/^  template:/q;p' | \
+      grep -v "encryptedData:" | \
+      sed 's/^/          /g' >> baas.02
 
-    cat - > baas.05 << EOF
+    cat - > baas.03 << EOF
         ibm-spectrum-protect-plus-prod:
 EOF
 
@@ -233,12 +246,14 @@ EOF
       replicaCount: 3
 EOF
 
-    cat baas-values.yaml | sed 's/^/      /g' > baas.06
+    cat baas-values.yaml | sed 's/^/      /g' >> baas.03
 
-    cat baas.00 baas.01 baas.02 baas.03 baas.04 baas.05 baas.06 > baas.all
-    rm tmp-baas-secret.yaml tmp-baas-registry-secret.yaml baas-secret.yaml baas-registry-secret.yaml
+    cat baas.00 baas.01 baas.02 baas.03 > baas.all
+    rm tmp-baas-secret.yaml tmp-baas-registry-secret.yaml 
     rm baas.0* baas-values.yaml baas-instance.yaml
     mv baas.all baas-instance.yaml
+    
+    echo "BAAS instance configured"
 }
 
 check_prereqs

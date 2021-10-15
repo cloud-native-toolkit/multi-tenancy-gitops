@@ -285,10 +285,23 @@ rules:
     apiGroups:
       - ocp.spp.ibm.com
     resources:
-      - IBMSPPs
+      - ibmspps
   - verbs:
       - '*'
     apiGroups:
       - konveyor.openshift.io
     resources:
-      - Veleros
+      - veleros
+  - verbs:
+      - '*'
+    apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+  - verbs:
+      - '*'
+    apiGroups:
+      - kafka.strimzi.io
+    resources:
+      - kafkas
+      - kafkausers

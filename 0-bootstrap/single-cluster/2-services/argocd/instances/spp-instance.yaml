@@ -141,6 +141,9 @@ spec:
                   aws_hypervisor: sha256:c74bca7db1259a110327d4fb95c29fbea8ab7ec380b0752b636eaf9594f653a7
                   manager-tag: 10.1.8.22
                   manager: sha256:51d9d2755110531681155ef52d62c087038ff21b06d42870fd5a576e62033e13
-          ibmspp-image-secret:
+          ibmsppsecret:
             data:
               .dockerconfigjson: AgAfoO3+zsk6HgoQxup1cSNw9z73+p1E7eztw7lBZB1bSnjTrd+jsEcqqo58xajCE4ElmUOSchRTcrBBxKaIHRsitvSjgVF+XyzVi8JD53B2EFd9dreyStKZsUJeetaFwmHAQpw6yn/1KCoNUgU4ePK0gdhOCfbnRsedeg3aqsL/m0nqcRfbgi9emGpqqWM9/kAjeths4eQlXdHUEN9S5Z4MyRwmHd4IAaokIhX6jQAJLka1LsZBUUfacb/TTiIXAU8l0Ps+pdsgP0dEGwIXlqCrb6Ok/mwXil4ePbIUsFxXs9qs7hbodRGFzqrFQ6NkTATkBeNI4sWIR1CW0RNS5MZCr0AA7GQ9y/kA2kaa87v+kS16BoWUrAV4pL3KL8vFZwkYt6iJcWsJrb+hOVEGxFJyzG8k6LKndtsv/V55/wUDOEfKgdOQ2+IaUiUzUdXBQSqcjkR6cWH1ZD6lyYEej4z+/ouAvgYpfewnyggaLRzwyaTcI7w6R9i4e9X17rv/Yl/HxFf7jPgCQHJljxvg8PE80TdkBIzwfClR0c4E8FM5VQO2TI3u6MyQowNqDqpDy+VP1G8M7CE6tr6+i1jEX1keQz3hHjYWS6YiKCK7e1IB2CZ7h53LtQ+0VDzM4qTrH7zjDdlYNuoHGHrEI0LiJ2ezpKIsw7/JWe6dZVhyD0XtFTq1Dde67+9PCe6Kq/QjsOy1rld/LyHt8c1zqjQBmMNO959v7s41NJS3OlL4Y193jRRw+sHMAEstfGBsy0YEsS+QWMKRgc4Zm54TfaD5h/GQSmQbBoTA/FQJjyyQe/aJHWmh+H30f53h/bmEBHPGKPMmwCPnjihAayHJIGAOJjr9oBQWcJwPnG0bB1iq4+5E54OzF8x/y/RojMHI38MD2jsadfhTChTcCHcFzq8bJCZXa69dZvYfFxx0kUerzwj0hGy+due197C2hKZTWEP+Bo5deuhYsEZfrbjr25bm98A9xFgeUeqR2tT+K68MjHugu9x+nFyAhSSc5umq7OvUj4drq20hXxjLr7a5/T26PA7jhtPRJkCibES3lXDuqEuM3yxQruQk7z9dY3ic66zIyrTcjDqV5herekdrC5EzofwcuMhxZeDVtI7JnNsg+BImljz7RWeIWhVCd8I0Kl9dil8cSpbpRd3Q5yxfT3j7b1bKqoPoS4YWo+DMUAyie9Wt5dkSefsCmyQ6cTMMlYmF0N3McSq5cLakhMoNWHvHmRMFZsut37eDKdkGZq2nsV16fuVwIZySJyByllbfX3HuhWKNjZAdLYqKQ5saEYXzEXPLT4J12lTKKD83BQOD77e3W5ZobDFqn8FZvX8S2mV1OZbgH1SDvej0CMexyIFqKR44O/9har/r+RgbNWlHsx8RzvR8Wfe98Alji7/aNQ==
+          sppadmin:
+            data:
+              adminPassword: REPLACE
