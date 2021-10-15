@@ -72,7 +72,7 @@ resources:
 #- argocd/instances/spp-instance.yaml
 #- argocd/operators/oadp-operator.yaml
 #- argocd/instances/oadp-instance.yaml
-#- argocd/instances/baas.yaml
+#- argocd/instances/baas-instance.yaml
 
 patches:
 - target:
