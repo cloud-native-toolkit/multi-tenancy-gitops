@@ -136,13 +136,14 @@ build_spp_instance() {
       sed "s/image_pull_secret: ibm-spp/image_pull_secret: ibmspp-image-secret/g" | \
       sed "s/accept: false/accept: true/g" | \
       sed "s/hostname: spp/hostname: ibmspp.apps.${CLUSTER_DOMAIN}/g" | \
+      sed "s/ registry: ibm/ registry: cp.icr.io/cp/sppserver/g" | \
       sed "s/storage_class_name: standard/storage_class_name: ${STORCLASS}/g" | \
       sed -n '/^spec:/,$p' | \
       sed 's/^/            /'> ibmspp.y1
     cat spp-instance.yaml | sed -n '/^            spec:/q;p' | sed '/^$/d' > ibmspp.y0
     cat spp-instance.yaml | sed -n '/^            spec:/q;p' | sed '/^$/d' > ibmspp.y0
-    echo "        ibmsppsecret:" > ibmspp.y2
-    echo "          data:" >> ibmspp.y2
+    echo "          ibmsppsecret:" > ibmspp.y2
+    echo "            data:" >> ibmspp.y2
     oc create secret docker-registry ibmspp-image-secret \
       --docker-username=cp \
       --docker-server="cp.icr.io/cp/sppserver" \
@@ -151,7 +152,7 @@ build_spp_instance() {
       -n spp --dry-run=client -o yaml > tmp-secret.yaml
     kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-secret.yaml | \
       sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
-      grep -v "encryptedData:" | sed 's/^/        /g' >> ibmspp.y2
+      grep -v "encryptedData:" | sed 's/^/          /g' >> ibmspp.y2
 
     cat ibmspp.y0  ibmspp.y1 ibmspp.y2 > spp-instance.yaml
     rm ibmspp.* tmp-secret.yaml
