@@ -163,7 +163,7 @@ build_spp_instance() {
 
     echo "          sppadmin:" > ibmspp.y3
     echo "            data:" >> ibmspp.y3
-    oc create secret generic sppadmin --from-literal adminPassword=${ADMINPW} --from-literal adminUser=${ADMINUSER} --dry-run=client -n spp > tmp-sppadmin.yaml
+    oc create secret generic sppadmin --from-literal adminPassword=${ADMINPW} --from-literal adminUser=${ADMINUSER} --dry-run=client -n spp -o yaml > tmp-sppadmin.yaml
     kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-sppadmin.yaml | \
       sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
       grep -v "encryptedData:" | sed 's/^/          /g' >> ibmspp.y3
@@ -252,7 +252,7 @@ EOF
     rm tmp-baas-secret.yaml tmp-baas-registry-secret.yaml 
     rm baas.0* baas-values.yaml baas-instance.yaml
     mv baas.all baas-instance.yaml
-    
+
     echo "BAAS instance configured"
 }
 
