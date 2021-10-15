@@ -17,6 +17,7 @@ spec:
     jsonPointers:
     - /metadata/finalizers
   - kind: SecurityContextConstraints
+    group: security.openshift.io
     jsonPointers:
     - /volumes
   syncPolicy:
