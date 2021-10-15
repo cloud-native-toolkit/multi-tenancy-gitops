@@ -19,12 +19,12 @@ check_prereqs() {
     ##############################################################################
     
     error=0
-    command -v helm >/dev/null 2>&1 || { echo >&2 "The helm V3 CLI is required but it's not installed. See https://helm.sh/docs/intro/install/ "; error=$(( $error + 1 )); }
-    command -v dig > /dev/null 2>&1 || { echo >&2 "The dig command is required but it's not found."; error=$(( $error + 1 )); }
-    command -v jq > /dev/null 2>&1 || { echo >&2 "The jq command is required but it's not installed. See https://stedolan.github.io/jq/"; error=$(( $error + 1 )); }
-    command -v yq > /dev/null 2>&1 || { echo >&2 "The yq command is required but it's not installed. See https://mikefarah.gitbook.io/yq/"; error=$(( $error + 1 )); }
-    command -v git > /dev/null 2>&1 || { echo >&2 "The git command is required but it's not installed. See https://git-scm.com/downloads"; error=$(( $error + 1 )); }
-    command -v gh >/dev/null 2>&1 || { echo >&2 "The Github CLI gh is required but it's not installed. Download https://github.com/cli/cli "; error=$(( $error + 1 )); }
+    command -v helm >/dev/null 2>&1 || { echo >&2 "ERROR: The helm V3 CLI is required but it's not installed. See https://helm.sh/docs/intro/install/ "; error=$(( $error + 1 )); }
+    command -v dig > /dev/null 2>&1 || { echo >&2 "ERROR: The dig command is required but it's not found."; error=$(( $error + 1 )); }
+    command -v jq > /dev/null 2>&1 || { echo >&2 "ERROR: The jq command is required but it's not installed. See https://stedolan.github.io/jq/"; error=$(( $error + 1 )); }
+    command -v yq > /dev/null 2>&1 || { echo >&2 "ERROR: The yq command is required but it's not installed. See https://mikefarah.gitbook.io/yq/"; error=$(( $error + 1 )); }
+    command -v git > /dev/null 2>&1 || { echo >&2 "ERROR: The git command is required but it's not installed. See https://git-scm.com/downloads"; error=$(( $error + 1 )); }
+    command -v gh >/dev/null 2>&1 || { echo >&2 "ERROR: The Github CLI gh is required but it's not installed. Download https://github.com/cli/cli "; error=$(( $error + 1 )); }
     
     if [[ ${error} -gt 0 ]]; then
       exit ${error}
@@ -36,20 +36,20 @@ check_prereqs() {
     OC_VERSION_CHECK=$?
     # set -x
     if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
-        echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
+        echo "WARN: Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
     fi
     
     git -C ${SCRIPTDIR} rev-parse 2>/dev/null
     if [ "$?" -eq 0 ]; then
         echo "GIT check OK"
     else
-        echo "the script must be run from under a Git repository"
+        echo >&2 "ERROR: The script must be run from under a Git repository"
         error=$(( $error + 1 ))
     fi
     
     gh_stat=$(gh auth status 2>&1 | grep "not logged" | wc -l)
     if [[ "${gh_stat}" -gt "0" ]]; then
-        echo "Not logged into GitHub gh cli"
+        echo >&2 "ERROR: Not logged into GitHub gh cli"
         error=$(( $error + 1 ))
     else
         echo "Github gh is active"
@@ -57,7 +57,7 @@ check_prereqs() {
     
     oc_ready=$(oc whoami 2>&1 | grep Error | wc -l)
     if [[ "${oc_ready}" -gt 0 ]]; then
-        echo "Not logged into OpenShift cli"
+        echo >&2 "ERROR: Not logged into an OpenShift environment cli"
         error=$(( $error + 1 ))
     else
         echo "OpenShift is on "
@@ -65,7 +65,7 @@ check_prereqs() {
     
     helmver=$(helm version --client 2>&1 | grep Version | grep v3 | wc -l)
     if [[ "${helmver}" -eq 0 ]]; then
-        echo "Helm must be v3"
+        echo >&2 "ERROR: Helm must be v3"
         error=$(( $error + 1 ))
     else
         echo "Helm is v3"
@@ -74,16 +74,23 @@ check_prereqs() {
     
     sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
     if [[ "${sscount}" -eq 0 ]]; then
-        echo "Sealed secret is not installed"
+        echo >&2 "WARN: Sealed secret is not installed"
         error=$(( $error + 1 ))
     else
         echo "Sealed secret pod is running"
     fi
 
     if [[ -z $IBM_ENTITLEMENT_KEY ]]; then
-        echo "Please supply IBM_ENTITLEMENT_KEY"
+        echo >&2 "ERROR: Please supply IBM_ENTITLEMENT_KEY"
         error=$(( $error + 1 )) 
     fi
+
+    sppoper=$(oc get packagemanifest -n openshift-marketplace spp-operator --no-headers 2>/dev/null | wc -l)
+    if [[ "$sppoper" -eq 0 ]]; then
+      echo >&2 "WARN: Must activate spp-catalog in services kustomization.yaml"
+      error=$(( $error + 1 ))
+    fi
+
     set -e
 
     if [[ ${error} -gt 0 ]]; then
@@ -222,6 +229,8 @@ EOF
     imageRegistryNamespace: sppc
     minioStorageClass: ${STORCLASS}
     veleroNamespace: spp-velero
+    tm:
+      replicaCount: 3
 EOF
 
     cat baas-values.yaml | sed 's/^/      /g' > baas.06
