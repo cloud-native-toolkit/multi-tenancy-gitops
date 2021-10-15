@@ -285,10 +285,10 @@ rules:
     apiGroups:
       - ocp.spp.ibm.com
     resources:
-      - IBMSPP
+      - IBMSPPs
   - verbs:
       - '*'
     apiGroups:
       - konveyor.openshift.io
     resources:
-      - Velero
+      - Veleros
