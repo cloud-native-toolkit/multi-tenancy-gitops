@@ -143,7 +143,7 @@ build_spp_instance() {
       sed "s/image_pull_secret: ibm-spp/image_pull_secret: ibmspp-image-secret/g" | \
       sed "s/accept: false/accept: true/g" | \
       sed "s/hostname: spp/hostname: ibmspp.apps.${CLUSTER_DOMAIN}/g" | \
-      sed "s/ registry: ibm/ registry: cp.icr.io/cp/sppserver/g" | \
+      sed "s# registry: ibm# registry: cp.icr.io/cp/sppserver#g" | \
       sed "s/storage_class_name: standard/storage_class_name: ${STORCLASS}/g" | \
       sed -n '/^spec:/,$p' | \
       sed 's/^/            /'> ibmspp.y1

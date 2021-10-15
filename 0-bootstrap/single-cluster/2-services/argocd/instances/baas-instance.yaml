@@ -13,6 +13,12 @@ spec:
     jsonPointers:
     - /imagePullSecrets
     - /secrets
+  - kind: PhysicalVolumeClaim
+    jsonPointers:
+    - /metadata/finalizers
+  - kind: SecurityContextConstraints
+    jsonPointers:
+    - /volumes
   syncPolicy:
     automated:
       prune: true
