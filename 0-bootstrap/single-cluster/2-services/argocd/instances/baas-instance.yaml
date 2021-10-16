@@ -9,7 +9,7 @@ metadata:
     gitops.tier.layer: services
 spec:
   ignoreDifferences:
-  - kind: Serviceaccount
+  - kind: ServiceAccount
     jsonPointers:
     - /imagePullSecrets
     - /secrets
