@@ -34,10 +34,13 @@ spec:
             - verbs:
                 - get
                 - list
+                - create
               apiGroups:
                 - ""
               resources:
                 - pod
+                - secret
+                - configmap
           init:
             enabled: true
             image: "quay.io/ibmgaragecloud/helm-kubectl"
@@ -46,10 +49,10 @@ spec:
             args:
               - "-c"
               - |
-                sppok=$(kubectl get pod -n spp --no-headers 2>/dev/null | grep sppvirgo | grep Running | grep '1/1' | wc -l)
+                sppok=$(kubectl get pod -n spp --no-headers | grep sppvirgo | grep Running | grep '1/1' | wc -l)
                 until [ $sppok -eq 1 ]; do
                   sleep 30
-                  sppok=$(kubectl get pod -n spp --no-headers 2>/dev/null | grep sppvirgo | grep Running | grep '1/1' | wc -l)
+                  sppok=$(kubectl get pod -n spp --no-headers | grep sppvirgo | grep Running | grep '1/1' | wc -l)
                   now=$(date)
                   echo "${now} - Waiting for sppvirgo - ${sppok}"
                 done
@@ -60,7 +63,7 @@ spec:
             args:
               - "-c"
               - |
-                ok=$(kubectl get configmap sppuser-done -n spp 2>/dev/null | grep sppuser-done | wc -l)
+                ok=$(kubectl get configmap sppuser-done -n spp | grep sppuser-done | wc -l)
                 if [[ "$ok" -eq 0 ]]; then
                   adminuser=$(kubectl get secret spp-admin -o jsonpath='{.data.adminUser}' | base64 -d)
                   adminpw=$(kubectl get secret spp-admin -o jsonpath='{.data.adminPassword}' | base64 -d)
@@ -68,7 +71,7 @@ spec:
                   SPPsession=$(curl "http://sppproxy/api/endeavour/session?changePassword=true" -H 'Accept: application/json' -H 'Content-Type: application/json' -u "admin:password"  --data-raw "${changeUser}")
                   now=$(date)
                   echo "${now} - SPP session: "${SPPsession}
-                  kubectl create configmap -n spp sppuser-done --from-literal creationID=${SPPsession}
+                  kubectl create configmap -n spp sppuser-done --from-literal creationID="${now}"
                 else
                   now=$(date)
                   echo "${now} - user has been set"  
