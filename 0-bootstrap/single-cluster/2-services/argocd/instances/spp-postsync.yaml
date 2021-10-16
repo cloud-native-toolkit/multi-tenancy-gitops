@@ -38,9 +38,9 @@ spec:
               apiGroups:
                 - ""
               resources:
-                - pod
-                - secret
-                - configmap
+                - pods
+                - secrets
+                - configmaps
           init:
             enabled: true
             image: "quay.io/ibmgaragecloud/helm-kubectl"
