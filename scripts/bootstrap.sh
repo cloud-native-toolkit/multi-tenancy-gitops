@@ -460,11 +460,11 @@ delete_default_argocd_instance
 
 create_custom_argocd_instance
 
-create_argocd_git_override_configmap
+#create_argocd_git_override_configmap
 
-apply_argocd_git_override_configmap
+#apply_argocd_git_override_configmap
 
-argocd_git_override
+#argocd_git_override
 
 # Set RWX storage
 get_rwx_storage_class
