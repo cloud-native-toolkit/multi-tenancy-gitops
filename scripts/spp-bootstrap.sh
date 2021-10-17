@@ -392,4 +392,4 @@ collect_info
 
 [[ ${DEPLOYSPP} == "true" ]] && wait_for_spectrum_ready
 
-[[ ${DEPLOYBAAS == "true" ]] && wait_for_baas_ready
+[[ ${DEPLOYBAAS} == "true" ]] && wait_for_baas_ready
