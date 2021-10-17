@@ -72,23 +72,9 @@ check_prereqs() {
         
     fi
     
-    sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
-    if [[ "${sscount}" -eq 0 ]]; then
-        echo >&2 "WARN: Sealed secret is not installed"
-        error=$(( $error + 1 ))
-    else
-        echo "Sealed secret pod is running"
-    fi
-
     if [[ -z $IBM_ENTITLEMENT_KEY ]]; then
         echo >&2 "ERROR: Please supply IBM_ENTITLEMENT_KEY"
         error=$(( $error + 1 )) 
-    fi
-
-    sppoper=$(oc get packagemanifest -n openshift-marketplace spp-operator --no-headers 2>/dev/null | wc -l)
-    if [[ "$sppoper" -eq 0 ]]; then
-      echo >&2 "WARN: Must activate spp-catalog in services kustomization.yaml"
-      error=$(( $error + 1 ))
     fi
 
     set -e
@@ -101,6 +87,55 @@ check_prereqs() {
     # End environment checking
     ##############################################################################
 }
+
+enable_prereq_applications () {
+
+    pushd "${SCRIPTDIR}/../0-bootstrap/single-cluster"
+    set +e
+    sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
+    if [[ "${sscount}" -eq 0 ]]; then
+        echo >&2 "WARN: Sealed secret is not installed"
+        sed -i'.bak' 's/#- argocd/namespace-sealed-secrets.yaml/- argocd/namespace-sealed-secrets.yaml/g' 1-infra/kustomization.yaml
+        sed -i'.bak' 's/#- argocd/namespace-tools.yaml/- argocd/namespace-tools.yaml/g' 1-infra/kustomization.yaml
+        sed -i'.bak' 's/#- argocd/instances/sealed-secrets.yaml/- argocd/instances/sealed-secrets.yaml/g' 2-services/kustomization.yaml
+    fi
+
+    sppoper=$(oc get packagemanifest -n openshift-marketplace spp-operator --no-headers 2>/dev/null | wc -l)
+    if [[ "$sppoper" -eq 0 ]]; then
+      echo >&2 "WARN: Must activate spp-catalog in services kustomization.yaml"
+      sed -i'.bak' 's/#- argocd/namespace-spp.yaml/- argocd/namespace-spp.yaml/g' 1-infra/kustomization.yaml
+      sed -i'.bak' 's/#- argocd/operators/spp-catalog.yaml/- argocd/operators/spp-catalog.yaml/g' 2-services/kustomization.yaml
+    fi
+
+    rm 1-infra/kustomization.yaml.bak
+    rm 2-services/kustomization.yaml.bak
+    # source ${SCRIPTDIR}/sync-manifests.sh
+    git add ..
+    git commit -m "Adding Spectrum Protect Plus prerequisites"
+    git push origin
+    set -e
+    popd
+
+    echo -n "Waiting till Sealed Secret is available"
+    sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
+    until [[ "$sscount" -gt 0 ]]; do
+      sleep 20
+      sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
+      echo -n "."
+    done
+    echo ". $(oc get pod -n sealed-secrets --no-headers)"
+
+    echo -n "Waiting for SPP catalog is available"
+    OUTPUT="INITIAL"
+    until [ $OUTPUT = "READY" ]; do
+      sleep 20
+      OUTPUT=$(oc get -n openshift-marketplace catalogsource ibm-spp-operator -o custom-columns=stat:status.connectionState.lastObservedState --no-headers)
+      echo -n "."
+    done
+    echo ". ${OUTPUT}"
+
+}
+
 
 collect_info() {
     ##############################################################################
@@ -172,6 +207,16 @@ build_spp_instance() {
     rm ibmspp.* tmp-*.yaml
     echo "SPP instance configured"
 
+    popd
+
+    pushd ${SCRIPTDIR}/..
+    sed -i'.bak' 's/#- argocd/operators/spp-operator.yaml/- argocd/operators/spp-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i'.bak' 's/#- argocd/instances/spp-instance.yaml/- argocd/instances/spp-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i'.bak' 's/#- argocd/instances/spp-postsync.yaml/- argocd/instances/spp-postsync.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    rm 0-bootstrap/single-cluster/2-services/kustomization.yaml.bak
+    git add .
+    git commit -m "Adding Spectrum Protect Plus instance"
+    git push origin
     popd
 }
 
@@ -253,13 +298,69 @@ EOF
     rm baas.0* baas-values.yaml baas-instance.yaml
     mv baas.all baas-instance.yaml
 
+    pushd ${SCRIPTDIR}/..
+    sed -i'.bak' 's/#- argocd/operators/oadp-operator.yaml/- argocd/operators/oadp-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i'.bak' 's/#- argocd/instances/oadp-instance.yaml/- argocd/instances/oadp-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i'.bak' 's/#- argocd/operators/baas-operator.yaml/- argocd/operators/baas-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i'.bak' 's/#- argocd/instances/baas-instance.yaml/- argocd/instances/baas-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    rm 0-bootstrap/single-cluster/2-services/kustomization.yaml.bak
+    git add .
+    git commit -m "Adding Backup as a Service instance"
+    git push origin
+    popd
+
     echo "BAAS instance configured"
 }
 
+wait_for_spectrum_ready () {
+
+    echo -n "Waiting for SPP server to run "
+    sppok=$(oc get pod -n spp --no-headers | grep sppvirgo | grep Running | wc -l)
+    until [ $sppok -eq 1 ]; do
+      sleep 30
+      sppok=$(oc get pod -n spp --no-headers | grep sppvirgo | grep Running | wc -l)
+      echo -n "."
+    done
+    echo "Running"
+
+    echo -n "Waiting for SPP server to be ready"
+    sppok=$(oc get pod -n spp --no-headers | grep sppvirgo | grep '1/1' | wc -l)
+      until [ $sppok -eq 1 ]; do
+      sleep 30
+      sppok=$(oc get pod -n spp --no-headers | grep sppvirgo | grep '1/1' | wc -l)
+      echo -n "."
+    done
+    echo "Ready"
+
+    echo " ----------------------------------------------- "
+    echo "You can now login to Spectrum Protect Plus UI at https://ibmspp.apps.${CLUSTER_DOMAIN}"
+    echo "Userid: ${ADMINUSER} and password: ${ADMINPW}"
+    echo " ----------------------------------------------- "
+
+}
+
+wait_for_baas_ready () {
+
+    echo -n "Waiting for BaaS Transaction Manager is ready"
+    sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep -v '3/3' | wc -l)
+    until [ $sppok -eq 0 ]; do
+      sleep 30
+      sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep -v '3/3' | wc -l)
+      echo -n "."
+    done
+    echo "BaaS is running"
+
+}
 check_prereqs
+
+enable_prereq_applications
 
 collect_info
 
 build_spp_instance
 
 build_baas
+
+wait_for_spectrum_ready
+
+wait_for_baas_ready
