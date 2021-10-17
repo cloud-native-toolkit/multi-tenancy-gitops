@@ -13,6 +13,26 @@ popd () {
     command popd "$@" > /dev/null
 }
 
+display_help () {
+    echo "This spp-bootstrap.sh deploy IBM Spectrum Protect Plus in an environment from Production Deployment Guide gitops"
+    echo "See https://github.com/cloud-native-toolkit/multi-tenancy-gitops for more information"
+    echo ""
+    echo "The following environment variables are required:"
+    echo "IBM_ENTITLEMENT_KEY - IBM Container registry entitlement key"
+    echo ""
+    echo "The following environment variables are optional:"
+    echo "DEPLOYSPP           - Whether to deploy SPP server - default to true"
+    echo "DEPLOYBAAS          - Whether to deploy baas - default to true"
+    echo "SPPUSER             - Spectrum Protect plus user name - default to \${ADMINUSER}"
+    echo "SPPPW               - Spectrum Protect plus password - default to \${ADMINPW}"
+    echo "ADMINUSER           - BaaS administrator user - default to sppadmin" 
+    echo "ADMINPW             - BaaS administrator password - default to passw0rd" 
+    echo "SPPFQDN             - Spectrum Protect Plus server host - default to ibmspp.apps.\${CLUSTER_DOMAIN}"
+    echo ""
+    echo "Required CLIs: bash, helm, dig, jq, yq, git, gh, oc" 
+    exit 1
+}
+
 check_prereqs() {
     ##############################################################################
     # Begin environment checking
@@ -25,6 +45,7 @@ check_prereqs() {
     command -v yq > /dev/null 2>&1 || { echo >&2 "ERROR: The yq command is required but it's not installed. See https://mikefarah.gitbook.io/yq/"; error=$(( $error + 1 )); }
     command -v git > /dev/null 2>&1 || { echo >&2 "ERROR: The git command is required but it's not installed. See https://git-scm.com/downloads"; error=$(( $error + 1 )); }
     command -v gh >/dev/null 2>&1 || { echo >&2 "ERROR: The Github CLI gh is required but it's not installed. Download https://github.com/cli/cli "; error=$(( $error + 1 )); }
+    command -v oc >/dev/null 2>&1 || { echo >&2 "ERROR: The oc is required but it's not installed. Download https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/ "; error=$(( $error + 1 )); }
     
     if [[ ${error} -gt 0 ]]; then
       exit ${error}
@@ -151,12 +172,16 @@ collect_info() {
     
     ADMINUSER=${ADMINUSER:-sppadmin}
     ADMINPW=${ADMINPW:-passw0rd}
+    SPPUSER=${SPPUSER:-${ADMINUSER}}
+    SPPPW=${SPPPW:-${ADMINPW}}
     CLUSTER_NAME=$(oc get cm cluster-config-v1 -n kube-system -o jsonpath='{.data.install-config}' | yq -r .metadata.name )
     SPPFQDN=${SPPFQDN:-"ibmspp.apps.${CLUSTER_DOMAIN}"}
     SPPIP=$(dig +short ${SPPFQDN})
     BAASID=${BAASID:-${CLUSTER_NAME}}
     BAAS_VERSION=${BAAS_VERSION:-'10.1.8.2'}
     BAAS_HELM_VERSION=${BAAS_HELM_VERSION:-'1.2.2'}
+    DEPLOYSPP=${DEPLOYSPP:-true}
+    DEPLOYBAAS=${DEPLOYBAAS:-true}
     
     
     IPS=( $(oc get endpoints -n default -o yaml kubernetes | yq '.subsets[0].addresses ' | jq .[].ip -r ) )
@@ -176,7 +201,7 @@ build_spp_instance() {
       jq .[] | yq -y | \
       sed "s/image_pull_secret: ibm-spp/image_pull_secret: ibmspp-image-secret/g" | \
       sed "s/accept: false/accept: true/g" | \
-      sed "s/hostname: spp/hostname: ibmspp.apps.${CLUSTER_DOMAIN}/g" | \
+      sed "s/hostname: spp/hostname: ${SPPFQDN}/g" | \
       sed "s# registry: ibm# registry: cp.icr.io/cp/sppserver#g" | \
       sed "s/storage_class_name: standard/storage_class_name: ${STORCLASS}/g" | \
       sed -n '/^spec:/,$p' | \
@@ -188,7 +213,7 @@ build_spp_instance() {
       --docker-username=cp \
       --docker-server="cp.icr.io/cp/sppserver" \
       --docker-password=${IBM_ENTITLEMENT_KEY} \
-      --docker-email="${ADMINUSER}@us.ibm.com" \
+      --docker-email="${SPPUSER}@us.ibm.com" \
       -n spp --dry-run=client -o yaml > tmp-secret.yaml
     kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-secret.yaml | \
       sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
@@ -196,7 +221,7 @@ build_spp_instance() {
 
     echo "          sppadmin:" > ibmspp.y3
     echo "            data:" >> ibmspp.y3
-    oc create secret generic sppadmin --from-literal adminPassword=${ADMINPW} --from-literal adminUser=${ADMINUSER} --dry-run=client -n spp -o yaml > tmp-sppadmin.yaml
+    oc create secret generic sppadmin --from-literal adminPassword=${SPPPW} --from-literal adminUser=${SPPUSER} --dry-run=client -n spp -o yaml > tmp-sppadmin.yaml
     kubeseal --scope cluster-wide --controller-name=sealed-secrets --controller-namespace=sealed-secrets -o yaml < tmp-sppadmin.yaml | \
       sed -n '/^  encryptedData:/,$p' | sed -n '/^  template:/q;p' | \
       grep -v "encryptedData:" | sed 's/^/          /g' >> ibmspp.y3
@@ -233,8 +258,8 @@ build_baas() {
             data:
 EOF
     oc create secret generic baas-secret --dry-run=client -o yaml --namespace baas \
-        --from-literal='baasadmin='"${ADMINUSER}"'' \
-        --from-literal='baaspassword='"${ADMINPW}"'' \
+        --from-literal='baasadmin='"${SPPUSER}"'' \
+        --from-literal='baaspassword='"${SPPPW}"'' \
         --from-literal='datamoveruser='"${ADMINUSER}"'' \
         --from-literal='datamoverpassword='"${ADMINPW}"'' \
         --from-literal='miniouser='"${ADMINUSER}"'' \
@@ -352,16 +377,19 @@ wait_for_baas_ready () {
     echo "BaaS is running"
     set -e
 }
+
+[ "$1" = "-h" -o "$1" = "--help"  -o "$1" = "-?" ] && display_help 
+
 check_prereqs
 
 enable_prereq_applications
 
 collect_info
 
-build_spp_instance
+[[ ${DEPLOYSPP} == "true" ]] && build_spp_instance
 
-build_baas
+[[ ${DEPLOYBAAS} == "true" ]] build_baas
 
-wait_for_spectrum_ready
+[[ ${DEPLOYSPP} == "true" ]] wait_for_spectrum_ready
 
-wait_for_baas_ready
+[[ ${DEPLOYBAAS == "true" ]] wait_for_baas_ready
