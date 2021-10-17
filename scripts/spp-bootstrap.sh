@@ -243,7 +243,7 @@ build_spp_instance() {
     popd
 }
 
-build_baas() {
+build_baas () {
     pushd ${SCRIPTDIR}/../0-bootstrap/single-cluster/2-services/argocd/instances
     #curl -kLo ibm-spectrum-protect-plus-prod-${BAAS_HELM_VERSION}.tgz https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm/ibm-spectrum-protect-plus-prod-${BAAS_HELM_VERSION}.tgz
     #tar -xzf ibm-spectrum-protect-plus-prod-${BAAS_HELM_VERSION}.tgz   
@@ -388,8 +388,8 @@ collect_info
 
 [[ ${DEPLOYSPP} == "true" ]] && build_spp_instance
 
-[[ ${DEPLOYBAAS} == "true" ]] build_baas
+[[ ${DEPLOYBAAS} == "true" ]] && build_baas
 
-[[ ${DEPLOYSPP} == "true" ]] wait_for_spectrum_ready
+[[ ${DEPLOYSPP} == "true" ]] && wait_for_spectrum_ready
 
-[[ ${DEPLOYBAAS == "true" ]] wait_for_baas_ready
+[[ ${DEPLOYBAAS == "true" ]] && wait_for_baas_ready
