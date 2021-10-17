@@ -12,10 +12,10 @@ spec:
   - kind: ServiceAccount
     jsonPointers:
     - /imagePullSecrets
-    - /secrets
-  - kind: PhysicalVolumeClaim
+  - group: ''
+    kind: PersistentVolumeClaim
     jsonPointers:
-    - /metadata/finalizers
+    - "/metadata/finalizers"
   - kind: SecurityContextConstraints
     group: security.openshift.io
     jsonPointers:
