@@ -5,6 +5,7 @@
     ```yaml
     - argocd/consolenotification.yaml
     - argocd/namespace-ibm-common-services.yaml
+    - argocd/namespace-sealed-secrets.yaml
     - argocd/namespace-tools.yaml
     ```
 ### Services - Kustomization.yaml
