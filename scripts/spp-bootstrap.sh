@@ -111,7 +111,6 @@ enable_prereq_applications () {
     git add ..
     git commit -m "Adding Spectrum Protect Plus prerequisites"
     git push origin
-    set -e
     popd
 
     echo -n "Waiting till Sealed Secret is available"
@@ -131,6 +130,7 @@ enable_prereq_applications () {
       echo -n "."
     done
     echo ". ${OUTPUT}"
+    set -e
 
 }
 
@@ -314,7 +314,7 @@ EOF
 }
 
 wait_for_spectrum_ready () {
-
+    set +e
     echo -n "Waiting for SPP server to run "
     sppok=$(oc get pod -n spp --no-headers | grep sppvirgo | grep Running | wc -l)
     until [ $sppok -eq 1 ]; do
@@ -332,7 +332,7 @@ wait_for_spectrum_ready () {
       echo -n "."
     done
     echo "Ready"
-
+    set -e
     echo " ----------------------------------------------- "
     echo "You can now login to Spectrum Protect Plus UI at https://ibmspp.apps.${CLUSTER_DOMAIN}"
     echo "Userid: ${ADMINUSER} and password: ${ADMINPW}"
@@ -341,7 +341,7 @@ wait_for_spectrum_ready () {
 }
 
 wait_for_baas_ready () {
-
+    set +e
     echo -n "Waiting for BaaS Transaction Manager is ready"
     sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep -v '3/3' | wc -l)
     until [ $sppok -eq 0 ]; do
@@ -350,7 +350,7 @@ wait_for_baas_ready () {
       echo -n "."
     done
     echo "BaaS is running"
-
+    set -e
 }
 check_prereqs
 
