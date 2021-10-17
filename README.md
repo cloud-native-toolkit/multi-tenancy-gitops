@@ -133,6 +133,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [API Connect recipe](doc/apic-recipe.md)
     - [Process Mining recipe](doc/process-mining-recipe.md)
     - [Cloud Pak for Data](doc/cp4d-platform-recipe.md)
+    - [Cloud Pak for Security](doc/cp4s-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
 
 ### Tasks:
