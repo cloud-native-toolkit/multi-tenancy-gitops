@@ -94,17 +94,15 @@ enable_prereq_applications () {
     set +e
     sscount=$(oc get pod -n sealed-secrets | grep sealed-secret | wc -l)
     if [[ "${sscount}" -eq 0 ]]; then
-        echo >&2 "WARN: Sealed secret is not installed"
-        sed -i'.bak' 's/#- argocd/namespace-sealed-secrets.yaml/- argocd/namespace-sealed-secrets.yaml/g' 1-infra/kustomization.yaml
-        sed -i'.bak' 's/#- argocd/namespace-tools.yaml/- argocd/namespace-tools.yaml/g' 1-infra/kustomization.yaml
-        sed -i'.bak' 's/#- argocd/instances/sealed-secrets.yaml/- argocd/instances/sealed-secrets.yaml/g' 2-services/kustomization.yaml
+      sed -i.bak '/namespace-sealed-secrets.yaml/s/^#//g' 1-infra/kustomization.yaml
+      sed -i.bak '/namespace-tools.yaml/s/^#//g' 1-infra/kustomization.yaml
+      sed -i.bak '/sealed-secrets.yaml/s/^#//g' 2-services/kustomization.yaml
     fi
 
     sppoper=$(oc get packagemanifest -n openshift-marketplace spp-operator --no-headers 2>/dev/null | wc -l)
     if [[ "$sppoper" -eq 0 ]]; then
-      echo >&2 "WARN: Must activate spp-catalog in services kustomization.yaml"
-      sed -i'.bak' 's/#- argocd/namespace-spp.yaml/- argocd/namespace-spp.yaml/g' 1-infra/kustomization.yaml
-      sed -i'.bak' 's/#- argocd/operators/spp-catalog.yaml/- argocd/operators/spp-catalog.yaml/g' 2-services/kustomization.yaml
+      sed -i.bak '/namespace-spp.yaml/s/^#//g' 1-infra/kustomization.yaml
+      sed -i.bak '/spp-catalog.yaml/s/^#//g' 2-services/kustomization.yaml
     fi
 
     rm 1-infra/kustomization.yaml.bak
@@ -210,9 +208,9 @@ build_spp_instance() {
     popd
 
     pushd ${SCRIPTDIR}/..
-    sed -i'.bak' 's/#- argocd/operators/spp-operator.yaml/- argocd/operators/spp-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i'.bak' 's/#- argocd/instances/spp-instance.yaml/- argocd/instances/spp-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i'.bak' 's/#- argocd/instances/spp-postsync.yaml/- argocd/instances/spp-postsync.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/spp-operator.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/spp-instance.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/spp-postsync.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
     rm 0-bootstrap/single-cluster/2-services/kustomization.yaml.bak
     git add .
     git commit -m "Adding Spectrum Protect Plus instance"
@@ -299,11 +297,14 @@ EOF
     mv baas.all baas-instance.yaml
 
     pushd ${SCRIPTDIR}/..
-    sed -i'.bak' 's/#- argocd/operators/oadp-operator.yaml/- argocd/operators/oadp-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i'.bak' 's/#- argocd/instances/oadp-instance.yaml/- argocd/instances/oadp-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i'.bak' 's/#- argocd/operators/baas-operator.yaml/- argocd/operators/baas-operator.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i'.bak' 's/#- argocd/instances/baas-instance.yaml/- argocd/instances/baas-instance.yaml/g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/namespace-spp-velero.yaml/s/^#//g' 0-bootstrap/single-cluster/1-infra/kustomization.yaml
+    sed -i.bak '/namespace-baas.yaml/s/^#//g' 0-bootstrap/single-cluster/1-infra/kustomization.yaml
+    sed -i.bak '/oadp-operator.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/oadp-instance.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/baas-operator.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
+    sed -i.bak '/baas-instance.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
     rm 0-bootstrap/single-cluster/2-services/kustomization.yaml.bak
+    rm 0-bootstrap/single-cluster/1-infra/kustomization.yaml.bak
     git add .
     git commit -m "Adding Backup as a Service instance"
     git push origin
