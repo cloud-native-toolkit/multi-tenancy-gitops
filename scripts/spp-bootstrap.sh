@@ -143,14 +143,16 @@ enable_prereq_applications () {
     done
     echo ". $(oc get pod -n sealed-secrets --no-headers)"
 
-    echo -n "Waiting for SPP catalog is available"
-    OUTPUT="INITIAL"
-    until [ $OUTPUT = "READY" ]; do
-      sleep 20
-      OUTPUT=$(oc get -n openshift-marketplace catalogsource ibm-spp-operator -o custom-columns=stat:status.connectionState.lastObservedState --no-headers)
-      echo -n "."
-    done
-    echo ". ${OUTPUT}"
+    if [[ "${DEPLOYSPP}" == "true" ]]; then 
+      echo -n "Waiting for SPP catalog is available"
+      OUTPUT="INITIAL"
+      until [ $OUTPUT = "READY" ]; do
+        sleep 20
+        OUTPUT=$(oc get -n openshift-marketplace catalogsource ibm-spp-operator -o custom-columns=stat:status.connectionState.lastObservedState --no-headers)
+        echo -n "."
+      done
+      echo ". ${OUTPUT}"
+    fi
     set -e
 
 }
@@ -366,11 +368,19 @@ wait_for_spectrum_ready () {
 
 wait_for_baas_ready () {
     set +e
-    echo -n "Waiting for BaaS Transaction Manager is ready"
-    sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep -v '3/3' | wc -l)
-    until [ $sppok -eq 0 ]; do
+    echo -n "Waiting for BaaS Transaction Managers start"
+    sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | wc -l)
+    until [ $sppok -eq 3 ]; do
       sleep 30
-      sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep -v '3/3' | wc -l)
+      sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | wc -l)
+      echo -n "."
+    done
+    echo ""
+    echo -n "Waiting for BaaS Transaction Managers become ready"
+    sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep '3/3' | wc -l)
+    until [ $sppok -eq 3 ]; do
+      sleep 30
+      sppok=$(oc get pod -n baas --no-headers | grep "baas-transaction-manager" | grep '3/3' | wc -l)
       echo -n "."
     done
     echo "BaaS is running"

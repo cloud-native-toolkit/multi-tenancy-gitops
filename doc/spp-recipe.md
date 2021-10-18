@@ -49,19 +49,19 @@ Depending on whether you want to install Spectrum Protect Plus and/or Container 
 - Installing both SPP and BaaS:
 
     ``` bash
-    DEPLOYSPP=true DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd ./script/spp-bootstrap.sh
+    DEPLOYSPP=true DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd ./scripts/spp-bootstrap.sh
     ```
 
 - Installing only SPP
 
     ``` bash
-    DEPLOYSPP=true DEPLOYBAAS=false SPPUSER=sppadmin SPPPW=passw0rd ./script/spp-bootstrap.sh
+    DEPLOYSPP=true DEPLOYBAAS=false SPPUSER=sppadmin SPPPW=passw0rd ./scripts/spp-bootstrap.sh
     ```
 
 - Installing only BaaS
 
     ``` bash
-    DEPLOYSPP=false DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd SPPFQDN="ibmspp.apps.sppserver.domain.com" ./script/spp-bootstrap.sh
+    DEPLOYSPP=false DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd SPPFQDN="ibmspp.apps.sppserver.domain.com" ./scripts/spp-bootstrap.sh
     ```
 
 ### Validation
