@@ -235,7 +235,6 @@ build_spp_instance() {
     pushd ${SCRIPTDIR}/..
     sed -i.bak '/spp-operator.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
     sed -i.bak '/spp-instance.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
-    sed -i.bak '/spp-postsync.yaml/s/^#//g' 0-bootstrap/single-cluster/2-services/kustomization.yaml
     rm 0-bootstrap/single-cluster/2-services/kustomization.yaml.bak
     git add .
     git commit -m "Adding Spectrum Protect Plus instance"

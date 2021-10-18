@@ -32,6 +32,38 @@ This recipe is for deploing IBM Spectrum Protect Plus
 
 **Note**: The script in `${GITOPS_PROFILE}/scripts/spp-bootstrap.sh` can perform all these magic automatically
 
+Assuming you are running under `multi-tenancy-gitops` repo or `gitops-0-bootstrap` directory - you can prepare your environment such as the following:
+
+```bash
+export GIT_ORG=<org>
+export IBM_ENTITLEMENT_KEY=<entitlement>
+export GITHUB_TOKEN=<git-token>
+echo ${GITHUB_TOKEN} | gh auth login --with-token
+oc login . . .
+git clone https://github.com/${GIT_ORG}/multi-tenancy-gitops
+cd multi-tenancy-gitops
+```
+
+Depending on whether you want to install Spectrum Protect Plus and/or Container Backup Support feature, you can do either one of these:
+
+- Installing both SPP and BaaS:
+
+    ``` bash
+    DEPLOYSPP=true DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd ./script/spp-bootstrap.sh
+    ```
+
+- Installing only SPP
+
+    ``` bash
+    DEPLOYSPP=true DEPLOYBAAS=false SPPUSER=sppadmin SPPPW=passw0rd ./script/spp-bootstrap.sh
+    ```
+
+- Installing only BaaS
+
+    ``` bash
+    DEPLOYSPP=false DEPLOYBAAS=true SPPUSER=sppadmin SPPPW=passw0rd ADMINUSER=baasadmin ADMINPW=passw0rd SPPFQDN="ibmspp.apps.sppserver.domain.com" ./script/spp-bootstrap.sh
+    ```
+
 ### Validation
 1.  Login to the IBM Specrum Protect plus UI: 
     ```bash
