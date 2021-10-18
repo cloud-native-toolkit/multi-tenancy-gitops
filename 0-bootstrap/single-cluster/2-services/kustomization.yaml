@@ -70,7 +70,6 @@ resources:
 #- argocd/operators/spp-catalog.yaml
 #- argocd/operators/spp-operator.yaml
 #- argocd/instances/spp-instance.yaml
-#- argocd/instances/spp-postsync.yaml
 #- argocd/operators/oadp-operator.yaml
 #- argocd/instances/oadp-instance.yaml
 #- argocd/instances/baas-instance.yaml

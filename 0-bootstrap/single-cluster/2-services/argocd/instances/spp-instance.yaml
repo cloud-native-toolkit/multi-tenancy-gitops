@@ -20,6 +20,62 @@ spec:
     path: instances/spp-instance
     helm:
       values: |
+        argocd-hook-job:
+          name: spp-postsync
+          namespace: spp
+          hook:
+            enabled: true
+            hooktype: PostSync
+          hookdeletepolicy:
+            enabled: true
+            hookdeletepolicytype: HookSucceeded
+          serviceaccount: ibm-spp
+          roleaccess:
+            - verbs:
+                - get
+                - list
+                - create
+              apiGroups:
+                - ""
+              resources:
+                - pods
+                - secrets
+                - configmaps
+          init:
+            enabled: true
+            image: "quay.io/ibmgaragecloud/helm-kubectl"
+            tag: "3.2.3"
+            command: "bash"
+            args:
+              - "-c"
+              - |
+                sppok=$(kubectl get pod -n spp --no-headers | grep sppvirgo | grep Running | grep '1/1' | wc -l)
+                until [ $sppok -eq 1 ]; do
+                  sleep 30
+                  sppok=$(kubectl get pod -n spp --no-headers | grep sppvirgo | grep Running | grep '1/1' | wc -l)
+                  now=$(date)
+                  echo "${now} - Waiting for sppvirgo - ${sppok}"
+                done
+          container:
+            image: "quay.io/ibmgaragecloud/helm-kubectl"
+            tag: "3.2.3"
+            command: "bash"
+            args:
+              - "-c"
+              - |
+                ok=$(kubectl get configmap sppuser-done -n spp | grep sppuser-done | wc -l)
+                if [[ "$ok" -eq 0 ]]; then
+                  adminuser=$(kubectl get secret spp-admin -o jsonpath='{.data.adminUser}' | base64 -d)
+                  adminpw=$(kubectl get secret spp-admin -o jsonpath='{.data.adminPassword}' | base64 -d)
+                  changeUser="{\"newPassword\":\"${adminpw}\",\"oldUsername\":\"admin\",\"newUsername\":\"${adminuser}\"}"
+                  SPPsession=$(curl "http://sppproxy/api/endeavour/session?changePassword=true" -H 'Accept: application/json' -H 'Content-Type: application/json' -u "admin:password"  --data-raw "${changeUser}")
+                  now=$(date)
+                  echo "${now} - SPP session: "${SPPsession}
+                  kubectl create configmap -n spp sppuser-done --from-literal creationID="${now}"
+                else
+                  now=$(date)
+                  echo "${now} - user has been set"  
+                fi
         spp-instance:
           spp:
             name: ibmspp
