@@ -82,9 +82,6 @@ This recipe is for deploing IBM Spectrum Protect Plus - there are two components
 
 5. Commit and push your changes to Git
 
-
-**Note**: The script in `${GITOPS_PROFILE}/scripts/spp-bootstrap.sh` can perform all these magic automatically
-
 ### Validation
 1.  Run the following command to check the pods deployed, the last one will be the set of pods for `baas-transaction-manager`:
 
