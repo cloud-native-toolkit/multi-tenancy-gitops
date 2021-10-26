@@ -30,6 +30,9 @@ The reference architecture for this GitOps workflow can be found [here](https://
 - An OpenShift v4.7+ cluster is required.
 
 ### CLI tools
+- Install the [git CLI](https://github.com/git-guides/install-git).
+    - Configure your username for your Git commits - [link](https://docs.github.com/en/get-started/getting-started-with-git/setting-your-username-in-git).
+    - Configure your email for your Git commits - [link](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/setting-your-commit-email-address).
 - Install the OpenShift CLI oc (version 4.7+) .  The binary can be downloaded from the Help menu from the OpenShift Console.
     <details>
     <summary>Download oc cli</summary>
