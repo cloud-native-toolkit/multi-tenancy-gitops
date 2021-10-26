@@ -168,6 +168,7 @@ install_argocd () {
     pushd ${OUTPUT_DIR}
     oc apply -f gitops-0-bootstrap/setup/ocp47/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
+    sleep 5
     while ! oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
     popd
 }
@@ -261,6 +262,16 @@ argocd_git_override () {
   oc label ns openshift-gitops cntk=experiment --overwrite=true
   sleep 5
   oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null
+}
+
+set_git_source () {
+  echo setting git source instead of git override
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap
+  GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
+  git add .
+  git commit -m "Updating git source to ${GIT_ORG}"
+  git push origin
+  popd
 }
 
 deploy_bootstrap_argocd () {
@@ -460,11 +471,13 @@ delete_default_argocd_instance
 
 create_custom_argocd_instance
 
-create_argocd_git_override_configmap
+# Either you map the GIT source using set_git_source or using argocd_git_override - but not both
 
-apply_argocd_git_override_configmap
+#create_argocd_git_override_configmap
+#apply_argocd_git_override_configmap
+#argocd_git_override
 
-argocd_git_override
+set_git_source
 
 # Set RWX storage
 get_rwx_storage_class
