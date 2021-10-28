@@ -51,8 +51,8 @@ GITOPS_PROFILE=${GITOPS_PROFILE:-0-bootstrap/single-cluster}
 
 GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_PROTOCOL=${GIT_PROTOCOL:-https}
-GIT_TYPE=${GIT_TYPE:-github.com}
-GIT_BASEURL=${GIT_BASEURL:-${GIT_PROTOCOL}://${GIT_TYPE}}
+GIT_HOST=${GIT_HOST:-github.com}
+GIT_BASEURL=${GIT_BASEURL:-${GIT_PROTOCOL}://${GIT_HOST}}
 GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
 GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
@@ -276,7 +276,7 @@ set_git_source () {
 
   GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
   if [[ ${GIT_TOKEN} ]]; then
-    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_TYPE}/${GIT_ORG}/${GIT_GITOPS}
+    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
