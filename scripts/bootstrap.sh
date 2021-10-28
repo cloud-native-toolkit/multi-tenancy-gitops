@@ -151,7 +151,7 @@ fork_repos () {
 }
 
 check_infra () {
-   if [[ "${ADD_INFRA}" == "yes" ]]; then 
+   if [[ "${ADD_INFRA}" == "yes" ]]; then
      pushd ${OUTPUT_DIR}/gitops-0-bootstrap
        source ./scripts/infra-mod.sh
      popd
@@ -168,8 +168,8 @@ install_argocd () {
     pushd ${OUTPUT_DIR}
     oc apply -f gitops-0-bootstrap/setup/ocp47/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
-    sleep 5
-    while ! oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
+    sleep 60
+    while ! oc wait pod --timeout=30s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
     popd
 }
 
