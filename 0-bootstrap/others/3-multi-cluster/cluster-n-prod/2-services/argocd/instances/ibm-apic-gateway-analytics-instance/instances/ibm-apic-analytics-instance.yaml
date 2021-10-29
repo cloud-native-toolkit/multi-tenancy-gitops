@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-apic-analytics-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    gitops.tier.group: cloudpak
+    gitops.tier.layer: services
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/ibm-apic-a7s-instance
+    helm:
+      values: |
+        ibm-apic-a7s-instance:
+          ibmapica7sinstance:
+            name: analytics
+            spec:
+              version: 10.0.3.0-ifix1
+              license:
+                accept: true
+                license: L-RJON-BZEP9N
+                use: production
+              profile: n3xc4.m16
+              microServiceSecurity: certManager
+              certManagerIssuer:
+                name: selfsigning-issuer
+                kind: Issuer
+              client:
+                clientAuthEnabled: true
+                # In cert-manager 3.14.0 (which ships with Common Services 3.12), they picked up the upstream cert-manager 1.5 to replace cert-manager controller 0.10.
+                # In order to keep it backward compatible, they have a convert in the cert-manager operator to convert 0.10 cert-manager CRs into 1.5 version to use cert-manager controller 1.5. 
+                # One of the side-effects of the new cert-manager controller version is that it does not add any organization to the subject of the certificates it creates. 
+                # As a result, the certificates that we create for APIC do not contain the organization cert-manager in their subject.
+                clientSubjectDN: 'CN=analytics-client-client'
+                # clientSubjectDN: 'CN=analytics-client-client,O=cert-manager'
+                enabled: true
+                endpoint:
+                  annotations:
+                    certmanager.k8s.io/issuer: ingress-issuer
+                  hosts:
+                    - name: ac.<your-openshift-domain>
+                      secretName: analytics-endpoint-secret
+              ingestion:
+                enabled: true
+                # In cert-manager 3.14.0 (which ships with Common Services 3.12), they picked up the upstream cert-manager 1.5 to replace cert-manager controller 0.10.
+                # In order to keep it backward compatible, they have a convert in the cert-manager operator to convert 0.10 cert-manager CRs into 1.5 version to use cert-manager controller 1.5. 
+                # One of the side-effects of the new cert-manager controller version is that it does not add any organization to the subject of the certificates it creates. 
+                # As a result, the certificates that we create for APIC do not contain the organization cert-manager in their subject.
+                clientSubjectDN: 'CN=analytics-ingestion-client'
+                # clientSubjectDN: 'CN=analytics-ingestion-client,O=cert-manager'
+                clientAuthEnabled: true
+                configReloadAutomatic: true
+                endpoint:
+                  annotations:
+                    certmanager.k8s.io/issuer: ingress-issuer
+                  hosts:
+                    - name: ai.<your-openshift-domain>
+                      secretName: analytics-ai-endpoint-secret
+              storage:
+                clientAuthEnabled: true
+                data:
+                  volumeClaimTemplate:
+                    storageClassName: <your-block-storage-class>
+                    volumeSize: 200Gi
+                enabled: true
+                master:
+                  volumeClaimTemplate:
+                    storageClassName: <your-block-storage-class>
+                    volumeSize: 10Gi
+                type: unique
+              cronjobs:
+                enabled: true

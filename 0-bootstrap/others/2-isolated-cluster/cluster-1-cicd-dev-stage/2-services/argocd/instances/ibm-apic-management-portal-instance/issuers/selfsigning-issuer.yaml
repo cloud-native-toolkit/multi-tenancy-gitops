@@ -1,0 +1,12 @@
+## This issuer is used for internal microservice security
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: selfsigning-issuer
+  labels: {
+    app.kubernetes.io/instance: "management",
+    app.kubernetes.io/managed-by: "ibm-apiconnect",
+    app.kubernetes.io/name: "selfsigning-issuer"
+  }
+spec:
+  selfSigned: {}

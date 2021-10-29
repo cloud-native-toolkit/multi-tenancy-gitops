@@ -1,0 +1,82 @@
+resources:
+
+## Secrets
+
+## IMPORTANT: In order to create secrets in our OpenShift cluster, this must be done through GitHub which is what GitOps dictates.
+## In order to create secrets, which contain confidential information, and deliver these to GitHub to get these created in our cluster by the GitOps tools,
+## we MUST SEAL the secrets. We are not sealing the secrets for simplicity for these enablement asset but sealing/encrypting the secrets you deliver to GitHub
+## is a MUST practice to enforce in production environments
+
+## IMPORTANT: This must be the same CA used for the management and portal components!
+# The CA for signing all IBM API Connect certificates with.
+- secrets/ingress-ca.yaml
+# The secret that holds the IBM API Connect Cloud Manager admin credentials.
+- secrets/management-admin-credentials.yaml
+
+## Issuers
+# This is the issuer to create a CA as well as to create the certificates for microservice security within each IBM API Connect subsystem.
+- issuers/selfsigning-issuer.yaml
+# This is the issuer to create all the certificates that IBM API Connect require that uses the ingress-ca CA.
+- issuers/ingress-issuer.yaml
+
+## Certificates
+# The CA that will be used to sign all the certificates that IBM API Connect requires that will be created by the ingres-issuer.
+# Ideally, this would be provided by the client.
+## IMPORTANT: This must be the same CA used for the management and portal components!
+# This would make the self-signing Issuer create a new CA for APIC. It is commented our as we are providing a custom CA in the secrets section above
+# - certificates/ingress-ca.yaml
+- certificates/portal-admin-client.yaml
+- certificates/gateway-client-client.yaml
+- certificates/analytics-client-client.yaml
+- certificates/analytics-ingestion-client.yaml
+
+## Instances
+- instances/ibm-apic-management-instance.yaml
+- instances/ibm-apic-portal-instance.yaml
+
+patches:
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=services"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+    - op: add
+      path: /spec/source/targetRevision
+      value: ${GIT_GITOPS_SERVICES_BRANCH}
+- target:
+    kind: Secret
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: tools
+- target:
+    group: certmanager.k8s.io
+    kind: Issuer
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: tools
+- target:
+    group: certmanager.k8s.io
+    kind: Certificate
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: tools
+# - target:
+#     group: cert-manager.io
+#     kind: Issuer
+#   patch: |-
+#     - op: add
+#       path: /metadata/namespace
+#       value: tools
+# - target:
+#     group: cert-manager.io
+#     kind: Certificate
+#   patch: |-
+#     - op: add
+#       path: /metadata/namespace
+#       value: tools

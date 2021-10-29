@@ -1,0 +1,24 @@
+# apiVersion: cert-manager.io/v1
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: portal-admin-client
+  labels: {
+    app.kubernetes.io/instance: "management",
+    app.kubernetes.io/managed-by: "ibm-apiconnect",
+    app.kubernetes.io/name: "portal-admin-client"
+  }
+spec:
+  commonName: portal-admin-client
+  secretName: portal-admin-client
+  issuerRef:
+    name: ingress-issuer
+  usages:
+  - "client auth"
+  - "signing"
+  - "key encipherment"
+  duration: 17520h # 2 years
+  renewBefore: 720h # 30 days
+  # subject:
+  #   organizations:
+  #     - cert-manager

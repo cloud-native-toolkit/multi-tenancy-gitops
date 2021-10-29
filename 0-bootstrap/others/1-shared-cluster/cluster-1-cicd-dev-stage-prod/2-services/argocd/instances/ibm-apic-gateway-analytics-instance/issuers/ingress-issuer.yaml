@@ -1,0 +1,19 @@
+## This is the Issuer that will create all the certificates that
+## IBM API Connect requires for establishing mTLS communications.
+## This issuer will use the provided CA to sign all the generated certificates.
+## If a client provides their own certificates already created, there
+## would be no need to create this issuer.
+
+# apiVersion: cert-manager.io/v1
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: ingress-issuer
+  labels: {
+    app.kubernetes.io/instance: "management",
+    app.kubernetes.io/managed-by: "ibm-apiconnect",
+    app.kubernetes.io/name: "ingress-issuer"
+  }
+spec:
+  ca:
+    secretName: ingress-ca

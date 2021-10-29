@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-apic-portal-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    gitops.tier.group: cloudpak
+    gitops.tier.layer: services
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/ibm-apic-ptl-instance
+    helm:
+      values: |
+        ibm-apic-ptl-instance:
+          ibmapicptlinstance:
+            name: portal
+            spec:
+              version: 10.0.3.0-ifix1
+              profile: n3xc4.m8
+              portalAdminEndpoint:
+                annotations:
+                  certmanager.k8s.io/issuer: ingress-issuer
+                hosts:
+                  - name: padmin.<your-openshift-domain>
+                    secretName: portal-admin-endpoint-secret
+              portalUIEndpoint:
+                annotations:
+                  certmanager.k8s.io/issuer: ingress-issuer
+                hosts:
+                  - name: portal.<your-openshift-domain>
+                    secretName: portal-web-endpoint-secret
+              databaseLogsVolumeClaimTemplate:
+                storageClassName: <your-block-storage-class>
+                volumeSize: 12Gi
+              databaseVolumeClaimTemplate:
+                storageClassName: <your-block-storage-class>
+                volumeSize: 300Gi
+              backupVolumeClaimTemplate:
+                storageClassName: <your-block-storage-class>
+                volumeSize: 300Gi
+              webVolumeClaimTemplate:
+                storageClassName: <your-block-storage-class>
+                volumeSize: 200Gi
+              adminVolumeClaimTemplate:
+                storageClassName: <your-block-storage-class>
+                volumeSize: 20Gi
+              # In cert-manager 3.14.0 (which ships with Common Services 3.12), they picked up the upstream cert-manager 1.5 to replace cert-manager controller 0.10.
+              # In order to keep it backward compatible, they have a convert in the cert-manager operator to convert 0.10 cert-manager CRs into 1.5 version to use cert-manager controller 1.5. 
+              # One of the side-effects of the new cert-manager controller version is that it does not add any organization to the subject of the certificates it creates. 
+              # As a result, the certificates that we create for APIC do not contain the organization cert-manager in their subject.
+              adminClientSubjectDN: 'CN=portal-admin-client'
+              # adminClientSubjectDN: 'CN=portal-admin-client,O=cert-manager'
+              microServiceSecurity: certManager
+              certManagerIssuer:
+                name: selfsigning-issuer
+                kind: Issuer  
+              license:
+                accept: true
+                license: L-RJON-BZEP9N
+                use: production
