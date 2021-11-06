@@ -1,0 +1,49 @@
+resources:
+- 1-infra/1-infra.yaml
+- 2-services/2-services.yaml
+- 3-apps/3-apps.yaml
+patches:
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=gitops"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    - op: add
+      path: /spec/source/targetRevision
+      value: ${GIT_GITOPS_BRANCH}
+- target:
+    group: argoproj.io
+    kind: AppProject
+    labelSelector: "gitops.tier.layer=infra"
+  patch: |-
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+- target:
+    group: argoproj.io
+    kind: AppProject
+    labelSelector: "gitops.tier.layer=services"
+  patch: |-
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+- target:
+    group: argoproj.io
+    kind: AppProject
+    labelSelector: "gitops.tier.layer=applications"
+  patch: |-
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
