@@ -21,18 +21,18 @@ resources:
 #- argocd/instances/ibm-process-mining-instance.yaml
 
 ## Cloud Pak for Data
-#- argocd/operators/ibm-cpd-platform-operator.yaml
-#- argocd/operators/ibm-cpd-scheduling-operator.yaml
-#- argocd/instances/ibm-cpd-instance.yaml
+- argocd/operators/ibm-cpd-platform-operator.yaml
+- argocd/operators/ibm-cpd-scheduling-operator.yaml
+- argocd/instances/ibm-cpd-instance.yaml
 
 ## IBM Foundational Services / Common Services
-#- argocd/operators/ibm-foundations.yaml
-#- argocd/instances/ibm-foundational-services-instance.yaml
+- argocd/operators/ibm-foundations.yaml
+- argocd/instances/ibm-foundational-services-instance.yaml
 #- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
 
 ## IBM Catalogs
-#- argocd/operators/ibm-catalogs.yaml
+- argocd/operators/ibm-catalogs.yaml
 
 
 # Required for IBM MQ
@@ -42,7 +42,7 @@ resources:
 #- argocd/instances/cert-manager-instance.yaml
 
 # Sealed Secrets
-#- argocd/instances/sealed-secrets.yaml
+- argocd/instances/sealed-secrets.yaml
 
 # CICD
 #- argocd/operators/grafana-operator.yaml
@@ -57,22 +57,14 @@ resources:
 #- argocd/operators/openshift-pipelines.yaml
 
 # Service Mesh
-#- argocd/operators/elasticsearch.yaml
-#- argocd/operators/jaeger.yaml
-#- argocd/operators/kiali.yaml
-#- argocd/operators/openshift-service-mesh.yaml
-#- argocd/instances/openshift-service-mesh-instance.yaml
+- argocd/operators/elasticsearch.yaml
+- argocd/operators/jaeger.yaml
+- argocd/operators/kiali.yaml
+- argocd/operators/openshift-service-mesh.yaml
+- argocd/instances/openshift-service-mesh-instance.yaml
 
 # Monitoring
 #- argocd/instances/instana-agent.yaml
-
-# Spectrum Protect Plus
-#- argocd/operators/spp-catalog.yaml
-#- argocd/operators/spp-operator.yaml
-#- argocd/instances/spp-instance.yaml
-#- argocd/operators/oadp-operator.yaml
-#- argocd/instances/oadp-instance.yaml
-#- argocd/instances/baas-instance.yaml
 
 patches:
 - target:
@@ -82,10 +74,10 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: https://github.com/cp4d2/multi-tenancy-gitops-services.git
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
     - op: add
       path: /spec/source/targetRevision
-      value: master
+      value: ${GIT_GITOPS_SERVICES_BRANCH}
 - target:
     group: argoproj.io
     kind: Application
@@ -93,7 +85,7 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: https://charts.cloudnativetoolkit.dev
+      value: ${HELM_REPOURL}
 - target:
     name: ibm-automation-foundation-operator
   patch: |-
