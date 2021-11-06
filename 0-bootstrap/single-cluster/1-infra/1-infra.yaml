@@ -40,12 +40,6 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openshift-cluster-node-tuning-operator
     server: https://kubernetes.default.svc
-  - namespace: spp
-    server: https://kubernetes.default.svc
-  - namespace: spp-velero
-    server: https://kubernetes.default.svc
-  - namespace: baas
-    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace

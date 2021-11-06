@@ -10,8 +10,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/single-cluster
-    repoURL: https://github.com/cp4d2/multi-tenancy-gitops.git
-    targetRevision: master
+    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    targetRevision: ${GIT_GITOPS_BRANCH}
   syncPolicy:
     automated:
       prune: true

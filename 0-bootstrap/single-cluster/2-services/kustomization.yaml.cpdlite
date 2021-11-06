@@ -57,11 +57,11 @@ resources:
 #- argocd/operators/openshift-pipelines.yaml
 
 # Service Mesh
-- argocd/operators/elasticsearch.yaml
-- argocd/operators/jaeger.yaml
-- argocd/operators/kiali.yaml
-- argocd/operators/openshift-service-mesh.yaml
-- argocd/instances/openshift-service-mesh-instance.yaml
+#- argocd/operators/elasticsearch.yaml
+#- argocd/operators/jaeger.yaml
+#- argocd/operators/kiali.yaml
+#- argocd/operators/openshift-service-mesh.yaml
+#- argocd/instances/openshift-service-mesh-instance.yaml
 
 # Monitoring
 #- argocd/instances/instana-agent.yaml
