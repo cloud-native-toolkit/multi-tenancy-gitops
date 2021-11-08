@@ -83,14 +83,14 @@ patches:
 - target:
     group: argoproj.io
     kind: Application
-    labelSelector: "gitops.tier.nested=true"
+    labelSelector: "gitops.tier.layer=applications"
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_GITOPS_BRANCH}
+      value: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 - target:
     group: argoproj.io
     kind: Application

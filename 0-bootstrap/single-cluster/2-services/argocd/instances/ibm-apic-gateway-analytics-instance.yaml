@@ -5,14 +5,15 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "240"
   labels:
-    gitops.tier.layer: gitops
-spec:
+    gitops.tier.group: cloudpak
+    gitops.tier.layer: applications
+  spec:
   destination:
     namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: services
   source: # repoURL  and targetRevision populated by kustomize patches in 2-services/kustomization.yaml
-    path: 0-bootstrap/single-cluster/2-services/argocd/instances/ibm-apic-gateway-analytics-instance
+    path: apic/config/argocd/single-cluster/instances/gateway-analytics-instance
   syncPolicy:
     automated:
       prune: true

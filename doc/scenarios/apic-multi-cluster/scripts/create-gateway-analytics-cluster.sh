@@ -21,11 +21,8 @@ PROFILE_PATH="${SCRIPTDIR}/../../../../0-bootstrap/others/apic-multi-cluster"
 pushd ${PROFILE_PATH} > /dev/null
 for directory in `ls -d */`
 do
-  # echo "This is the directory variable: ${directory}"
-  IFS='-' read -r -a words <<< "${directory}"
-  # echo "this is the name: ${words[0]}"
   # Check that the cluster name does not exist alraedy
-  if [[ "${words[0]}" == ${NAME} ]]; then
+  if [[ "${directory}" == "${NAME}-gateway-analytics-cluster/" ]]; then
     echo "[ERROR] - The name ${NAME} you chose for you new IBM API Connect Gateway and Analytics cluster already exists. Please, choose a different name."
     exit 1
   fi
@@ -34,9 +31,9 @@ done
 popd > /dev/null
 
 # Copy the cluster folder
-cp -R ${SCRIPTDIR}/../template-gateway-analytics-cluster ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster
+cp -R ${SCRIPTDIR}/../gateway-analytics-cluster ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster
 # Copy the bootstrap file
-cp ${SCRIPTDIR}/../template-bootstrap-gateway-analytics-cluster.yaml ${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml
+cp ${SCRIPTDIR}/../bootstrap-gateway-analytics-cluster.yaml ${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml
 
 # Point to the appropriate cluster folder in the bootstrap file
 sed -i'.bak' -e "s/template-gateway-analytics-cluster/${NAME}-gateway-analytics-cluster/" "${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml"
@@ -45,6 +42,11 @@ rm "${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml.bak"
 # Point to the appropriate cluster folder for any ArgoCD application
 find ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster -name '*.yaml' -print0 |
   while IFS= read -r -d '' File; do
+    if grep -q "template-gateway-analytics-instance" "$File"; then
+      # echo "$File"
+      sed -i'.bak' -e "s/template-gateway-analytics-instance/${NAME}-gateway-analytics-instance/" $File
+      rm "${File}.bak"
+    fi
     if grep -q "template-gateway-analytics-cluster" "$File"; then
       # echo "$File"
       sed -i'.bak' -e "s/template-gateway-analytics-cluster/${NAME}-gateway-analytics-cluster/" $File

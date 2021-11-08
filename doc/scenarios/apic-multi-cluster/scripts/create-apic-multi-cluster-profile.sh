@@ -28,9 +28,9 @@ cp ${SCRIPTDIR}/../bootstrap-management-portal-cluster.yaml ${PROFILE_PATH}/boot
 
 
 # Copy the gateway and analytics cluster folder
-cp -R ${SCRIPTDIR}/../template-gateway-analytics-cluster ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster
+cp -R ${SCRIPTDIR}/../gateway-analytics-cluster ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster
 # Copy the bootstrap file
-cp ${SCRIPTDIR}/../template-bootstrap-gateway-analytics-cluster.yaml ${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml
+cp ${SCRIPTDIR}/../bootstrap-gateway-analytics-cluster.yaml ${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml
 
 # Point to the appropriate cluster folder in the bootstrap file
 sed -i'.bak' -e "s/template-gateway-analytics-cluster/${NAME}-gateway-analytics-cluster/" "${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml"
@@ -39,6 +39,11 @@ rm "${PROFILE_PATH}/bootstrap-${NAME}-gateway-analytics-cluster.yaml.bak"
 # Point to the appropriate cluster folder for any ArgoCD application
 find ${PROFILE_PATH}/${NAME}-gateway-analytics-cluster -name '*.yaml' -print0 |
   while IFS= read -r -d '' File; do
+    if grep -q "template-gateway-analytics-instance" "$File"; then
+      # echo "$File"
+      sed -i'.bak' -e "s/template-gateway-analytics-instance/${NAME}-gateway-analytics-instance/" $File
+      rm "${File}.bak"
+    fi
     if grep -q "template-gateway-analytics-cluster" "$File"; then
       # echo "$File"
       sed -i'.bak' -e "s/template-gateway-analytics-cluster/${NAME}-gateway-analytics-cluster/" $File
