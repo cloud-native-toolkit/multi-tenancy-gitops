@@ -1,0 +1,116 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: artifactory
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: tools
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/artifactory
+    helm:
+      values: |
+        service-account:
+          name: artifactory-artifactory
+          create: false
+          sccs: ["anyuid", "privileged"]
+
+        config-service-account:
+          name: artifactory-config
+          roles:
+          - apiGroups:
+            - ''
+            resources:
+            - secrets
+            - configmaps
+            verbs:
+            - "*"
+
+        artifactory:
+          nameOverride: artifactory
+          artifactory:
+            image:
+              repository: docker.bintray.io/jfrog/artifactory-oss
+            adminAccess:
+              password: admin
+            persistence:
+              enabled: true
+              storageClassName: ''
+              size: 5Gi
+            uid: 0
+          ingress:
+            enabled: false
+          postgresql:
+            enabled: false
+          nginx:
+            enabled: false
+          serviceAccount:
+            create: true
+            name: artifactory-artifactory
+
+        ocp-route:
+          nameOverride: artifactory
+          targetPort: router
+          app: artifactory
+          serviceName: artifactory-artifactory
+          termination: edge
+          insecurePolicy: Redirect
+
+        argocd-hook-job:
+          name: artifactory-postsync
+          namespace: tools
+          hook:
+            enabled: true
+            hooktype: PostSync
+          hookdeletepolicy:
+            enabled: true
+            hookdeletepolicytype: HookSucceeded
+          serviceaccount: artifactory-argocd-hook-job
+          roleaccess:
+            - verbs:
+                - create
+                - get
+                - list
+                - patch
+                - update
+                - delete
+              apiGroups:
+                - "*"
+              resources:
+                - secrets
+                - configmaps
+                - routes
+          init:
+            enabled: true
+            image: "quay.io/ibmgaragecloud/helm-kubectl"
+            tag: "3.2.3"
+            command: "bash"
+            args:
+              - "-c"
+              - |
+                URL=https://$(kubectl get route artifactory -n tools -o jsonpath='{.spec.host}')
+                if [[ -z "$(kubectl get configmap artifactory-config)" ]]; then
+                  kubectl create configmap artifactory-config --from-literal=ARTIFACTORY_URL=${URL}
+                fi
+                if [[ -z "$(kubectl get secret artifactory-access)" ]]; then
+                  kubectl create secret generic artifactory-access --from-literal=ARTIFACTORY_USER=admin --from-literal=ARTIFACTORY_PASSWORD=password --from-literal=ARTIFACTORY_URL="http://artifactory-artifactory.tools:8082"
+                fi
+          container:
+            image: "quay.io/ibmgaragecloud/nodejs"
+            tag: "latest"
+            command: "bash"
+            args:
+              - "-c"
+              - "npm i -g @ibmgaragecloud/cloud-native-toolkit-web-cli@$latest; $(npm config get prefix)/bin/igc-web setup-artifactory --inCluster -n tools --debug"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

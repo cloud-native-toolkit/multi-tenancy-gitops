@@ -263,9 +263,27 @@ rules:
       - icp4aclusters
   - apiGroups:              # API Connect
       - apiconnect.ibm.com  # API Connect specific API groups
+      - management.apiconnect.ibm.com
+      - portal.apiconnect.ibm.com
+      - gateway.apiconnect.ibm.com
+      - analytics.apiconnect.ibm.com
       - datapower.ibm.com   # DataPower specific API groups
     resources:
       - '*'
+    verbs:
+      - '*'
+  - apiGroups:              # API Connect Multicloud use case
+      - certmanager.k8s.io
+      - apps.openshift.io
+      - build.openshift.io
+      - image.openshift.io
+      - cert-manager.io
+    resources:
+      - 'certificates'
+      - 'issuers'
+      - 'deploymentconfigs'
+      - 'imagestreams'
+      - 'buildconfigs'
     verbs:
       - '*'
   - verbs:

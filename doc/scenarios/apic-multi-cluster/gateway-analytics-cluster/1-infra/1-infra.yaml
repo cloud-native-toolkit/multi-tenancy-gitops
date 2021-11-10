@@ -1,0 +1,91 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infra
+  labels:
+    gitops.tier.layer: infra
+spec:
+  sourceRepos: [] # Populated by kustomize patches in 1-infra/kustomization.yaml
+  destinations:
+  - namespace: ci
+    server: https://kubernetes.default.svc
+  - namespace: dev
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  - namespace: prod
+    server: https://kubernetes.default.svc
+  - namespace: sealed-secrets
+    server: https://kubernetes.default.svc
+  - namespace: tools
+    server: https://kubernetes.default.svc
+  - namespace: ibm-common-services
+    server: https://kubernetes.default.svc
+  - namespace: cloudpak
+    server: https://kubernetes.default.svc
+  - namespace: istio-system
+    server: https://kubernetes.default.svc
+  - namespace: openldap
+    server: https://kubernetes.default.svc
+  - namespace: instana-agent
+    server: https://kubernetes.default.svc
+  - namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  - namespace: openshift-machine-api
+    server: https://kubernetes.default.svc
+  - namespace: openshift-storage
+    server: https://kubernetes.default.svc
+  - namespace: openshift-monitoring
+    server: https://kubernetes.default.svc
+  - namespace: openshift-cluster-node-tuning-operator
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ""
+    kind: Namespace
+  - group: ""
+    kind: RoleBinding
+  - group: "security.openshift.io"
+    kind: SecurityContextConstraints
+  - group: "console.openshift.io"
+    kind: ConsoleNotification
+  - group: "console.openshift.io"
+    kind: ConsoleLink
+  - group: "machine.openshift.io"
+    kind: MachineSet
+  - group: "machineconfiguration.openshift.io"
+    kind: MachineConfigPool
+  - group: "machineconfiguration.openshift.io"
+    kind: ContainerRuntimeConfig
+  - group: "tuned.openshift.io"
+    kind: Tuned
+  - group: "batch"
+    kind: Job
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to my-project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - argocd-admins
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  labels:
+    gitops.tier.layer: gitops
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: infra
+  source: # repoURL  and targetRevision populated by kustomize patches in 1-infra/kustomization.yaml
+    path: 0-bootstrap/others/apic-multi-cluster/template-gateway-analytics-cluster/1-infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

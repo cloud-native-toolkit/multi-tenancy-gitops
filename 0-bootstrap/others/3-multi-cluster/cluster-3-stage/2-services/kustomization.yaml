@@ -5,6 +5,8 @@ resources:
 #- argocd/operators/ibm-ace-operator.yaml
 #- argocd/operators/ibm-apic-operator.yaml
 #- argocd/instances/ibm-apic-instance.yaml
+#- argocd/instances/ibm-apic-management-portal-instance.yaml
+#- argocd/instances/ibm-apic-gateway-analytics-instance.yaml
 #- argocd/operators/ibm-aspera-operator.yaml
 #- argocd/operators/ibm-assetrepository-operator.yaml
 #- argocd/operators/ibm-cp4i-operators.yaml
@@ -78,6 +80,17 @@ patches:
     - op: add
       path: /spec/source/targetRevision
       value: ${GIT_GITOPS_SERVICES_BRANCH}
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=applications"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+    - op: add
+      path: /spec/source/targetRevision
+      value: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 - target:
     group: argoproj.io
     kind: Application
