@@ -22,7 +22,7 @@ spec:
   source:
     chart: ocp-subscription
     repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
-    targetRevision: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: 1.0.0
     helm:
       parameters:
       - name: metadata.name

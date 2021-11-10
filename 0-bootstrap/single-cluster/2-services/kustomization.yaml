@@ -105,9 +105,6 @@ patches:
     - op: add
       path: /spec/source/repoURL
       value: ${HELM_REPOURL}
-    - op: add
-      path: /spec/source/targetRevision
-      value: 1.0.0
 - target:
     name: ibm-automation-foundation-operator
   patch: |-

@@ -6,8 +6,8 @@ metadata:
     argocd.argoproj.io/sync-wave: "270"
   labels:
     gitops.tier.group: ibm-cloudpak
-    # gitops.tier.layer: services
-    # gitops.tier.source: helm
+    gitops.tier.layer: services
+    gitops.tier.source: helm
 spec:
   syncPolicy:
     automated:
