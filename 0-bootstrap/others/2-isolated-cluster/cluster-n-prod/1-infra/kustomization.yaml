@@ -13,6 +13,9 @@ resources:
 #- argocd/namespace-tools.yaml
 #- argocd/namespace-instana-agent.yaml
 #- argocd/namespace-openshift-storage.yaml
+#- argocd/namespace-spp.yaml
+#- argocd/namespace-spp-velero.yaml
+#- argocd/namespace-baas.yaml
 #- argocd/storage.yaml
 #- argocd/infraconfig.yaml
 #- argocd/machinesets.yaml

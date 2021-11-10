@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oadp-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "210"
+  labels:
+    gitops.tier.group: spp
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: spp-velero
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/oadp-operator
+    helm:
+      values: |
+        oadp-operator:
+          subscriptions:
+            subscription:
+              channel: alpha
+              installPlanApproval: Automatic
+              name: oadp-operator
+              source: community-operators
+              sourceNamespace: openshift-marketplace
+              startingCSV: oadp-operator.v0.2.6
+            operatorgroup:
+              name: oadp-operatorgroup
+              namespace: spp-velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

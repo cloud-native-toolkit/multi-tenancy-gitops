@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oadp-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "220"
+  labels:
+    gitops.tier.group: spp
+    gitops.tier.layer: services
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: spp-velero
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/oadp-instance
+    helm:
+      values: |
+        oadp-instance:
+          oadp:
+            name: oadp-velero
+            spec:
+              default_velero_plugins:
+                - aws
+                - openshift
+              enable_restic: false
+              olm_managed: true
+              use_upstream_images: false
+              velero_resource_allocation:
+                limits:
+                  cpu: '1'
+                  memory: 512Mi
+                requests:
+                  cpu: 500m
+                  memory: 256Mi

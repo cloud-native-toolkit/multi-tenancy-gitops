@@ -1,0 +1,40 @@
+resources:
+#- argocd/ace/cicd.yaml
+#- argocd/ace/dev.yaml
+#- argocd/ace/stage.yaml
+#- argocd/ace/prod.yaml
+
+#- argocd/mq/cicd.yaml
+#- argocd/mq/dev.yaml
+#- argocd/mq/stage.yaml
+#- argocd/mq/prod.yaml
+
+#- argocd/apic/cicd.yaml
+#- argocd/apic/dev.yaml
+#- argocd/apic/stage.yaml
+#- argocd/apic/prod.yaml
+#- argocd/apic/single-cluster.yaml
+- argocd/apic/multi-cluster-app.yaml
+#- argocd/apic/multi-cluster-ops.yaml
+
+#- argocd/bookinfo/cicd.yaml
+#- argocd/bookinfo/dev.yaml
+#- argocd/bookinfo/stage.yaml
+#- argocd/bookinfo/prod.yaml
+
+#- argocd/soapserver/soapserver.yaml
+
+#- argocd/cp4a/cp4a.yaml
+
+patches:
+- target:
+    group: argoproj.io
+    kind: Application
+    labelSelector: "gitops.tier.layer=applications"
+  patch: |-
+    - op: add
+      path: /spec/source/repoURL
+      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+    - op: add
+      path: /spec/source/targetRevision
+      value: ${GIT_GITOPS_APPLICATIONS_BRANCH}
