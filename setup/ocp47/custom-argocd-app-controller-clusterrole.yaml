@@ -305,3 +305,15 @@ rules:
     resources:
       - kafkas
       - kafkausers
+  - verbs:
+      - '*'
+    apiGroups:
+      - isc.ibm.com
+    resources:
+      - cp4sthreatmanagements
+  - verbs:
+      - '*'
+    apiGroups:
+      - ws.cpd.ibm.com
+    resources:
+      - ws
