@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-apic-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "240"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/ibm-apic-operator
+    helm:
+      values: |
+        ibm-apic-operator:
+          subscriptions:
+            ibmapic:
+              name: ibm-apic
+              subscription:
+                channel: v2.3
+                installPlanApproval: Automatic
+                name: ibm-apiconnect
+                source: ibm-operator-catalog
+                sourceNamespace: openshift-marketplace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
