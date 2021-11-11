@@ -7,6 +7,7 @@ metadata:
   labels:
     gitops.tier.group: spp
     gitops.tier.layer: services
+    gitops.tier.source: git
 spec:
   syncPolicy:
     automated:
@@ -74,7 +75,7 @@ spec:
                   kubectl create configmap -n spp sppuser-done --from-literal creationID="${now}"
                 else
                   now=$(date)
-                  echo "${now} - user has been set"  
+                  echo "${now} - user has been set"
                 fi
         spp-instance:
           spp:
