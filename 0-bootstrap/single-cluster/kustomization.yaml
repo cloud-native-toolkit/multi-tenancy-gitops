@@ -46,6 +46,9 @@ patches:
     - op: add
       path: /spec/sourceRepos/-
       value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+    - op: add
+      path: /spec/sourceRepos/-
+      value: ${HELM_REPOURL}
 - target:
     group: argoproj.io
     kind: AppProject

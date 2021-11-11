@@ -16,6 +16,7 @@ resources:
 #- argocd/namespace-spp.yaml
 #- argocd/namespace-spp-velero.yaml
 #- argocd/namespace-baas.yaml
+#- argocd/serviceaccounts-tools.yaml
 #- argocd/storage.yaml
 #- argocd/infraconfig.yaml
 #- argocd/machinesets.yaml
