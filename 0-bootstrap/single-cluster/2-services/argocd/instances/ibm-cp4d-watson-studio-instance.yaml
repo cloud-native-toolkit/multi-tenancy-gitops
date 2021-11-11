@@ -19,7 +19,7 @@ spec:
   project: services
   source:
     chart: ibm-cp4d-watson-studio-instance
-    repoURL: https://hollisc.github.io/gitops-testing/
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
     targetRevision: 0.1.1
     helm:
       parameters:
