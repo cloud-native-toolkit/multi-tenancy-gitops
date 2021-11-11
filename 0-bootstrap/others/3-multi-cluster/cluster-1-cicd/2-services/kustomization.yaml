@@ -23,9 +23,15 @@ resources:
 #- argocd/instances/ibm-process-mining-instance.yaml
 
 ## Cloud Pak for Data
+#- argocd/operators/ibm-cp4d-watson-studio-operator.yaml
+#- argocd/instances/ibm-cp4d-watson-studio-instance.yaml
 #- argocd/operators/ibm-cpd-platform-operator.yaml
 #- argocd/operators/ibm-cpd-scheduling-operator.yaml
 #- argocd/instances/ibm-cpd-instance.yaml
+
+## Cloud Pak for Security
+#- argocd/operators/ibm-cp4s-operator.yaml
+#- argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
 
 ## IBM Foundational Services / Common Services
 #- argocd/operators/ibm-foundations.yaml
@@ -68,11 +74,19 @@ resources:
 # Monitoring
 #- argocd/instances/instana-agent.yaml
 
+# Spectrum Protect Plus
+#- argocd/operators/spp-catalog.yaml
+#- argocd/operators/spp-operator.yaml
+#- argocd/instances/spp-instance.yaml
+#- argocd/operators/oadp-operator.yaml
+#- argocd/instances/oadp-instance.yaml
+#- argocd/instances/baas-instance.yaml
+
 patches:
 - target:
     group: argoproj.io
     kind: Application
-    labelSelector: "gitops.tier.layer=services"
+    labelSelector: "gitops.tier.layer=services,gitops.tier.source=git"
   patch: |-
     - op: add
       path: /spec/source/repoURL
@@ -83,7 +97,7 @@ patches:
 - target:
     group: argoproj.io
     kind: Application
-    labelSelector: "gitops.tier.layer=applications"
+    labelSelector: "gitops.tier.layer=applications,gitops.tier.source=git"
   patch: |-
     - op: add
       path: /spec/source/repoURL
