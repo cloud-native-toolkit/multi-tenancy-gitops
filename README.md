@@ -106,7 +106,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     ```
 1. Create a custom ArgoCD instance with custom checks
     ```bash
-    oc apply -f gitops-0-bootstrap/setup/ocp47/argocd-instance/ -n openshift-gitops
+    oc apply -f setup/ocp47/argocd-instance/ -n openshift-gitops
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
     ```
 
