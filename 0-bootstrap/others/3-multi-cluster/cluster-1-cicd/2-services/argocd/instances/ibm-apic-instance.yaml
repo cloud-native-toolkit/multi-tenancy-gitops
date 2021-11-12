@@ -9,6 +9,7 @@ metadata:
   labels:
     gitops.tier.group: cloudpak
     gitops.tier.layer: services
+    gitops.tier.source: git
 spec:
   syncPolicy:
     automated:
