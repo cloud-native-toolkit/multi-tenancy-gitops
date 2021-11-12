@@ -6,6 +6,8 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$(cd ${SCRIPTDIR}/..; pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
+cd ${SCRIPTDIR}/..
+
 for LAYER in 1-infra 2-services 3-apps
 do
 
