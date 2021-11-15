@@ -43,7 +43,7 @@ This IBM API Connect recipe should provide a highly available deployment of IBM 
 ### Apps - kustomization.yaml
 1. Edit the Application layer `${GITOPS_PROFILE}/3-apps/kustomization.yaml` uncomment the following:
     ```yaml
-    - argocd/apic/cicd.yaml
+    - argocd/apic/single-cluster.yaml
     ```
 
     Make sure you have forked the [GitOps Application Repository](https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps) into the same GitHub organization where this main `multi-tenancy-gitops` GitHub repository is as mentioned at the bottom of the IBM API Connect Quickstart [here](https://pages.github.ibm.com/cloudpakbringup/production-deployment-guides/quickstart/quickstart-apic/).
