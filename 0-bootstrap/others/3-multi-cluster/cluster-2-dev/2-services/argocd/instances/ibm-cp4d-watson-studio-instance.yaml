@@ -33,5 +33,5 @@ spec:
         value: Enterprise
       - name: spec.scaleConfig
         value: small
-      - name: spec.storageCLass
+      - name: spec.storageClass
         value: managed-nfs-storage
