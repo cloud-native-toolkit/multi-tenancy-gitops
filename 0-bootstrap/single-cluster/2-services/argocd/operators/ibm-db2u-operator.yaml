@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-db2u-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "220"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/ibm-db2u-operator
+    helm:
+      values: |
+        ibm-db2u:
+          subscriptions:
+            subscription:
+              channel: v1.1
+              installPlanApproval: Automatic
+              name: db2u-operator
+              source: ibm-db2uoperator-catalog
+              sourceNamespace: openshift-marketplace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

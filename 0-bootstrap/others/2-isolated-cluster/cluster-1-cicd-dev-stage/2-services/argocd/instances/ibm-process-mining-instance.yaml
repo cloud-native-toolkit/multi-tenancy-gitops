@@ -27,8 +27,9 @@ spec:
           ibmprocessmininginstance:
             name: processmining
             spec:
+              defaultStorageClassName: managed-nfs-storage
               license:
                 accept: true
                 cloudPak: IBM Cloud Pak for Business Automation
-              version: 1.11.1
+              version: 1.12.0
 
