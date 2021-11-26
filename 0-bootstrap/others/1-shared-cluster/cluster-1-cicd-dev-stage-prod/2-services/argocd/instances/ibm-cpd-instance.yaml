@@ -7,7 +7,7 @@ metadata:
   labels:
     gitops.tier.group: ibm-cloudpak
     gitops.tier.layer: services
-    gitops.tier.source: git
+    gitops.tier.source: helm
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,7 +16,23 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: instances/ibm-cpd-instance
+    chart: ibm-cpd-platform-instance
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: 0.1.1
+    helm:
+      parameters:
+      - name: metadata.name
+        value: "ibmcpd-cr"
+      - name: spec.license.accept
+        value: "true"
+      - name: spec.license.license
+        value: "Enterprise"
+      - name: spec.storageClass
+        value: "managed-nfs-storage"
+      - name: spec.zenCoreMetadbStorageClass
+        value: "managed-nfs-storage"
+      - name: spec.version
+        value: "4.0.1"
   syncPolicy:
     automated:
       prune: true

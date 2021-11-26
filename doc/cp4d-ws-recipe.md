@@ -10,6 +10,20 @@
     - argocd/serviceaccounts-tools.yaml
     ```
 ### Services - Kustomization.yaml
+1. Edit the Cloud Pak for Data Platform instance and update the storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cpd-instance.yaml` as needed.  The default is set to `managed-nfs-storage`.
+    ```yaml
+      - name: spec.storageClass
+        value: "managed-nfs-storage"
+      - name: spec.zenCoreMetadbStorageClass
+        value: "managed-nfs-storage"
+    ```
+
+1. Edit the Watson Studio instance and update the storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cp4d-watson-studio-instance.yaml` as needed.  The default is set to `managed-nfs-storage`.
+    ```yaml
+      - name: spec.storageClass
+        value: managed-nfs-storage
+    ```
+
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` uncomment the following:
     ```yaml
     - argocd/operators/ibm-cp4d-watson-studio-operator.yaml
