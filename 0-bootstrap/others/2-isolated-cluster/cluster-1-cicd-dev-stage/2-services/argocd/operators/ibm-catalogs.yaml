@@ -64,7 +64,20 @@ spec:
                 updateStrategy:
                   registryPoll:
                     interval: 45m
+            db2u:
+              name: ibm-db2uoperator-catalog
+              catalog:
+                displayName: IBM Db2U Catalog
+                publisher: IBM
+                sourceType: grpc
+                image: ibmcom/ibm-db2uoperator-catalog@sha256:7e416ff563492b05daf270e3d8792b1edb70cf6e03bd6a1afca3bc1110f39346
+                updateStrategy:
+                  registryPoll:
+                    interval: 45m
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+  
+  
+  
