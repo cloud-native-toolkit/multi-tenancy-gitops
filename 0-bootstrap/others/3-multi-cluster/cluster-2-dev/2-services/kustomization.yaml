@@ -74,6 +74,7 @@ resources:
 
 # Monitoring
 #- argocd/instances/instana-agent.yaml
+#- argocd/instances/instana-robot-shop.yaml
 
 # Spectrum Protect Plus
 #- argocd/operators/spp-catalog.yaml
