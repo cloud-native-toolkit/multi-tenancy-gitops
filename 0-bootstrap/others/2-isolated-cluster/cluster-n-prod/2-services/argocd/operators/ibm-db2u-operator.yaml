@@ -24,7 +24,7 @@ spec:
             subscription:
               channel: v1.1
               installPlanApproval: Automatic
-              name: ibm-db2u-operator
+              name: db2u-operator
               source: ibm-db2uoperator-catalog
               sourceNamespace: openshift-marketplace
   syncPolicy:

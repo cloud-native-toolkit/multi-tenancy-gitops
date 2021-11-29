@@ -46,6 +46,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: baas
     server: https://kubernetes.default.svc
+  - namespace: robot-shop
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
