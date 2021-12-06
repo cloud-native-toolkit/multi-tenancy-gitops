@@ -39,6 +39,8 @@ resources:
 #- argocd/instances/ibm-foundational-services-instance.yaml
 #- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
+#- argocd/operators/ibm-license-service-operator.yaml
+#- argocd/instances/ibm-license-service-instance.yaml
 
 ## IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
