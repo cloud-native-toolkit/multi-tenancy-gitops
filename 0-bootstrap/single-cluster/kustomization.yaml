@@ -1,6 +1,6 @@
 resources:
 - 1-infra/1-infra.yaml
-#- 2-services/2-services.yaml
+- 2-services/2-services.yaml
 #- 3-apps/3-apps.yaml
 patches:
 - target:
