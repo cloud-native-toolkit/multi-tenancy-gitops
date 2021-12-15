@@ -10,8 +10,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/others/2-isolated-cluster/cluster-1-cicd-dev-stage
-    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-    targetRevision: ${GIT_GITOPS_BRANCH}
+    repoURL: https://github.com/Nordic-MVP-GitOps-Repos/multi-tenancy-gitops.git
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true
