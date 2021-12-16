@@ -2,7 +2,7 @@ resources:
 # IBM Software
 
 ## Cloud Pak for Integration
-- argocd/operators/ibm-ace-operator.yaml
+#- argocd/operators/ibm-ace-operator.yaml
 #- argocd/operators/ibm-apic-operator.yaml
 #- argocd/instances/ibm-apic-instance.yaml
 #- argocd/instances/ibm-apic-management-portal-instance.yaml
@@ -14,8 +14,8 @@ resources:
 #- argocd/operators/ibm-eventstreams-operator.yaml
 #- argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
-- argocd/operators/ibm-platform-navigator.yaml
-- argocd/instances/ibm-platform-navigator-instance.yaml
+#- argocd/operators/ibm-platform-navigator.yaml
+#- argocd/instances/ibm-platform-navigator-instance.yaml
 
 ## Cloud Pak for Business Automation
 #- argocd/operators/ibm-cp4a-operator.yaml
@@ -35,15 +35,15 @@ resources:
 #- argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
 
 ## IBM Foundational Services / Common Services
-- argocd/operators/ibm-foundations.yaml
-- argocd/instances/ibm-foundational-services-instance.yaml
-- argocd/operators/ibm-automation-foundation-core-operator.yaml
+#- argocd/operators/ibm-foundations.yaml
+#- argocd/instances/ibm-foundational-services-instance.yaml
+#- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
 #- argocd/operators/ibm-license-service-operator.yaml
 #- argocd/instances/ibm-license-service-instance.yaml
 
 ## IBM Catalogs
-- argocd/operators/ibm-catalogs.yaml
+#- argocd/operators/ibm-catalogs.yaml
 
 
 # Required for IBM MQ
