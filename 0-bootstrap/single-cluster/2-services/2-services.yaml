@@ -8,6 +8,8 @@ metadata:
 spec:
   sourceRepos: [] # Populated by kustomize patches in 2-services/kustomization.yaml
   destinations:
+  - namespace: cp4i
+    server: https://kubernetes.default.svc
   - namespace: tools
     server: https://kubernetes.default.svc
   - namespace: ibm-common-services
