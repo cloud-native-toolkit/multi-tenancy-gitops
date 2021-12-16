@@ -14,7 +14,7 @@ resources:
 #- argocd/operators/ibm-eventstreams-operator.yaml
 #- argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
-#- argocd/operators/ibm-platform-navigator.yaml
+- argocd/operators/ibm-platform-navigator.yaml
 #- argocd/instances/ibm-platform-navigator-instance.yaml
 
 ## Cloud Pak for Business Automation
