@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: ibm-platform-navigator
   annotations:
-    argocd.argoproj.io/sync-wave: "220"
+    argocd.argoproj.io/sync-wave: "210"
   labels:
     gitops.tier.group: ibm-cloudpak
     gitops.tier.layer: services
