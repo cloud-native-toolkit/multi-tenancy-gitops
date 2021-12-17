@@ -16,7 +16,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: operators/ibm-opsdashboard-operator
+    path: operators/ibm-opsdashboard-operator1
      helm:
       values: |
         ibm-opsdashboard-operator:
