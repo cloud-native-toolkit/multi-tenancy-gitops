@@ -24,7 +24,7 @@ spec:
             ibmapic:
               name: ibm-apic
               subscription:
-                channel: v2.3
+                channel: v2.4
                 installPlanApproval: Automatic
                 name: ibm-apiconnect
                 source: ibm-operator-catalog
