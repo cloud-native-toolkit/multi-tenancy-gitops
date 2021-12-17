@@ -24,7 +24,7 @@ spec:
             platformnavigator:
               name: ibm-platform-navigator
               subscription:
-                channel: v5.0
+                channel: v5.2
                 installPlanApproval: Automatic
                 name: ibm-integration-platform-navigator
                 source: ibm-operator-catalog
