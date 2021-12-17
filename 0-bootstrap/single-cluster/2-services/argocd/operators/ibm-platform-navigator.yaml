@@ -19,16 +19,15 @@ spec:
     path: operators/ibm-platform-navigator
     helm:
       values: |
-        ibm-platform-navigator:
-          subscriptions:
-            platformnavigator:
-              name: ibm-platform-navigator
-              subscription:
-                channel: v5.2
-                installPlanApproval: Automatic
-                name: ibm-integration-platform-navigator
-                source: ibm-operator-catalog
-                sourceNamespace: openshift-marketplace
+        subscriptions:
+          platformnavigator:
+            name: ibm-platform-navigator
+            subscription:
+              channel: v5.2
+              installPlanApproval: Automatic
+              name: ibm-integration-platform-navigator
+              source: ibm-operator-catalog
+              sourceNamespace: openshift-marketplace
   syncPolicy:
     automated:
       prune: true
