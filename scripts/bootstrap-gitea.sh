@@ -410,8 +410,7 @@ print_urls_passwords () {
     echo "# "
     echo "# To get the Gitea admin ID and admin password:"
     echo "# -----"
-    echo "oc extract secrets/${INSTANCE_NAME}-access --keys=username -n ${TOOLKIT_NAMESPACE} --to=-"
-    echo "oc extract secrets/${INSTANCE_NAME}-access --keys=password -n ${TOOLKIT_NAMESPACE} --to=-"
+    echo "oc extract secrets/${INSTANCE_NAME}-access --keys=username,password -n ${TOOLKIT_NAMESPACE} --to=-"
     echo "# -----"
 
 }
