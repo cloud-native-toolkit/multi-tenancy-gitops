@@ -4,7 +4,7 @@ resources:
 ## Cloud Pak for Integration
 - argocd/operators/ibm-ace-operator.yaml
 - argocd/operators/ibm-apic-operator.yaml
-#- argocd/instances/ibm-apic-instance.yaml
+- argocd/instances/ibm-apic-instance.yaml
 #- argocd/instances/ibm-apic-management-portal-instance.yaml
 #- argocd/instances/ibm-apic-gateway-analytics-instance.yaml
 #- argocd/operators/ibm-aspera-operator.yaml
@@ -15,7 +15,7 @@ resources:
 - argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
 - argocd/operators/ibm-platform-navigator.yaml
-#- argocd/instances/ibm-platform-navigator-instance.yaml
+- argocd/instances/ibm-platform-navigator-instance.yaml
 
 ## Cloud Pak for Business Automation
 #- argocd/operators/ibm-cp4a-operator.yaml

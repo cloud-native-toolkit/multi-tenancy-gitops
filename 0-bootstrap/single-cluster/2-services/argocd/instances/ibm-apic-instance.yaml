@@ -16,7 +16,7 @@ spec:
       prune: true
       selfHeal: true
   destination:
-    namespace: tools
+    namespace: cp4i
     server: https://kubernetes.default.svc
   project: services
   source:
@@ -29,8 +29,8 @@ spec:
             spec:
               license:
                 accept: true
-                use: production
-                license: L-RJON-BZEP9N
-              version: 10.0.3.0-ifix1
-              profile: n3xc14.m48
+                use: nonproduction
+                license: L-RJON-C7BJ42
+              version: 10.0.4.0
+              profile: n1xc10.m48
               storageClassName: ibmc-block-gold

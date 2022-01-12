@@ -14,7 +14,7 @@ spec:
       prune: true
       selfHeal: true
   destination:
-    namespace: tools
+    namespace: cp4i
     server: https://kubernetes.default.svc
   project: services
   source:
@@ -27,10 +27,9 @@ spec:
             spec:
               license:
                 accept: true
-                license: L-RJON-BZFQU2
+                license: L-RJON-C7QG3S
               mqDashboard: true
-              version: "2021.2.1"
+              version: "2021.4.1"
               replicas: 2
               storage:
-                class: managed-nfs-storage
-
+                class: ibmc-file-gold-gid
