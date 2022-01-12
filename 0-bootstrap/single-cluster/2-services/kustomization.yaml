@@ -35,7 +35,7 @@ resources:
 #- argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
 
 ## IBM Foundational Services / Common Services
-- argocd/operators/ibm-foundations.yaml
+#- argocd/operators/ibm-foundations.yaml
 #- argocd/instances/ibm-foundational-services-instance.yaml
 #- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
@@ -44,7 +44,6 @@ resources:
 
 ## IBM Catalogs
 - argocd/operators/ibm-catalogs.yaml
-
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
