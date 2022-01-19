@@ -2,6 +2,12 @@
 
 set -eo pipefail
 
+USE_GITEA=${USE_GITEA:-false}
+
+if [[ "${USE_GITEA}" == "true" ]]; then
+  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
+fi
+
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
