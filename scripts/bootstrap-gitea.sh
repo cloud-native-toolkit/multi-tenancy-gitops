@@ -2,12 +2,6 @@
 
 set -eo pipefail
 
-USE_GITEA=${USE_GITEA:-false}
-
-if [[ "${USE_GITEA}" == "true" ]]; then
-  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
-fi
-
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
@@ -29,19 +23,21 @@ if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
   echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
 fi
 
+GIT_ORG=${GIT_ORG:-gitops-org}
+# if [[ -z ${GIT_ORG} ]]; then
+#   echo "We recommend to create a new github organization for all your gitops repos"
+#   echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
+#   echo "Please set the environment variable GIT_ORG when running the script like:"
+#   echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
 
-if [[ -z ${GIT_ORG} ]]; then
-  echo "We recommend to create a new github organization for all your gitops repos"
-  echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
-  echo "Please set the environment variable GIT_ORG when running the script like:"
-  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
-
-  exit 1
-fi
+#   exit 1
+# fi
 
 if [[ -z ${OUTPUT_DIR} ]]; then
   echo "Please set the environment variable OUTPUT_DIR when running the script like:"
-  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
+  echo "OUTPUT_DIR=gitops-production ./scripts/bootstrap-gitea.sh"
+  echo "You can also specify the GIT ORG (defaults to gitops-org) with environment variable GIT_ORG when running the script like:"
+  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap-gitea.sh"
 
   exit 1
 fi
@@ -72,87 +68,85 @@ GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
 
-fork_repos () {
+install_gitea () {
+    bash $(dirname "${BASH_SOURCE}")/gitea-install.sh
+}
+
+clone_repos () {
     echo "Github user/org is ${GIT_ORG}"
+
+    TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
+    INSTANCE_NAME=${INSTANCE_NAME:-gitea}
+    ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
+    ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
+    GITEA_BRANCH=${GITEA_BRANCH:-main}
+    GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
+    GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
+    GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
+
+    GITEA_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH:-${GITEA_BRANCH}}
+
+    GITOPS_REPOS="${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops,multi-tenancy-gitops,gitops-0-bootstrap \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-infra,multi-tenancy-gitops-infra,gitops-1-infra \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
+              
+
+    if [[ "${CP_EXAMPLES}" == "true" ]]; then
+        GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
+
+        if [[ "${ACE_SCENARIO}" == "true" ]]; then
+          GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
+        fi
+    fi
 
     pushd ${OUTPUT_DIR}
 
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops gitops-0-bootstrap
-    elif [[ ! -d gitops-0-bootstrap ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
+    # create org
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
+    if [[ "${response}" == "200" ]]; then
+      echo "org already exists ${GIT_ORG}"
+          # CAN NOT delete org with repos and recreating doesn't complain so don't check]
+    else
+      echo "Creating org for ${GITEA_BASEURL}/api/v1/orgs ${GIT_ORG}"
+      curl -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
     fi
-    cd gitops-0-bootstrap
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
+
+    # create repos
+    for i in ${GITOPS_REPOS}; do
+    IFS=","
+    set $i
+    echo "snapshot git repo $1 into $3"
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+    if [[ "${response}" == "200" ]]; then
+      echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+      continue
+    fi
+
+
+    echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+    curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+
+    git clone --depth 1 $1 $3
+    cd $3
+    rm -rf .git
+    git init
+    git config --local user.email "toolkit@cloudnativetoolkit.dev"
+    git config --local user.name "IBM Cloud Native Toolkit"
+    git add .
+    git commit -m "initial commit"
+    git tag 1.0.0
+    git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+    git push downstream ${GITEA_BRANCH}
+    git push --tags downstream
+
     cd ..
+    unset IFS
 
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-infra --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-infra gitops-1-infra
-    elif [[ ! -d gitops-1-infra ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra gitops-1-infra
-    fi
-    cd gitops-1-infra
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
-    cd ..
 
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-services --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-services gitops-2-services
-    elif [[ ! -d gitops-2-services ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services gitops-2-services
-    fi
-    cd gitops-2-services
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
-    cd ..
-
-    if [[ "${CP_EXAMPLES}" == "true" ]]; then
-      echo "Creating repos for Cloud Pak examples"
-
-      GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-apps -q .name || true)
-      if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
-        echo "Fork not found, creating fork and cloning"
-        gh repo fork cloud-native-toolkit-demos/multi-tenancy-gitops-apps --clone --org ${GIT_ORG} --remote
-        mv multi-tenancy-gitops-apps gitops-3-apps
-      elif [[ ! -d gitops-3-apps ]]; then
-        echo "Fork found, repo not cloned, cloning repo"
-        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-3-apps
-      fi
-      cd gitops-3-apps
-      git remote set-url --push upstream no_push
-      git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
-      cd ..
-
-      if [[ "${ACE_SCENARIO}" == "true" ]]; then
-        GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
-        if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
-          echo "Fork not found, creating fork and cloning"
-          gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
-          mv ace-customer-details src-ace-app-customer-details
-        elif [[ ! -d src-ace-app-customer-details ]]; then
-          echo "Fork found, repo not cloned, cloning repo"
-          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
-        fi
-        cd src-ace-app-customer-details
-        git remote set-url --push upstream no_push
-        git checkout master || git checkout --track origin/master
-        cd ..
-      fi
-
-    fi
+    done
 
     popd
 
@@ -236,20 +230,20 @@ data:
   map.yaml: |-
     map:
     - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-      originBranch: ${GIT_GITOPS_BRANCH}
+      originRepoUrL: ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      originBranch: ${GITEA_GITOPS_BRANCH}
     - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
-      originBranch: ${GIT_GITOPS_INFRA_BRANCH}
+      originRepoUrL: ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+      originBranch: ${GITEA_GITOPS_INFRA_BRANCH}
     - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
-      originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
+      originRepoUrL: ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+      originBranch: ${GITEA_GITOPS_SERVICES_BRANCH}
     - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+      originRepoUrL: ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GITEA_GITOPS_APPLICATIONS_BRANCH}
     - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+      originRepoUrL: ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      originBranch: ${GITEA_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
 popd
@@ -280,10 +274,16 @@ set_git_source () {
     rm -r 0-bootstrap/others
   fi
 
-  GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
-  if [[ ${GIT_TOKEN} ]]; then
-    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
-  fi
+  GIT_ORG=${GIT_ORG} \
+  GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} \
+  GIT_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH} \
+  GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} \
+  GIT_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH} \
+  GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} \
+  ./scripts/set-git-source.sh
+
+  git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+  git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
@@ -405,6 +405,13 @@ print_urls_passwords () {
     echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
     echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
     echo "# -----"
+    echo "# "
+    echo "# Gitea UI: $(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE}${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o template --template='https://{{.spec.host}}')"
+    echo "# "
+    echo "# To get the Gitea admin ID and admin password:"
+    echo "# -----"
+    echo "oc extract secrets/${INSTANCE_NAME}-access --keys=username,password -n ${TOOLKIT_NAMESPACE} --to=-"
+    echo "# -----"
 
 }
 
@@ -462,7 +469,12 @@ set_rwx_storage_class () {
 
 # main
 
-fork_repos
+install_gitea
+
+#give time gitea api to come up before creating org and repos
+sleep 60
+
+clone_repos
 
 if [[ -n "${IBM_ENTITLEMENT_KEY}" ]]; then
   update_pull_secret
