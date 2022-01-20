@@ -13,7 +13,6 @@ popd () {
     command popd "$@" > /dev/null
 }
 
-command -v gh >/dev/null 2>&1 || { echo >&2 "The Github CLI gh but it's not installed. Download https://github.com/cli/cli "; exit 1; }
 
 set +e
 oc version --client | grep '4.7\|4.8'
@@ -24,14 +23,6 @@ if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
 fi
 
 GIT_ORG=${GIT_ORG:-gitops-org}
-# if [[ -z ${GIT_ORG} ]]; then
-#   echo "We recommend to create a new github organization for all your gitops repos"
-#   echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
-#   echo "Please set the environment variable GIT_ORG when running the script like:"
-#   echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
-
-#   exit 1
-# fi
 
 if [[ -z ${OUTPUT_DIR} ]]; then
   echo "Please set the environment variable OUTPUT_DIR when running the script like:"
@@ -55,14 +46,6 @@ GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_PROTOCOL=${GIT_PROTOCOL:-https}
 GIT_HOST=${GIT_HOST:-github.com}
 GIT_BASEURL=${GIT_BASEURL:-${GIT_PROTOCOL}://${GIT_HOST}}
-GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
-GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
-GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
-GIT_GITOPS_INFRA_BRANCH=${GIT_GITOPS_INFRA_BRANCH:-${GIT_BRANCH}}
-GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
-GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
-GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
-GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
 
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
@@ -83,7 +66,7 @@ clone_repos () {
     GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
     GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
     GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
-
+    GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
     GITEA_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH:-${GITEA_BRANCH}}
     GITEA_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH:-${GITEA_BRANCH}}
     GITEA_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH:-${GITEA_BRANCH}}
