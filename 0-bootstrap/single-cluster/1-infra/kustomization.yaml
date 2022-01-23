@@ -11,7 +11,7 @@ resources:
 #- argocd/namespace-openldap.yaml
 #- argocd/namespace-sealed-secrets.yaml
 #- argocd/namespace-tools.yaml
-#- argocd/namespace-instana-agent.yaml
+- argocd/namespace-instana-agent.yaml
 #- argocd/namespace-robot-shop.yaml
 #- argocd/namespace-openshift-storage.yaml
 #- argocd/namespace-spp.yaml
