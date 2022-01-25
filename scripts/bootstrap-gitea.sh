@@ -115,7 +115,7 @@ clone_repos () {
     git clone --depth 1 $1 $3
     cd $3
     rm -rf .git
-    git init
+    git init -b main
     git config --local user.email "toolkit@cloudnativetoolkit.dev"
     git config --local user.name "IBM Cloud Native Toolkit"
     git add .
@@ -384,16 +384,17 @@ print_urls_passwords () {
     echo "oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'"
     echo "oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-"
     echo "# -----"
-    echo "# The Cloud Pak console and admin password"
-    echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
-    echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
-    echo "# -----"
     echo "# "
     echo "# Gitea UI: $(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE}${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o template --template='https://{{.spec.host}}')"
     echo "# "
     echo "# To get the Gitea admin ID and admin password:"
     echo "# -----"
     echo "oc extract secrets/${INSTANCE_NAME}-access --keys=username,password -n ${TOOLKIT_NAMESPACE} --to=-"
+    echo "# -----"
+    echo "# "
+    echo "# The Cloud Pak console and admin password"
+    echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
+    echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
     echo "# -----"
 
 }
