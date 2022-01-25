@@ -19,12 +19,12 @@ spec:
     path: instances/instana-robot-shop
     helm:
       values: |
-        instana-robot-shop:
-          service-account:
-            name: default
-            create: false
-            sccs: ["anyuid", "privileged"]
+        service-account:
+          name: default
+          create: false
+          sccs: ["anyuid", "privileged"]
 
+        instana-robot-shop:
           robot-shop:
             image:
               repo: robotshop
