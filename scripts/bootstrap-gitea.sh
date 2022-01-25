@@ -115,7 +115,7 @@ clone_repos () {
     git clone --depth 1 $1 $3
     cd $3
     rm -rf .git
-    git init -b main
+    git init -b ${GITEA_BRANCH}
     git config --local user.email "toolkit@cloudnativetoolkit.dev"
     git config --local user.name "IBM Cloud Native Toolkit"
     git add .
