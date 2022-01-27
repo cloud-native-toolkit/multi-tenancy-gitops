@@ -44,7 +44,7 @@ spec:
             # specify its name in the `keysSecret` field. The secret you create must contains
             # a field called `key` and optionally one called `downloadKey`, which contain, respectively,
             # the values you'd otherwise set in `.agent.key` and `agent.downloadKey`.
-            keysSecret: instana-agent
+            keysSecret: instana-agent-key
 
             # agent.listenAddress is the IP address the agent HTTP server will listen to.
             # listenAddress: *
