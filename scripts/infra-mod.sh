@@ -23,7 +23,8 @@ popd () {
 }
 
 set +e
-oc version --client | grep '4.7\|4.8'
+#oc version --client | grep '4.7\|4.8'
+oc version --client | grep -E '4.[7-9].[0-9]|4.[1-9][0-9].[0-9]|4.[1-9][0-9][0-9].[0-9]'
 OC_VERSION_CHECK=$?
 set -e
 if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
