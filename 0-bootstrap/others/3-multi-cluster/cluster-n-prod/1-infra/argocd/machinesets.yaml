@@ -19,7 +19,7 @@ spec:
       values: |
         refarch-machinesets:
           infrastructureId: "${INFRASTRUCTURE_ID}"
-          # cloudProvider.name set to aws, azure or vsphere
+          # cloudProvider.name set to aws, azure, ibmcloud or vsphere
           cloudProvider:
             name: "${PLATFORM}" 
             managed: ${MANAGED}
