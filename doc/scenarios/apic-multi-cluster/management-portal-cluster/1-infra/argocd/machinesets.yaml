@@ -20,10 +20,11 @@ spec:
         refarch-machinesets:
           infrastructureId: "${INFRASTRUCTURE_ID}"
           # cloudProvider.name set to aws, azure, ibmcloud or vsphere
+          # cloudProvider.managed set to true for ROSA, ARO, ROKS
           cloudProvider:
             name: "${PLATFORM}" 
             managed: ${MANAGED}
-          # only for "aws" or "azure" maybe "gcp"
+          # only for "aws", "ibmcloud" or "azure" maybe "gcp"
           cloud:
             region: ${REGION}
             image: ${IMAGE_NAME}
