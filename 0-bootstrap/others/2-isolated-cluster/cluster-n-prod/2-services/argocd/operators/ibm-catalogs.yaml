@@ -7,6 +7,7 @@ metadata:
   labels:
     gitops.tier.group: ibm-cloudpak
     gitops.tier.layer: services
+    gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -59,7 +60,17 @@ spec:
                 displayName: IBM ProcessMining Operators
                 publisher: IBM
                 sourceType: grpc
-                image: icr.io/cpopen/processmining-operator-catalog
+                image: icr.io/cpopen/processmining-operator-catalog:1.0.4
+                updateStrategy:
+                  registryPoll:
+                    interval: 45m
+            db2u:
+              name: ibm-db2uoperator-catalog
+              catalog:
+                displayName: IBM Db2U Catalog
+                publisher: IBM
+                sourceType: grpc
+                image: ibmcom/ibm-db2uoperator-catalog@sha256:7e416ff563492b05daf270e3d8792b1edb70cf6e03bd6a1afca3bc1110f39346
                 updateStrategy:
                   registryPoll:
                     interval: 45m
@@ -67,3 +78,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  
+  
+  

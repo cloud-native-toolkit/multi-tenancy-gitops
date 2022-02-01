@@ -263,9 +263,27 @@ rules:
       - icp4aclusters
   - apiGroups:              # API Connect
       - apiconnect.ibm.com  # API Connect specific API groups
+      - management.apiconnect.ibm.com
+      - portal.apiconnect.ibm.com
+      - gateway.apiconnect.ibm.com
+      - analytics.apiconnect.ibm.com
       - datapower.ibm.com   # DataPower specific API groups
     resources:
       - '*'
+    verbs:
+      - '*'
+  - apiGroups:              # API Connect Multicloud use case
+      - certmanager.k8s.io
+      - apps.openshift.io
+      - build.openshift.io
+      - image.openshift.io
+      - cert-manager.io
+    resources:
+      - 'certificates'
+      - 'issuers'
+      - 'deploymentconfigs'
+      - 'imagestreams'
+      - 'buildconfigs'
     verbs:
       - '*'
   - verbs:
@@ -280,3 +298,40 @@ rules:
       - cpd.ibm.com
     resources:
       - ibmcpds
+  - verbs:
+      - '*'
+    apiGroups:
+      - ocp.spp.ibm.com
+    resources:
+      - ibmspps
+  - verbs:
+      - '*'
+    apiGroups:
+      - konveyor.openshift.io
+    resources:
+      - veleros
+  - verbs:
+      - '*'
+    apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+  - verbs:
+      - '*'
+    apiGroups:
+      - kafka.strimzi.io
+    resources:
+      - kafkas
+      - kafkausers
+  - verbs:
+      - '*'
+    apiGroups:
+      - isc.ibm.com
+    resources:
+      - cp4sthreatmanagements
+  - verbs:
+      - '*'
+    apiGroups:
+      - ws.cpd.ibm.com
+    resources:
+      - ws

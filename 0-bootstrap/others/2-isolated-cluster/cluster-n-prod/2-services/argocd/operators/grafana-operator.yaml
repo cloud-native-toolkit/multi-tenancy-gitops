@@ -7,6 +7,7 @@ metadata:
   labels:
     gitops.tier.group: cntk
     gitops.tier.layer: services
+    gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -23,7 +24,7 @@ spec:
             grafana:
               name: grafana-operator
               subscription:
-                channel: alpha
+                channel: v4
                 installPlanApproval: Automatic
                 name: grafana-operator
                 source: community-operators

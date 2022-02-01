@@ -7,15 +7,16 @@ metadata:
   labels:
     gitops.tier.group: ibm-cloudpak
     gitops.tier.layer: services
+    gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: openshift-operators
+    namespace: tools
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: operators/ibm-process-mining
+    path: operators/ibm-process-mining-operator
     helm:
       values: |
         ibm-process-mining-operator:
@@ -23,7 +24,7 @@ spec:
             ibmprocessmining:
               name: ibm-process-mining
               subscription:
-                channel: v1.0
+                channel: v2.0
                 installPlanApproval: Automatic
                 name: ibm-automation-processmining
                 source: ibm-automation-processminings

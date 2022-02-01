@@ -7,6 +7,7 @@ metadata:
   labels:
     gitops.tier.group: ibm-cloudpak
     gitops.tier.layer: services
+    gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -23,7 +24,7 @@ spec:
             ibmcpdscheduling:
               name: ibm-cpd-scheduling-catalog-subscription
               subscription:
-                channel: alpha
+                channel: v1.3
                 installPlanApproval: Automatic
                 name: ibm-cpd-scheduling-operator
                 source: ibm-operator-catalog

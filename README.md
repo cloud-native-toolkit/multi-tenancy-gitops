@@ -30,6 +30,9 @@ The reference architecture for this GitOps workflow can be found [here](https://
 - An OpenShift v4.7+ cluster is required.
 
 ### CLI tools
+- Install the [git CLI](https://github.com/git-guides/install-git).
+    - Configure your username for your Git commits - [link](https://docs.github.com/en/get-started/getting-started-with-git/setting-your-username-in-git).
+    - Configure your email for your Git commits - [link](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-user-account/managing-email-preferences/setting-your-commit-email-address).
 - Install the OpenShift CLI oc (version 4.7+) .  The binary can be downloaded from the Help menu from the OpenShift Console.
     <details>
     <summary>Download oc cli</summary>
@@ -103,7 +106,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     ```
 1. Create a custom ArgoCD instance with custom checks
     ```bash
-    oc apply -f gitops-0-bootstrap/setup/ocp47/argocd-instance/ -n openshift-gitops
+    oc apply -f setup/ocp47/argocd-instance/ -n openshift-gitops
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
     ```
 
@@ -133,7 +136,10 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [API Connect recipe](doc/apic-recipe.md)
     - [Process Mining recipe](doc/process-mining-recipe.md)
     - [Cloud Pak for Data](doc/cp4d-platform-recipe.md)
+    - [Cloud Pak for Data + Watson Studio](doc/cp4d-ws-recipe.md)
+    - [Cloud Pak for Security](doc/cp4s-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
+    - [Spectrum Protect Plus](doc/spp-recipe.md)
 
 ### Tasks:
 1. Select a profile and delete the others from the `0-bootstrap` directory.  If this is your first usage of the gitops workflow, Use the `single-cluster` profile.

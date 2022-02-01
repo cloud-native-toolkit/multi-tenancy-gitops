@@ -6,9 +6,10 @@ metadata:
     argocd.argoproj.io/sync-wave: "250"
   labels:
     gitops.tier.group: cntk
-    gitops.tier.layer: services    
+    gitops.tier.layer: services
+    gitops.tier.source: git
   finalizers:
-    - resources-finalizer.argocd.argoproj.io    
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: instana-agent
@@ -43,7 +44,7 @@ spec:
             # specify its name in the `keysSecret` field. The secret you create must contains
             # a field called `key` and optionally one called `downloadKey`, which contain, respectively,
             # the values you'd otherwise set in `.agent.key` and `agent.downloadKey`.
-            keysSecret: instana-agent
+            keysSecret: instana-agent-key
 
             # agent.listenAddress is the IP address the agent HTTP server will listen to.
             # listenAddress: *
@@ -148,9 +149,9 @@ spec:
                 NodesOrServers: # Multiple Integration node instances or multiple standalone Integration Servers can be specified
                   create-customer-details-rest:  # specify the Integration node name (required)
                         # Following parameters used to acess ACE server's rest api service to retrieve such as status data, configuration data etc
-                    restApiPort: '7600'           # ACE server's rest api port (required)     
+                    restApiPort: '7600'           # ACE server's rest api port (required)
 
-              org.ops4j.pax.logging.cfg: 
+              org.ops4j.pax.logging.cfg:
                 log4j2.logger.instana.level: 'DEBUG'
 
             # agent.redactKubernetesSecrets sets the INSTANA_KUBERNETES_REDACT_SECRETS environment variable.

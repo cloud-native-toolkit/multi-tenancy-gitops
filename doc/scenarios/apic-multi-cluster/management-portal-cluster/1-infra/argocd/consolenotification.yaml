@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cntk-consolenotification
+  labels:
+    gitops.tier.layer: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: consolenotification
+    helm:
+      values: |
+        ocp-console-notification:
+          ## The name of the ConsoleNotification resource in the cluster
+          name: "banner-env"
+
+          ## The background color that should be used for the banner
+          backgroundColor: "'#138D75'"
+          ## The color of the text that will appear in the banner
+          color: "'#fff'"
+          ## The location of the banner. Options: BannerTop, BannerBottom, BannerTopBottom
+          location: BannerTop
+          ## The text that should be displayed in the banner. This value is required for the banner to be created
+          text: "IBM API Connect Management and Portal cluster"

@@ -38,6 +38,14 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: openshift-gitops
     server: https://kubernetes.default.svc
+  - namespace: spp
+    server: https://kubernetes.default.svc
+  - namespace: spp-velero
+    server: https://kubernetes.default.svc
+  - namespace: baas
+    server: https://kubernetes.default.svc
+  - namespace: robot-shop
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"

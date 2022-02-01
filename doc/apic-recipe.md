@@ -25,7 +25,7 @@ This IBM API Connect recipe should provide a highly available deployment of IBM 
     ```
 
 #### Storage - ibm-apic-instance.yaml
-1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`ibm-block-gold`**, corresponds to an available **block** storage class in the cluster you are executing this recipe in.
+1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`ibmc-block-gold`**, corresponds to an available **block** storage class in the cluster you are executing this recipe in.
 
 #### High Availability - ibm-apic-instance.yaml
 1. Make sure the `profile` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`n3xc14.m48`**, corresponds to the desired profile: development vs production.
@@ -39,16 +39,6 @@ This IBM API Connect recipe should provide a highly available deployment of IBM 
       * `n` stands for the number of worker nodes.
       * `c` stands for the amount of CPU per worker node.
       * `m` stands for the amount of RAM per worker node.
-
-### Apps - kustomization.yaml
-1. Edit the Application layer `${GITOPS_PROFILE}/3-apps/kustomization.yaml` uncomment the following:
-    ```yaml
-    - argocd/apic/cicd.yaml
-    ```
-
-    Make sure you have forked the [GitOps Application Repository](https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps) into the same GitHub organization where this main `multi-tenancy-gitops` GitHub repository is as mentioned at the bottom of the IBM API Connect Quickstart [here](https://pages.github.ibm.com/cloudpakbringup/production-deployment-guides/quickstart/quickstart-apic/).
-
-
 
 ### Validation
 1. Make sure that the phase in which the IBM API Connect cluster is at is `Ready`

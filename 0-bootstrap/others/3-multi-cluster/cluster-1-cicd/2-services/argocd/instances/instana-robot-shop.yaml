@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: instana-robot-shop
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: robot-shop
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/instana-robot-shop
+    helm:
+      values: |
+        service-account:
+          name: default
+          create: false
+          sccs: ["anyuid", "privileged"]
+
+        robot-shop:
+          image:
+            repo: robotshop
+            version: latest
+            pullPolicy: IfNotPresent
+          payment:
+            gateway: null
+          eum:
+            # eum.key is the secret token used to authenticate to Instana's server.
+            # key:
+            # Rather than explicitly specifying the key, you can "bring your own secret" creating it in
+            # the namespace in which you deploy "robot-shop" and specify the name in the "keysSecret" field.
+            # The secret you create must contain a field called 'key' which contains the value you'd set in `.eum.key`.
+            keysSecret: instana-eum-key
+            url: ""
+          psp:
+            enabled: false
+          nodeport: false
+          openshift: true
+          redis:
+            storageClassName: ibmc-file-silver-gid
+          ocCreateRoute: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
