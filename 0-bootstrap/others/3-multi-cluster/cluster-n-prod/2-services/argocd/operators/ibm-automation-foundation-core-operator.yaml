@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-automation-foundation-core-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "215"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-operators
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/ibm-automation-foundation-core-operator
+    helm:
+      values: |
+        ibm-automation-foundation-core-operator:
+          subscriptions:
+            ibmautomation:
+              name: ibm-automation-foundation-core
+              subscription:
+                channel: v1.2
+                installPlanApproval: Automatic
+                name: ibm-automation-core
+                source: iaf-core-operators
+                sourceNamespace: openshift-marketplace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

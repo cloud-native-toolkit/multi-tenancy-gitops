@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: spp-catalog
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+  labels:
+    gitops.tier.group: spp
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: openshift-marketplace
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: operators/spp-catalog
+    helm:
+      values: |
+        spp-catalog:
+          catalogs:
+            spp:
+              name: ibm-spp-operator
+              catalog:
+                displayName: IBM SPP Operator
+                image: 'ibmcom/spp-operator-catalog:latest'
+                publisher: IBM
+                sourceType: grpc
+                updateStrategy:
+                  registryPoll:
+                    interval: 45m
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

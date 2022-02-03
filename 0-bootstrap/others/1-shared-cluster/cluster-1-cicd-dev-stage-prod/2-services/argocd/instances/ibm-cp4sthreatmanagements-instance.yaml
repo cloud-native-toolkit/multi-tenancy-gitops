@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cp4sthreatmanagements-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "270"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+    gitops.tier.source: helm
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    chart: ibm-cp4sthreatmanagements-instance
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: 0.1.0
+    helm:
+      parameters:
+      - name: metadata.name
+        value: threatmgmt
+      - name: spec.acceptLicense
+        value: "true"
+      - name: spec.basicDeploymentConfiguration.adminUser
+        value: adminUser
+      - name: spec.basicDeploymentConfiguration.storageClass
+        value: managed-nfs-storage
+      - name: spec.extendedDeploymentConfiguration.airgapInstall
+        value: "false"
+      - name: spec.extendedDeploymentConfiguration.backupStorageClass
+        value: managed-nfs-storage
+      - name: spec.extendedDeploymentConfiguration.backupStorageSize
+        value: ''
+      - name: spec.extendedDeploymentConfiguration.imagePullPolicy
+        value: IfNotPresent
+      - name: spec.extendedDeploymentConfiguration.repository
+        value: cp.icr.io/cp/cp4s
+      - name: spec.extendedDeploymentConfiguration.repositoryType
+        value: entitled
+      - name: spec.extendedDeploymentConfiguration.roksAuthentication
+        value: "false"
+      - name: spec.threatManagementCapabilities.deployDRC
+        value: "true"
+      - name: spec.threatManagementCapabilities.deployRiskManager
+        value: "true"
+      - name: spec.threatManagementCapabilities.deployThreatInvestigator
+        value: "true"
