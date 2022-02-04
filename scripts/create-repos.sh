@@ -29,7 +29,6 @@ if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
   echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
 fi
 
-
 if [[ -z ${GIT_ORG} ]]; then
   echo "We recommend to create a new github organization for all your gitops repos"
   echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
@@ -48,8 +47,6 @@ else
   echo "Creating GitHub repositories and local clones in folder:" ${OUTPUT_DIR}
 fi
 mkdir -p "${OUTPUT_DIR}"
-
-
 
 CP_EXAMPLES=${CP_EXAMPLES:-true}
 ACE_SCENARIO=${ACE_SCENARIO:-false}
@@ -75,6 +72,21 @@ GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git
 GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_APPLICATIONS_NAME=multi-tenancy-gitops-apps
 GIT_GITOPS_ACE_SCENARIO_NAME=ace-customer-details
+NEW_FOLDERS=${NEW_FOLDERS}
+
+if [ -z ${NEW_FOLDERS} ]; then
+  LOCAL_FOLDER_0="multi-tenancy-gitops"
+  LOCAL_FOLDER_1="multi-tenancy-gitops-infra"
+  LOCAL_FOLDER_2="multi-tenancy-gitops-services"
+  LOCAL_FOLDER_3="multi-tenancy-gitops-apps"
+  LOCAL_FOLDER_4="ace-customer-details"
+else
+  LOCAL_FOLDER_0="gitops-0-bootstrap"
+  LOCAL_FOLDER_1="gitops-1-infra"
+  LOCAL_FOLDER_2="gitops-2-services"
+  LOCAL_FOLDER_3="gitops-3-apps"
+  LOCAL_FOLDER_4="src-ace-app-customer-details"
+fi
 
 create_repos () {
     echo "Github user/org is ${GIT_ORG}"
@@ -85,14 +97,16 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
       echo "Repository ${GIT_GITOPS_NAME} not found, creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops --clone
-      mv multi-tenancy-gitops gitops-0-bootstrap
-    elif [[ ! -d gitops-0-bootstrap ]]; then
+      if [ ! -z ${NEW_FOLDERS} ]; then
+        mv multi-tenancy-gitops ${LOCAL_FOLDER_0}
+      fi
+    elif [[ ! -d ${LOCAL_FOLDER_0} ]]; then
       echo "Repository ${GIT_GITOPS_NAME} found but not cloned... cloning repository"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops ${LOCAL_FOLDER_0}
     else
       echo "Repository ${GIT_GITOPS_NAME} exists and already cloned... nothing to do"
     fi
-    cd gitops-0-bootstrap
+    cd ${LOCAL_FOLDER_0}
     git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
     cd ..
 
@@ -100,14 +114,16 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
       echo "Repository not found for ${GIT_GITOPS_INFRA_NAME}; creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops-infra --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra --clone
-      mv multi-tenancy-gitops-infra gitops-1-infra
-    elif [[ ! -d gitops-1-infra ]]; then
+      if [ ! -z ${NEW_FOLDERS} ]; then
+        mv multi-tenancy-gitops-infra ${LOCAL_FOLDER_1}
+      fi
+    elif [[ ! -d ${LOCAL_FOLDER_1} ]]; then
       echo "Repository ${GIT_GITOPS_INFRA_NAME} found but not cloned... cloning repository"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra gitops-1-infra
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra ${LOCAL_FOLDER_1}
     else
       echo "Repository ${GIT_GITOPS_INFRA_NAME} exists and already cloned... nothing to do"
     fi
-    cd gitops-1-infra
+    cd ${LOCAL_FOLDER_1}
     git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
     cd ..
 
@@ -115,14 +131,16 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
       echo "Repository ${GIT_GITOPS_SERVICES_NAME} not found, creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops-services --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services --clone
-      mv multi-tenancy-gitops-services gitops-2-services
-    elif [[ ! -d gitops-2-services ]]; then
+      if [ ! -z ${NEW_FOLDERS} ]; then
+        mv multi-tenancy-gitops-services ${LOCAL_FOLDER_2}
+      fi
+    elif [[ ! -d ${LOCAL_FOLDER_2} ]]; then
       echo "Repository ${GIT_GITOPS_SERVICES_NAME} found but not cloned... cloning repository"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services gitops-2-services
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services ${LOCAL_FOLDER_2}
     else
       echo "Repository ${GIT_GITOPS_SERVICES_NAME} exists and already cloned... nothing to do"
     fi
-    cd gitops-2-services
+    cd ${LOCAL_FOLDER_2}
     git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
     cd ..
 
@@ -133,14 +151,16 @@ create_repos () {
       if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
         echo "Repository ${GIT_GITOPS_APPLICATIONS_NAME} not found, creating from template and cloning"
         gh repo create ${GIT_ORG}/multi-tenancy-gitops-apps --public --template https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps --clone
-        mv multi-tenancy-gitops-apps gitops-3-apps
-      elif [[ ! -d gitops-3-apps ]]; then
+        if [ ! -z ${NEW_FOLDERS} ]; then
+          mv multi-tenancy-gitops-apps ${LOCAL_FOLDER_3}
+        fi
+      elif [[ ! -d ${LOCAL_FOLDER_3} ]]; then
         echo "Repository ${GIT_GITOPS_APPLICATIONS_NAME} found but not cloned... cloning repository"
-        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-3-apps
+        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps ${LOCAL_FOLDER_3}
       else
         echo "Repository ${GIT_GITOPS_APPLICATIONS_NAME} exists and already cloned... nothing to do"
       fi
-      cd gitops-3-apps
+      cd ${LOCAL_FOLDER_3}
       git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
       cd ..
 
@@ -149,14 +169,16 @@ create_repos () {
         if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
           echo "Repository not found for ${GIT_GITOPS_ACE_SCENARIO_NAME}; creating from template and cloning"
           gh repo create ${GIT_ORG}/ace-customer-details --public --template https://github.com/cloud-native-toolkit-demos/ace-customer-details --clone
-          mv ace-customer-details src-ace-app-customer-details
-        elif [[ ! -d src-ace-app-customer-details ]]; then
+          if [ ! -z ${NEW_FOLDERS} ]; then
+            mv ace-customer-details ${LOCAL_FOLDER_4}
+          fi
+        elif [[ ! -d ${LOCAL_FOLDER_4} ]]; then
           echo "Repository ${GIT_GITOPS_ACE_SCENARIO_NAME} found but not cloned... cloning repository"
-          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
+          gh repo clone ${GIT_ORG}/ace-customer-details ${LOCAL_FOLDER_4}
         else
           echo "Repository ${GIT_GITOPS_ACE_SCENARIO_NAME} exists and already cloned... nothing to do"
         fi
-        cd src-ace-app-customer-details
+        cd ${LOCAL_FOLDER_4}
         git checkout master || git checkout --track origin/master
         cd ..
       fi
