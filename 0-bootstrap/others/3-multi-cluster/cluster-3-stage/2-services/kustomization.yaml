@@ -58,6 +58,7 @@ resources:
 # CICD
 #- argocd/operators/grafana-operator.yaml
 #- argocd/instances/grafana-instance.yaml
+#- argocd/instances/grafana-instana.yaml
 #- argocd/instances/artifactory.yaml
 #- argocd/instances/chartmuseum.yaml
 #- argocd/instances/developer-dashboard.yaml

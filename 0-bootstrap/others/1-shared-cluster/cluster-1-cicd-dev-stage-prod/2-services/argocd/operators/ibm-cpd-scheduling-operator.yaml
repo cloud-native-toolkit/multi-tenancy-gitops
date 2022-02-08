@@ -24,7 +24,7 @@ spec:
             ibmcpdscheduling:
               name: ibm-cpd-scheduling-catalog-subscription
               subscription:
-                channel: alpha
+                channel: v1.3
                 installPlanApproval: Automatic
                 name: ibm-cpd-scheduling-operator
                 source: ibm-operator-catalog

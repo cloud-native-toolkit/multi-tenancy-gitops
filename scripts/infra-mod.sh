@@ -23,7 +23,8 @@ popd () {
 }
 
 set +e
-oc version --client | grep '4.7\|4.8'
+#oc version --client | grep '4.7\|4.8'
+oc version --client | grep -E '4.[7-9].[0-9]|4.[1-9][0-9].[0-9]|4.[1-9][0-9][0-9].[0-9]'
 OC_VERSION_CHECK=$?
 set -e
 if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
@@ -74,7 +75,7 @@ fi
 infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
 platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
 shopt -s extglob
-if [[ $platform == @(aws|azure|vsphere) ]]; then
+if [[ $platform == @(aws|azure|vsphere|ibmcloud) ]]; then
     echo "Platform ${platform} is valid"
 else
     echo "Supported platform is not found"
@@ -96,6 +97,8 @@ else
         image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A3 "azure" | grep '"image"' | cut -d'"' -f4)
         elif [[ "$platform" == "gcp"  ]]; then
         image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A3 "gcp" | grep '"image"' | cut -d'"' -f4)
+        elif [[ "$platform" == "ibmcloud"  ]]; then
+        image=$(curl -k -s https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json | grep -A3 "ibmcloud" | grep '"path"' | cut -d'"' -f4)
     fi
 fi
 # platform=$(oc get -o jsonpath='{.status.platform}' infrastructure cluster | tr [:upper:] [:lower:])
@@ -141,6 +144,8 @@ if [[ "$platform" == "aws" ]]; then
     storageClass=${defsc:-"managed-premium"}
     elif [[ "$platform" == "gcp" ]]; then
     storageClass=${defsc:-"standard"}
+    elif [[ "$platform" == "ibmcloud" ]]; then
+    storageClass=${defsc:-"ibmc-vpc-block-10iops-tier"}
 fi
 
 sed -i.bak "s#\${CHANNEL}#${newChannel}#" argocd/storage.yaml

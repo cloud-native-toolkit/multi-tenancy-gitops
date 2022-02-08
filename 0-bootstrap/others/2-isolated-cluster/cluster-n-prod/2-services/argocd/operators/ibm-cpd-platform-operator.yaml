@@ -24,7 +24,7 @@ spec:
             ibmcpdplatform:
               name: ibm-cpd-platform-catalog-subscription
               subscription:
-                channel: stable-v1
+                channel: v2.0
                 installPlanApproval: Automatic
                 name: cpd-platform-operator
                 source: ibm-operator-catalog

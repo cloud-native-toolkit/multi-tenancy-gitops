@@ -18,7 +18,7 @@ spec:
   source:
     chart: ibm-cpd-platform-instance
     repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
-    targetRevision: 0.1.1
+    targetRevision: 0.1.2
     helm:
       parameters:
       - name: metadata.name
@@ -29,10 +29,6 @@ spec:
         value: "Enterprise"
       - name: spec.storageClass
         value: "managed-nfs-storage"
-      - name: spec.zenCoreMetadbStorageClass
-        value: "managed-nfs-storage"
-      - name: spec.version
-        value: "4.0.1"
   syncPolicy:
     automated:
       prune: true

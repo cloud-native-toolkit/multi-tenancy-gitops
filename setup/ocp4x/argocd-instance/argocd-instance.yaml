@@ -1,0 +1,538 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: openshift-gitops-cntk
+spec:
+  server:
+    autoscale:
+      enabled: false
+    grpc:
+      ingress:
+        enabled: false
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 125m
+        memory: 128Mi
+    route:
+      enabled: true
+    service:
+      type: ''
+  grafana:
+    enabled: false
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+    route:
+      enabled: false
+  prometheus:
+    enabled: false
+    ingress:
+      enabled: false
+    route:
+      enabled: false
+  initialSSHKnownHosts: {}
+  resourceCustomizations: |
+    argoproj.io/Application:
+      ignoreDifferences: |
+        jsonPointers:
+        - /spec/source/targetRevision
+        - /spec/source/repoURL
+    argoproj.io/AppProject:
+      ignoreDifferences: |
+        jsonPointers:
+        - /spec/sourceRepos
+    operators.coreos.com/OperatorGroup:
+      ignoreDifferences: |
+        jsonPointers:
+        - /metadata/annotations/olm.providedAPIs
+    argoproj.io/Application:
+      health.lua: |
+        hs = {}
+        hs.status = "Progressing"
+        hs.message = ""
+        if obj.status ~= nil then
+          if obj.status.health ~= nil then
+            hs.status = obj.status.health.status
+            if obj.status.health.message ~= nil then
+              hs.message = obj.status.health.message
+            end
+          end
+        end
+        return hs
+    operators.coreos.com/CatalogSource:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.connectionState ~= nil then
+            if obj.status.connectionState.lastObservedState ~= nil then
+              if obj.status.connectionState.lastObservedState == "READY" then
+                hs.status = "Healthy"
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    operators.coreos.com/InstallPlan:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Complete" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    operators.coreos.com/Subscription:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.installedCSV ~= nil then
+            hs.status = "Healthy"
+            hs.message = "CSV Installed"
+            if obj.status.state ~= nil then
+              hs.message = obj.status.state
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        if obj.status.state ~= nil then
+          hs.message = obj.status.state
+        end
+        return hs
+    operator.ibm.com/CommonService:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Succeeded" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    core.automation.ibm.com/Cartridge:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Ready" and condition.reason == "InProgress" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    integration.ibm.com/PlatformNavigator:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    mq.ibm.com/QueueManager:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Running" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    apiconnect.ibm.com/APIConnectCluster:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Error" and condition.status == "True" then
+                hs.status = "Failed"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Pending" and condition.status == "True" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    datapower.ibm.com/DataPowerService:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Running" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    orchestrator.aiops.ibm.com/Installation:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Running" then
+              hs.status = "Healthy"
+            elseif obj.status.phase == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.failureMessage
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    noi.ibm.com/NOI:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "OK" then
+              hs.status = "Healthy"
+            elseif obj.status.phase == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.failureMessage
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    cpd.ibm.com/Ibmcpd:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.controlPlaneStatus ~= nil then
+            hs.message = obj.status.controlPlaneStatus
+            if obj.status.controlPlaneStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.controlPlaneStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.controlPlaneStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    db2u.databases.ibm.com/DvService:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.reconcileStatus ~= nil then
+            hs.message = obj.status.reconcileStatus
+            if obj.status.reconcileStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.reconcileStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.reconcileStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    rstudio.cpd.ibm.com/RStudioAddon:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.rstudioStatus ~= nil then
+            hs.message = obj.status.rstudioStatus
+            if obj.status.rstudioStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.rstudioStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.rstudioStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    wkc.cpd.ibm.com/WKC:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.wkcStatus ~= nil then
+            hs.message = obj.status.wkcStatus
+            if obj.status.wkcStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.wkcStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.wkcStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    wml.cpd.ibm.com/WmlBase:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.wmlStatus ~= nil then
+            hs.message = obj.status.wmlStatus
+            if obj.status.wmlStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.wmlStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.wmlStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    wos.cpd.ibm.com/WOService:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.wosStatus ~= nil then
+            hs.message = obj.status.wosStatus
+            if obj.status.wosStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.wosStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.wosStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    ws.cpd.ibm.com/WS:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.wsStatus ~= nil then
+            hs.message = obj.status.wsStatus
+            if obj.status.wsStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.wsStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.wosStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    icp4a.ibm.com/ICP4ACluster:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          observedGeneration = 0
+          if obj.status.observedGeneration ~= nil then
+            observedGeneration = tonumber(obj.status.observedGeneration)
+          end
+          if obj.status.conditions ~= nil then
+            hs.status = "Failed"
+            hs.message = ""
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "ReconciliationSuccess" and observedGeneration == generation then
+                if condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                else
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+              if condition.type == "Running" and condition.status == "True" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    isc.ibm.com/CP4SThreatManagement:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Success" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Success" and condition.reason == "InProgress" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+  applicationSet:
+    resources:
+      limits:
+        cpu: '2'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  rbac: {}
+  repo:
+    resources:
+      limits:
+        cpu: '1'
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+  resourceExclusions: |
+    - apiGroups:
+      - tekton.dev
+      clusters:
+      - '*'
+      kinds:
+      - TaskRun
+      - PipelineRun
+  dex:
+    openShiftOAuth: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  ha:
+    enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  tls:
+    ca: {}
+  redis:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  controller:
+    processors: {}
+    resources:
+      limits:
+        cpu: '2'
+        memory: 4Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi

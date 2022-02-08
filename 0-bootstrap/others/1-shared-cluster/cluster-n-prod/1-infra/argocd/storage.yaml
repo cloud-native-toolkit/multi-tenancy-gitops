@@ -17,7 +17,7 @@ spec:
     path: storage
     helm:
       values: |
-        ocs-operator:
+        odf-operator:
           channel: ${CHANNEL}
           sizeGiB: 512
           storageClass: ${STORCLASS}
