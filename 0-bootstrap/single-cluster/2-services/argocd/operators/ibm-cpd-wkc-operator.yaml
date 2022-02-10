@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-cp4d-watson-knowledge-catalog-operator
+  name: ibm-cpd-wkc-operator
   annotations:
     argocd.argoproj.io/sync-wave: "230"
   labels:
