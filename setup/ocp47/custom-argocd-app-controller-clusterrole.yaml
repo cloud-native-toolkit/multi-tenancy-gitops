@@ -335,3 +335,9 @@ rules:
       - ws.cpd.ibm.com
     resources:
       - ws
+  - verbs:
+      - '*'
+    apiGroups:
+      - wkc.cpd.ibm.com
+    resources:
+      - wkc
