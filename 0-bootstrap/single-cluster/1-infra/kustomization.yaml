@@ -17,6 +17,7 @@ resources:
 #- argocd/namespace-spp.yaml
 #- argocd/namespace-spp-velero.yaml
 #- argocd/namespace-baas.yaml
+#- argocd/serviceaccounts-ibm-common-services.yaml
 #- argocd/serviceaccounts-tools.yaml
 #- argocd/scc-wkc-iis.yaml
 #- argocd/storage.yaml
