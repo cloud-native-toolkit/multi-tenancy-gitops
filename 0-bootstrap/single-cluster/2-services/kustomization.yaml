@@ -25,6 +25,7 @@ resources:
 
 ## Cloud Pak for Data
 #- argocd/operators/ibm-cpd-scheduling-operator.yaml
+#- argocd/operators/ibm-cpd-scheduling-instance.yaml
 #- argocd/operators/ibm-cpd-platform-operator.yaml
 #- argocd/instances/ibm-cpd-instance.yaml
 #- argocd/operators/ibm-cpd-ws-operator.yaml
