@@ -18,7 +18,7 @@
         value: "managed-nfs-storage"
     ```
 
-1. Edit the Watson Studio instance and update the storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cp4d-watson-studio-instance.yaml` as needed.  The default is set to `managed-nfs-storage`.
+1. Edit the Watson Studio instance and update the storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cpd-ws-instance.yaml` as needed.  The default is set to `managed-nfs-storage`.
     ```yaml
       - name: spec.storageClass
         value: managed-nfs-storage
@@ -26,13 +26,11 @@
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` uncomment the following:
     ```yaml
-    - argocd/operators/ibm-cp4d-watson-studio-operator.yaml
-    - argocd/instances/ibm-cp4d-watson-studio-instance.yaml
-    - argocd/operators/ibm-cpd-platform-operator.yaml
     - argocd/operators/ibm-cpd-scheduling-operator.yaml
+    - argocd/operators/ibm-cpd-platform-operator.yaml
     - argocd/instances/ibm-cpd-instance.yaml
-    - argocd/operators/ibm-foundations.yaml
-    - argocd/instances/ibm-foundational-services-instance.yaml
+    - argocd/operators/ibm-cpd-ws-operator.yaml
+    - argocd/instances/ibm-cpd-ws-instance.yaml
     - argocd/operators/ibm-catalogs.yaml
     - argocd/instances/sealed-secrets.yaml
     ```
