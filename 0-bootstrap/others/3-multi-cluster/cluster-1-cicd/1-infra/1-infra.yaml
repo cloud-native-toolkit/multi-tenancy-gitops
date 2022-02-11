@@ -53,6 +53,8 @@ spec:
     kind: Namespace
   - group: ""
     kind: RoleBinding
+  - group: "rbac.authorization.k8s.io"
+    kind: ClusterRole
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: "console.openshift.io"

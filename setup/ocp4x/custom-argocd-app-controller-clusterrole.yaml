@@ -289,18 +289,6 @@ rules:
   - verbs:
       - '*'
     apiGroups:
-      - operator.ibm.com
-    resources:
-      - operandrequests
-  - verbs:
-      - '*'
-    apiGroups:
-      - cpd.ibm.com
-    resources:
-      - ibmcpds
-  - verbs:
-      - '*'
-    apiGroups:
       - ocp.spp.ibm.com
     resources:
       - ibmspps
@@ -332,6 +320,30 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - operator.ibm.com
+    resources:
+      - operandrequests
+  - verbs:
+      - '*'
+    apiGroups:
+      - scheduler.spectrumcomputing.ibm.com
+    resources:
+      - scheduling
+  - verbs:
+      - '*'
+    apiGroups:
+      - cpd.ibm.com
+    resources:
+      - ibmcpds
+  - verbs:
+      - '*'
+    apiGroups:
       - ws.cpd.ibm.com
     resources:
       - ws
+  - verbs:
+      - '*'
+    apiGroups:
+      - wkc.cpd.ibm.com
+    resources:
+      - wkc
