@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-cp4d-watson-studio-operator
+  name: ibm-cpd-ws-operator
   annotations:
     argocd.argoproj.io/sync-wave: "230"
   labels:
