@@ -161,6 +161,26 @@ spec:
         end
         hs.status = "Progressing"
         return hs
+    zen.cpd.ibm.com/ZenService:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.zenStatus ~= nil then
+            hs.message = obj.status.zenStatus
+            if obj.status.zenStatus == "Completed" then
+              hs.status = "Healthy"
+            elseif obj.status.zenStatus == "Failed" then
+              hs.status = "Degraded"
+              hs.message = obj.status.zenStatus
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
     integration.ibm.com/PlatformNavigator:
       health.lua: |
         hs = {}
@@ -185,6 +205,40 @@ spec:
           if obj.status.phase ~= nil then
             hs.message = obj.status.phase
             if obj.status.phase == "Running" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    appconnect.ibm.com/IntegrationServer:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Ready" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    appconnect.ibm.com/Dashboard:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Ready" then
               hs.status = "Healthy"
             else
               hs.status = "Progressing"
@@ -446,6 +500,28 @@ spec:
               if condition.type == "Running" and condition.status == "True" then
                 hs.status = "Progressing"
                 hs.message = condition.message
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    processmining.ibm.com/ProcessMining:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Running" and condition.reason == "Running" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
               end
             end
           end

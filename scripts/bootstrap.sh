@@ -175,7 +175,7 @@ install_pipelines () {
 install_argocd () {
     echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
     pushd ${OUTPUT_DIR}
-    oc apply -f gitops-0-bootstrap/setup/ocp47/
+    oc apply -f gitops-0-bootstrap/setup/ocp4x/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
     sleep 60
     while ! oc wait pod --timeout=30s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
@@ -193,10 +193,34 @@ create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
     pushd ${OUTPUT_DIR}
 
-    oc apply -f gitops-0-bootstrap/setup/ocp47/argocd-instance/ -n openshift-gitops
+    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n openshift-gitops
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
     popd
 }
+
+patch_argocd_tls () {
+    echo "Patch ArgoCD instance with TLS certificate"
+    pushd ${OUTPUT_DIR}
+
+    INGRESS_SECRET_NAME=$(oc get ingresscontroller.operator default \
+    --namespace openshift-ingress-operator \
+    -o jsonpath='{.spec.defaultCertificate.name}')
+
+    if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
+        echo "Cluster is using a self-signed certificate."
+        exit 1
+    fi
+
+    oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
+    oc create secret tls -n openshift-gitops openshift-gitops-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
+    oc -n openshift-gitops patch argocd/openshift-gitops-cntk --type=merge \
+    -p='{"spec":{"tls":{"ca":{"secretName":"openshift-gitops-cntk-tls"}}}}'
+
+    rm tls.key tls.crt
+
+    popd
+}
+
 
 gen_argocd_patch () {
 echo "Generating argocd instance patch for resourceCustomizations"
@@ -476,7 +500,7 @@ fi
 
 check_infra
 
-install_pipelines
+#install_pipelines
 
 install_argocd
 
@@ -487,6 +511,8 @@ install_argocd
 delete_default_argocd_instance
 
 create_custom_argocd_instance
+
+patch_argocd_tls
 
 # Either you map the GIT source using set_git_source or using argocd_git_override - but not both
 
