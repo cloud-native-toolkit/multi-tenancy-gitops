@@ -208,7 +208,7 @@ patch_argocd_tls () {
 
     if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
         echo "Cluster is using a self-signed certificate."
-        exit 1
+        return 0
     fi
 
     oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
