@@ -24,7 +24,7 @@ spec:
             ibmdatapower:
               name: ibm-datapower
               subscription:
-                channel: v1.4
+                channel: v1.5
                 installPlanApproval: Automatic
                 name: datapower-operator
                 source: ibm-operator-catalog
