@@ -13,7 +13,8 @@ resources:
 #- argocd/apic/dev.yaml
 #- argocd/apic/stage.yaml
 #- argocd/apic/prod.yaml
-#- argocd/apic/single-cluster.yaml
+#- argocd/apic/single-cluster-pipelines.yaml
+#- argocd/apic/single-cluster-config.yaml
 #- argocd/apic/single-cluster-cp4i.yaml
 #- argocd/apic/multi-cluster-app.yaml
 #- argocd/apic/multi-cluster-ops.yaml
