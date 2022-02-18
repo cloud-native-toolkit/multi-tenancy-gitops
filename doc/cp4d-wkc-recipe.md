@@ -15,8 +15,6 @@
     ```yaml
       - name: spec.storageClass
         value: "managed-nfs-storage"
-      - name: spec.zenCoreMetadbStorageClass
-        value: "managed-nfs-storage"
     ```
 
 1. Edit the Watson Knowledge Catalog instance and update the storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cpd-wkc-instance.yaml` as needed.  The default is set to `managed-nfs-storage`.
