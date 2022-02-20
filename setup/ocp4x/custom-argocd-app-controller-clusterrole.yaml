@@ -39,6 +39,7 @@ rules:
       - 'route.openshift.io'
     resources:
       - routes
+      - routes/custom-host
   - verbs:
       - '*'
     apiGroups:
@@ -347,3 +348,9 @@ rules:
       - wkc.cpd.ibm.com
     resources:
       - wkc
+  - verbs:
+      - '*'
+    apiGroups:
+      - policy
+    resources:
+      - podsecuritypolicies
