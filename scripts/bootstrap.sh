@@ -28,12 +28,16 @@ fi
 
 
 if [[ -z ${GIT_ORG} ]]; then
-  echo "We recommend to create a new github organization for all your gitops repos"
-  echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
-  echo "Please set the environment variable GIT_ORG when running the script like:"
-  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
+  if [[ "${USE_GITEA}" == "true" ]]; then
+    GIT_ORG="gitops-org"
+  else
+    echo "We recommend to create a new github organization for all your gitops repos"
+    echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
+    echo "Please set the environment variable GIT_ORG when running the script like:"
+    echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
 
-  exit 1
+    exit 1
+  fi
 fi
 
 if [[ -z ${OUTPUT_DIR} ]]; then
