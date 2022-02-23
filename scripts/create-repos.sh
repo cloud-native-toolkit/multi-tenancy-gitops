@@ -21,6 +21,19 @@ popd () {
 
 command -v gh >/dev/null 2>&1 || { echo >&2 "The Github CLI gh but it's not installed. Download https://github.com/cli/cli "; exit 1; }
 
+gh_version_long=$(gh --version | grep version | sed 's/gh version //g' | sed 's/ .*//g')
+gh_version=$(echo ${gh_version_long} | sed 's/.[0-9]$//g')
+min_req_gh_version="2.5"
+
+echo "Your Github CLI (gh) version is: ${gh_version_long}"
+
+if [ 1 -eq "$(echo "${gh_version} < ${min_req_gh_version}" | bc)" ]
+then  
+    echo "--> We recommend you to have your GitHub CLI (gh) version to ${min_req_gh_version} or newer to avoid errors in this script."
+    echo "--> You can check your GitHub CLI (gh) version executing: gh --version."
+    echo "--> You can find more information about the GitHub CLI (gh) in https://github.com/cli/cli"
+fi
+
 set +e
 oc version --client | grep '4.7\|4.8'
 OC_VERSION_CHECK=$?
