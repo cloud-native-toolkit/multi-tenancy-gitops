@@ -4,10 +4,6 @@ set -eo pipefail
 
 USE_GITEA=${USE_GITEA:-false}
 
-if [[ "${USE_GITEA}" == "true" ]]; then
-  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
-fi
-
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
@@ -72,6 +68,95 @@ GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
+
+install_gitea () {
+    bash $(dirname "${BASH_SOURCE}")/gitea-install.sh
+}
+
+clone_repos () {
+    echo "Github user/org is ${GIT_ORG}"
+
+    TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
+    INSTANCE_NAME=${INSTANCE_NAME:-gitea}
+    ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
+    ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
+    GITEA_BRANCH=${GITEA_BRANCH:-main}
+    GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
+    GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
+    GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
+    GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+    GITEA_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH:-${GITEA_BRANCH}}
+
+    GITOPS_REPOS="${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops,multi-tenancy-gitops,gitops-0-bootstrap \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-infra,multi-tenancy-gitops-infra,gitops-1-infra \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
+              
+
+    GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} 
+    GIT_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH} 
+    GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} 
+    GIT_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH} 
+    GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} 
+    if [[ "${CP_EXAMPLES}" == "true" ]]; then
+        GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
+
+        if [[ "${ACE_SCENARIO}" == "true" ]]; then
+          GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
+        fi
+    fi
+
+    pushd ${OUTPUT_DIR}
+
+    # create org
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
+    if [[ "${response}" == "200" ]]; then
+      echo "org already exists ${GIT_ORG}"
+          # CAN NOT delete org with repos and recreating doesn't complain so don't check]
+    else
+      echo "Creating org for ${GITEA_BASEURL}/api/v1/orgs ${GIT_ORG}"
+      curl -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
+    fi
+
+    # create repos
+    for i in ${GITOPS_REPOS}; do
+    IFS=","
+    set $i
+    echo "snapshot git repo $1 into $3"
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+    if [[ "${response}" == "200" ]]; then
+      echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+      continue
+    fi
+
+
+    echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+    curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+
+    git clone --depth 1 $1 $3
+    cd $3
+    rm -rf .git
+    git init -b ${GITEA_BRANCH}
+    git config --local user.email "toolkit@cloudnativetoolkit.dev"
+    git config --local user.name "IBM Cloud Native Toolkit"
+    git add .
+    git commit -m "initial commit"
+    git tag 1.0.0
+    git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+    git push downstream ${GITEA_BRANCH}
+    git push --tags downstream
+
+    cd ..
+    unset IFS
+
+
+    done
+
+    popd
+
+}
 
 fork_repos () {
     echo "Github user/org is ${GIT_ORG}"
@@ -208,6 +293,7 @@ patch_argocd_tls () {
 
     if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
         echo "Cluster is using a self-signed certificate."
+        popd
         return 0
     fi
 
@@ -430,7 +516,14 @@ print_urls_passwords () {
     echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
     echo "oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-"
     echo "# -----"
-
+    if [[ "${USE_GITEA}" == "true" ]]; then
+        echo "# Gitea UI: $(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE}${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o template --template='https://{{.spec.host}}')"
+        echo "# "
+        echo "# To get the Gitea admin ID and admin password:"
+        echo "# -----"
+        echo "oc extract secrets/${INSTANCE_NAME}-access --keys=username,password -n ${TOOLKIT_NAMESPACE} --to=-"
+        echo "# -----"
+    fi
 }
 
 get_rwx_storage_class () {
@@ -487,7 +580,16 @@ set_rwx_storage_class () {
 
 # main
 
-fork_repos
+if [[ "${USE_GITEA}" == "true" ]]; then
+  install_gitea
+
+  #give time gitea api to come up before creating org and repos
+  sleep 60
+
+  clone_repos
+else
+  fork_repos
+fi
 
 if [[ -n "${IBM_ENTITLEMENT_KEY}" ]]; then
   update_pull_secret
