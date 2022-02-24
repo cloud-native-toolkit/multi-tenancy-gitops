@@ -79,7 +79,7 @@ install_gitea () {
 
 clone_repos () {
     echo "Github user/org is ${GIT_ORG}"
-    set +x
+
     TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
     INSTANCE_NAME=${INSTANCE_NAME:-gitea}
     ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
@@ -131,11 +131,11 @@ clone_repos () {
 
     echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
     curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+    git config --global http.sslVerify false
 
     git clone --depth 1 $1 $3
     cd $3
     rm -rf .git
-    git config --global http.sslVerify false
     git init -b ${GITEA_BRANCH}
     git config --local user.email "toolkit@cloudnativetoolkit.dev"
     git config --local user.name "IBM Cloud Native Toolkit"
@@ -154,7 +154,6 @@ clone_repos () {
 
     popd
                   
-    set -x
     GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} 
     GIT_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH} 
     GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} 
@@ -400,6 +399,9 @@ set_git_source () {
   GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  elif [[ ${USE_GITEA} == "true" ]]; then
+    git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+    git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
   fi
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
