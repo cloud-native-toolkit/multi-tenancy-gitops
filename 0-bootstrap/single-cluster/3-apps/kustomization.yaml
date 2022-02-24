@@ -4,7 +4,7 @@ resources:
 #- argocd/ace/stage.yaml
 #- argocd/ace/prod.yaml
 
-#- argocd/mq/cicd.yaml
+- argocd/mq/cicd.yaml
 #- argocd/mq/dev.yaml
 #- argocd/mq/stage.yaml
 #- argocd/mq/prod.yaml
@@ -13,8 +13,8 @@ resources:
 - argocd/lauren-demo/dev.yaml
 - argocd/lauren-demo/stage.yaml
 - argocd/lauren-demo/prod.yaml
-# - agocd/htz-integration/cicd.yaml
-# - argocd/htz-integration/dec.yaml
+- agocd/htz-integration/cicd.yaml
+- argocd/htz-integration/dec.yaml
 
 #- argocd/apic/cicd.yaml
 #- argocd/apic/dev.yaml
