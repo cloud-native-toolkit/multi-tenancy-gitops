@@ -11,10 +11,10 @@ resources:
 
 - argocd/lauren-demo/cicd.yaml
 - argocd/lauren-demo/dev.yaml
-# - argocd/lauren-demo/stage.yaml
-# - argocd/lauren-demo/prod.yaml
-- agocd/htz-integration/cicd.yaml
-- argocd/htz-integration/dec.yaml
+- argocd/lauren-demo/stage.yaml
+- argocd/lauren-demo/prod.yaml
+# - agocd/htz-integration/cicd.yaml
+# - argocd/htz-integration/dec.yaml
 
 #- argocd/apic/cicd.yaml
 #- argocd/apic/dev.yaml
