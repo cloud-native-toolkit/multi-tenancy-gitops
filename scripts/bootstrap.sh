@@ -79,7 +79,7 @@ install_gitea () {
 
 clone_repos () {
     echo "Github user/org is ${GIT_ORG}"
-
+    set +x
     TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
     INSTANCE_NAME=${INSTANCE_NAME:-gitea}
     ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
@@ -97,13 +97,6 @@ clone_repos () {
     GITOPS_REPOS="${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops,multi-tenancy-gitops,gitops-0-bootstrap \
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-infra,multi-tenancy-gitops-infra,gitops-1-infra \
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
-              
-
-    GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} 
-    GIT_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH} 
-    GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} 
-    GIT_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH} 
-    GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} 
     if [[ "${CP_EXAMPLES}" == "true" ]]; then
         GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
 
@@ -115,13 +108,13 @@ clone_repos () {
     pushd ${OUTPUT_DIR}
 
     # create org
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
+    response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
     if [[ "${response}" == "200" ]]; then
       echo "org already exists ${GIT_ORG}"
           # CAN NOT delete org with repos and recreating doesn't complain so don't check]
     else
       echo "Creating org for ${GITEA_BASEURL}/api/v1/orgs ${GIT_ORG}"
-      curl -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
+      curl -k -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
     fi
 
     # create repos
@@ -129,7 +122,7 @@ clone_repos () {
     IFS=","
     set $i
     echo "snapshot git repo $1 into $3"
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+    response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
     if [[ "${response}" == "200" ]]; then
       echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
       continue
@@ -137,11 +130,12 @@ clone_repos () {
 
 
     echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-    curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+    curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
 
     git clone --depth 1 $1 $3
     cd $3
     rm -rf .git
+    git config --global http.sslVerify false
     git init -b ${GITEA_BRANCH}
     git config --local user.email "toolkit@cloudnativetoolkit.dev"
     git config --local user.name "IBM Cloud Native Toolkit"
@@ -159,6 +153,14 @@ clone_repos () {
     done
 
     popd
+                  
+    set -x
+    GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} 
+    GIT_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH} 
+    GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} 
+    GIT_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH} 
+    GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} 
+
 
 }
 
@@ -390,7 +392,7 @@ argocd_git_override () {
 set_git_source () {
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
-
+  set +e
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     rm -r 0-bootstrap/others
   fi
@@ -402,6 +404,7 @@ set_git_source () {
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
+  set -e
   popd
 }
 
