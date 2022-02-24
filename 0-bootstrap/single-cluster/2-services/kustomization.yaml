@@ -12,10 +12,10 @@ resources:
 #- argocd/operators/ibm-cp4i-operators.yaml
 #- argocd/operators/ibm-datapower-operator.yaml
 #- argocd/operators/ibm-eventstreams-operator.yaml
-#- argocd/operators/ibm-mq-operator.yaml
+- argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
-#- argocd/operators/ibm-platform-navigator.yaml
-#- argocd/instances/ibm-platform-navigator-instance.yaml
+- argocd/operators/ibm-platform-navigator.yaml
+- argocd/instances/ibm-platform-navigator-instance.yaml
 
 ## Cloud Pak for Business Automation
 #- argocd/operators/ibm-cp4a-operator.yaml
@@ -38,15 +38,15 @@ resources:
 #- argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
 
 ## IBM Foundational Services / Common Services
-#- argocd/operators/ibm-foundations.yaml
-#- argocd/instances/ibm-foundational-services-instance.yaml
-#- argocd/operators/ibm-automation-foundation-core-operator.yaml
+- argocd/operators/ibm-foundations.yaml
+- argocd/instances/ibm-foundational-services-instance.yaml
+- argocd/operators/ibm-automation-foundation-core-operator.yaml
 #- argocd/operators/ibm-automation-foundation-operator.yaml
 #- argocd/operators/ibm-license-service-operator.yaml
 #- argocd/instances/ibm-license-service-instance.yaml
 
 ## IBM Catalogs
-#- argocd/operators/ibm-catalogs.yaml
+- argocd/operators/ibm-catalogs.yaml
 
 # B2BI
 #- argocd/instances/ibm-sfg-db2.yaml
@@ -61,20 +61,20 @@ resources:
 #- argocd/instances/cert-manager-instance.yaml
 
 # Sealed Secrets
-#- argocd/instances/sealed-secrets.yaml
+- argocd/instances/sealed-secrets.yaml
 
 # CICD
 #- argocd/operators/grafana-operator.yaml
 #- argocd/instances/grafana-instance.yaml
 #- argocd/instances/grafana-instana.yaml
-#- argocd/instances/artifactory.yaml
+- argocd/instances/artifactory.yaml
 #- argocd/instances/chartmuseum.yaml
 #- argocd/instances/developer-dashboard.yaml
 #- argocd/instances/swaggereditor.yaml
-#- argocd/instances/sonarqube.yaml
+- argocd/instances/sonarqube.yaml
 #- argocd/instances/pact-broker.yaml
 # In OCP 4.7+ we need to install openshift-pipelines and possibly privileged scc to the pipeline serviceaccount
-#- argocd/operators/openshift-pipelines.yaml
+- argocd/operators/openshift-pipelines.yaml
 
 # Service Mesh
 #- argocd/operators/elasticsearch.yaml
