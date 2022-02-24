@@ -117,39 +117,39 @@ clone_repos () {
       curl -k -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
     fi
 
-    # create repos
-    for i in ${GITOPS_REPOS}; do
-    IFS=","
-    set $i
-    echo "snapshot git repo $1 into $3"
-    response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
-    if [[ "${response}" == "200" ]]; then
-      echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-      continue
-    fi
-
-
-    echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-    curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
     git config --global http.sslVerify false
 
-    git clone --depth 1 $1 $3
-    cd $3
-    rm -rf .git
-    git init -b ${GITEA_BRANCH}
-    git config --local user.email "toolkit@cloudnativetoolkit.dev"
-    git config --local user.name "IBM Cloud Native Toolkit"
-    git add .
-    git commit -m "initial commit"
-    git tag 1.0.0
-    git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
-    git push downstream ${GITEA_BRANCH}
-    git push --tags downstream
-
-    cd ..
-    unset IFS
+    # create repos
+    for i in ${GITOPS_REPOS}; do
+      IFS=","
+      set $i
+      echo "snapshot git repo $1 into $3"
+      response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+      if [[ "${response}" == "200" ]]; then
+        echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+        continue
+      fi
 
 
+      echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+      curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+
+      git clone --depth 1 $1 $3
+      cd $3
+      rm -rf .git
+      git init -b ${GITEA_BRANCH}
+      git config --local user.email "toolkit@cloudnativetoolkit.dev"
+      git config --local user.name "IBM Cloud Native Toolkit"
+      git add .
+      git commit -m "initial commit"
+      git tag 1.0.0
+      git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+      git push downstream ${GITEA_BRANCH}
+      git push --tags downstream
+      git push --set-upstream origin ${GITEA_BRANCH}
+
+      cd ..
+      unset IFS
     done
 
     popd
@@ -159,8 +159,6 @@ clone_repos () {
     GIT_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH} 
     GIT_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH} 
     GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} 
-
-
 }
 
 fork_repos () {
@@ -396,12 +394,11 @@ set_git_source () {
     rm -r 0-bootstrap/others
   fi
 
-  GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
+  GIT_ORG=${GIT_ORG} GIT_BASEURL=${GIT_BASEURL} ./scripts/set-git-source.sh
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   elif [[ ${USE_GITEA} == "true" ]]; then
     git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-    git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
   fi
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
