@@ -10,17 +10,17 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops.git
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_GITOPS_BRANCH}
+      value: master
 - target:
     group: argoproj.io
     kind: AppProject
   patch: |-
     - op: add
       path: /spec/sourceRepos/-
-      value: ${HELM_REPOURL}
+      value: https://charts.cloudnativetoolkit.dev
 - target:
     group: argoproj.io
     kind: AppProject
@@ -28,10 +28,10 @@ patches:
   patch: |-
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops.git
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops-infra.git
 - target:
     group: argoproj.io
     kind: AppProject
@@ -39,16 +39,16 @@ patches:
   patch: |-
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops.git
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops-services.git
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops-apps.git
     - op: add
       path: /spec/sourceRepos/-
-      value: ${HELM_REPOURL}
+      value: https://charts.cloudnativetoolkit.dev
 - target:
     group: argoproj.io
     kind: AppProject
@@ -56,7 +56,7 @@ patches:
   patch: |-
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops.git
     - op: add
       path: /spec/sourceRepos/-
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      value: https://github.com/client-engineering-gitops-htz/multi-tenancy-gitops-apps.git
