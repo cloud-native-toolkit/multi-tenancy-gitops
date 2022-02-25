@@ -30,7 +30,7 @@ spec:
           serviceName: mq
           serviceAccount: mq
           image:
-            repository: nginx
+            repository: ibmcom/mq
             pullPolicy: IfNotPresent
           storageClassName: ibmc-block-gold
   syncPolicy:
