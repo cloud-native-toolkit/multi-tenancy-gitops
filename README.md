@@ -141,6 +141,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [Cloud Pak for Security](doc/cp4s-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
     - [Spectrum Protect Plus](doc/spp-recipe.md)
+    - [Sterling Secure File Gateway](doc/sfg-recipe.md)
 
 ### Tasks:
 1. Select a profile and delete the others from the `0-bootstrap` directory.  If this is your first usage of the gitops workflow, Use the `single-cluster` profile.
