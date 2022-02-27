@@ -75,6 +75,7 @@ IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
 
 install_gitea () {
     bash $(dirname "${BASH_SOURCE}")/gitea-install.sh
+    # initialize gitea repos
 }
 
 clone_repos () {
@@ -143,10 +144,8 @@ clone_repos () {
       git add .
       git commit -m "initial commit"
       git tag 1.0.0
-      git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
-      git push downstream ${GITEA_BRANCH}
-      git push --tags downstream
-      git push --set-upstream origin ${GITEA_BRANCH}
+      git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+      git push --tags --set-upstream origin ${GITEA_BRANCH}
 
       cd ..
       unset IFS
