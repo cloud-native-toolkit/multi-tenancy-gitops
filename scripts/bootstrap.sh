@@ -393,14 +393,14 @@ set_git_source () {
     rm -r 0-bootstrap/others
   fi
 
-  GIT_ORG=${GIT_ORG} GIT_BASEURL=${GIT_BASEURL} ./scripts/set-git-source.sh
+  GIT_BRANCH=${GIT_BRANCH} GIT_ORG=${GIT_ORG} GIT_BASEURL=${GIT_BASEURL} ./scripts/set-git-source.sh
   # if [[ ${GIT_TOKEN} ]]; then
   #   git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   # elif [[ ${USE_GITEA} == "true" ]]; then
   #   git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
   # fi
   git add .
-  git commit -m "Updating git source to ${GIT_ORG}"
+  git commit -m "Updating git source to ${GIT_ORG} with ${GIT_BRANCH}"
   git push origin
   set -e
   popd
