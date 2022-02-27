@@ -394,11 +394,11 @@ set_git_source () {
   fi
 
   GIT_ORG=${GIT_ORG} GIT_BASEURL=${GIT_BASEURL} ./scripts/set-git-source.sh
-  if [[ ${GIT_TOKEN} ]]; then
-    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
-  elif [[ ${USE_GITEA} == "true" ]]; then
-    git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-  fi
+  # if [[ ${GIT_TOKEN} ]]; then
+  #   git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  # elif [[ ${USE_GITEA} == "true" ]]; then
+  #   git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+  # fi
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
