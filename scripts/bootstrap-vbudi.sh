@@ -572,6 +572,7 @@ set_rwx_storage_class () {
 # main
 echo "Processing bootstrap to ${GIT_TARGET}"
 
+set_repo_list
 
 if [[ "${GIT_TARGET}" == "github" ]]; then 
     setup_github
