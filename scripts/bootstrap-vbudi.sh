@@ -572,6 +572,7 @@ set_rwx_storage_class () {
 # main
 echo "Processing bootstrap to ${GIT_TARGET}"
 
+
 if [[ "${GIT_TARGET}" == "github" ]]; then 
     setup_github
 elif [[ "${GIT_TARGET}" == "gitea" ]]; then 
