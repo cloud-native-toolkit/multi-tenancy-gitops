@@ -572,14 +572,14 @@ set_rwx_storage_class () {
 # main
 
 
-if [[ "${GIT_TARGET}" == "github"]]; then 
+if [[ "${GIT_TARGET}" == "github" ]]; then 
     setup_github
-elif [[ "${GIT_TARGET}" == "gitea"]]; then 
+elif [[ "${GIT_TARGET}" == "gitea" ]]; then 
     setup_gitea
-elif [[ "${GIT_TARGET}" == "gitlab"]]; then 
+elif [[ "${GIT_TARGET}" == "gitlab" ]]; then 
     echo "Gitlab is not implemented yet"
     exit 999
-elif [[ "${GIT_TARGET}" == "github.ibm"]]; then 
+elif [[ "${GIT_TARGET}" == "github.ibm" ]]; then 
     echo "IBM Github is not implemented yet"
     exit 999
 fi
