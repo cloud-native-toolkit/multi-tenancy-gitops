@@ -124,17 +124,17 @@ setup_gitea () {
 
     # Creating repos based on the GITOPS_REPOS list
     for i in ${GITOPS_REPOS}; do
-      IFS=","
-      set $i
-      echo "Checking git repository ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-      response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
-      if [[ "${response}" == "200" ]]; then
-        echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-      else
-        echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
-        curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
-      fi
-
+        IFS=","
+        set $i
+        echo "Checking git repository ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+        response=$(curl -k --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+        if [[ "${response}" == "200" ]]; then
+            echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+        else
+            echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+            curl -k -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+        fi
+        unset IFS
     done
 
     GIT_BASEURL=${GITEA_BASEURL}
@@ -161,6 +161,7 @@ setup_github () {
         set -e
         unset IFS
     done
+
     popd
 }
 
@@ -168,7 +169,7 @@ clone_repos () {
     echo "Github prefix is ${GIT_BASEURL}/${GIT_ORG}"
 
     pushd ${OUTPUT_DIR}
-
+    IFS=" "
     # create repos
     for i in ${GITOPS_REPOS}; do
         IFS=","
@@ -178,9 +179,8 @@ clone_repos () {
         echo "Cloning repo $1 into ${GIT_BASEURL}/${GIT_ORG}/$2 branch ${GIT_BRANCH}"
         echo "Repo will be locally available in ${OUTPUT_DIR}/$3"
 
-        # delete the output path if exist
-        if [[ ! -d $3 ]]; then
-            remoteUrl=$(cat $3/.git/config | grep url | head -1 | cut -d" " -f3)
+        if [[ -d $3 ]]; then
+            remoteUrl=$(cat $3/.git/config 2>/dev/null | grep url | head -1 | cut -d" " -f3)
             if [[ "${remoteUrl}" == "${GIT_BASEURL}/${GIT_ORG}/$2" ]]; then 
                 echo "${remoteUrl} is already cloned in $3"
                 # check whether it is empty
@@ -199,7 +199,7 @@ clone_repos () {
             fi
         fi
         # check if repo is populated
-        git clone ${GIT_BASEURL}/${GIT_ORG}/$1
+        git clone ${GIT_BASEURL}/${GIT_ORG}/$2 $3
         cd $3
         commits=$(git log 2>/dev/null | grep commit | wc -l)
         cd ..
