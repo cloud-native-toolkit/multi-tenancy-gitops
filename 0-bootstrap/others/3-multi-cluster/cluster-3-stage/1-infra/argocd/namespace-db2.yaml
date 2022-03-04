@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-db2
+  labels:
+    gitops.tier.layer: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+spec:
+  destination:
+    namespace: db2
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: namespaces/db2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
