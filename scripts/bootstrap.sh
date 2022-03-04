@@ -315,7 +315,7 @@ patch_argocd_tls () {
         if [[ ${GIT_HOST} == *${OCDOMAIN} ]]; then
           echo "Adding self-signed cert to argoCD"
           oc get secret -n openshift-ingress router-certs-default -o jsonpath='{.data.tls\.crt}' | base64 -d > route.crt
-          oc create secret generic -n openshift-gitops argocd-tls-certs-cm --from-file ${GIT_HOST}=route.crt
+          oc create configmap -n openshift-gitops argocd-tls-certs-cm --from-file  ${GIT_HOST}=route.crt -o yaml --dry-run=client | oc apply -f -
           rm route.crt
         fi
         popd
