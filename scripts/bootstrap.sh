@@ -310,6 +310,14 @@ patch_argocd_tls () {
 
     if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
         echo "Cluster is using a self-signed certificate."
+        # if using internal git repo - need to patch 
+        OCDOMAIN=$(oc get ingresscontrollers.operator.openshift.io -n openshift-ingress-operator   default -o jsonpath='{.status.domain}')
+        if [[ ${GIT_HOST} == *${OCDOMAIN} ]]; then
+          echo "Adding self-signed cert to argoCD"
+          oc get secret -n openshift-ingress router-certs-default -o jsonpath='{.data.tls\.crt}' | base64 -d > route.crt
+          oc create secret generic -n openshift-gitops argocd-tls-certs-cm --from-file ${GIT_HOST}=route.crt
+          rm route.crt
+        fi
         popd
         return 0
     fi
