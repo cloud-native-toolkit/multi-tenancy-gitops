@@ -422,6 +422,7 @@ set_git_source () {
   # elif [[ ${USE_GITEA} == "true" ]]; then
   #   git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
   # fi
+  set +e
   git add .
   git commit -m "Updating git source to ${GIT_ORG} with ${GIT_BRANCH}"
   git push origin
