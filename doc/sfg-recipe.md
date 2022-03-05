@@ -99,7 +99,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     ```
 > This is to avoid going through the job again
 
-
+___
 
 ### Validation
 
