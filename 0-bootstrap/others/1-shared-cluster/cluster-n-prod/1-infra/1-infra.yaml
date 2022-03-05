@@ -20,6 +20,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: tools
     server: https://kubernetes.default.svc
+  - namespace: db2
+    server: https://kubernetes.default.svc
+  - namespace: mq
+    server: https://kubernetes.default.svc
   - namespace: ibm-common-services
     server: https://kubernetes.default.svc
   - namespace: cloudpak
