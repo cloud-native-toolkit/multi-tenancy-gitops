@@ -7,6 +7,7 @@
 cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
 ```
 
+
 ```yaml
 - argocd/consolenotification.yaml
 - argocd/namespace-db2.yaml
