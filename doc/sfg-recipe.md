@@ -1,5 +1,5 @@
-
 # Deploy [Sterling File Gateway](https://www.ibm.com/supply-chain/collaboration?utm_content=SRCWW&p1=Search&p4=43700068006590527&p5=p&gclid=CjwKCAiAjoeRBhAJEiwAYY3nDKkx-iT7gk0IHoCYzWN97TVVeQu_mOixEk4no6pi3I_MxnSH8GwSrhoCo8EQAvD_BwE&gclsrc=aw.ds)
+
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
@@ -56,6 +56,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
 >  💡 **NOTE**  
 > Push the changes & sync ArgoCD.
 
+
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following lines to install the pre-requisites for Sterling File Gateway, **commit** and **push** the changes and synchronize the `services` Application in the ArgoCD console.
     ```yaml
     - argocd/instances/ibm-db2.yaml
@@ -80,6 +81,22 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
     ./ibm-sfg-b2bi-overrides-values.sh
     ```
+
+1. Generate Helm Chart values.yaml for the Sterling Secure File Gateway Helm Chart:
+    
+    ```bash
+    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
+    ./ibm-sfg-b2bi-overrides-values.sh
+    ```
+
+1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Secure File Gateway, commit and push the changes and synchronize the `services` Application in the ArgoCD console:
+   
+1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart:
+    ```
+    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
+    ./ibm-sfg-b2bi-overrides-values.sh
+    ```
+
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and synchronize the `services` Application in the ArgoCD console:
 
     ```yaml
@@ -92,6 +109,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
 > **⚠️** Warning:  
 > If you decided to scale the pods or upgrade the verison you should do the following steps:
 >> **This is to avoid going through the job again**
+
 - Step 1:
     ```bash
     cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
