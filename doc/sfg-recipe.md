@@ -54,7 +54,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     ./ibm-b2bi-resources-pv.sh
     ./sterlingtoolkit-pv.sh
     ```
-> ✅ **NOTE**  
+>  💡 **NOTE**  
 > Push the changes & sync ArgoCD this will 
 
 
@@ -65,7 +65,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     - argocd/instances/ibm-mq.yaml
     - argocd/instances/ibm-sfg-b2bi-setup.yaml
     ```
-> ✅ **NOTE**  
+>  💡 **NOTE**  
 > Push the changes & sync ArgoCD this will 
 
 1. Generate Helm Chart values.yaml for the Sterling Secure File Gateway Helm Chart:
@@ -81,7 +81,7 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     - argocd/instances/ibm-sfg-b2bi.yaml
     ```
 
-> ✅ **NOTE**  
+>  💡 **NOTE**  
 > Push the changes & sync ArgoCD this will take around 1.5 hr.
 ---
 > **⚠️** Warning:  
