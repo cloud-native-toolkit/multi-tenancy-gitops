@@ -62,7 +62,7 @@ spec:
           app: artifactory
           serviceName: artifactory-artifactory
           termination: edge
-          insecurePolicy: Redirect
+          inPolicy: Redirect
 
         argocd-hook-job:
           name: artifactory-postsync

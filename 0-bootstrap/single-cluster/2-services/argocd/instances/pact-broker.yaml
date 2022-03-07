@@ -27,7 +27,7 @@ spec:
           route:
             enabled: true
             termination: edge
-            insecure: Redirect
+            in: Redirect
 
           ingress:
             enabled: false

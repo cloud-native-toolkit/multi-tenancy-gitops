@@ -343,7 +343,7 @@ spec:
           app: chartmuseum
           serviceName: chartmuseum
           termination: edge
-          insecurePolicy: Redirect
+          inPolicy: Redirect
 
         argocd-hook-job:
           name: chartmuseum-presync
