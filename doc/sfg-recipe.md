@@ -2,11 +2,11 @@
 # Deploy [Sterling Secure File Gateway](https://www.ibm.com/supply-chain/collaboration?utm_content=SRCWW&p1=Search&p4=43700068006590527&p5=p&gclid=CjwKCAiAjoeRBhAJEiwAYY3nDKkx-iT7gk0IHoCYzWN97TVVeQu_mOixEk4no6pi3I_MxnSH8GwSrhoCo8EQAvD_BwE&gclsrc=aw.ds)
 
 ### Infrastructure - Kustomization.yaml
+1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
 
 ```bash        
 cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
 ```
-
 
 ```yaml
 - argocd/consolenotification.yaml
