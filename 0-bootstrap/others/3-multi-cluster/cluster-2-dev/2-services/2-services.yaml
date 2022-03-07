@@ -46,6 +46,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: robot-shop
     server: https://kubernetes.default.svc
+  - namespace: db2
+    server: https://kubernetes.default.svc
+  - namespace: mq
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"
@@ -78,6 +82,10 @@ spec:
     kind: ClusterRole
   - group: apiextensions.k8s.io
     kind: CustomResourceDefinition
+  - group: policy
+    kind: PodSecurityPolicy
+  - group: ""
+    kind: PersistentVolume
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
