@@ -31,7 +31,10 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
         
         ```bash
         git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
-
+        ```
+        ```bash
+        cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-setup
+        ```
     1. Generate a Sealed Secret for the DB2 credentials.
         ```bash
         B2B_DB_SECRET=db2inst1 ./b2b-db-secret-secret.sh
