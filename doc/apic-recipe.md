@@ -25,7 +25,7 @@ This IBM API Connect recipe should provide a highly available deployment of IBM 
     ```
 
 #### Storage - ibm-apic-instance.yaml
-1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`ibmc-block-gold`**, corresponds to an available **block** storage class in the cluster you are executing this recipe in.
+1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml` suits your needs. By default, the storage class used for this recipe, which should be the storage class requested unless the use case or specific requirements dictate otherwise, is **`managed-nfs-storage`** since the IBM Technology Zone environments this recipe is meant for mount NFS storage. If you are using this recipe and the GitOps Framework that executes this recipe on another environment, make sure you select the appropriate storage class. Bear in mind that IBM Event Streams requires **block storage**.
 
 #### High Availability - ibm-apic-instance.yaml
 1. Make sure the `profile` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`n3xc14.m48`**, corresponds to the desired profile: development vs production.

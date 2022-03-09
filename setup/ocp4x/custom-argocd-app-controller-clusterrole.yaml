@@ -315,6 +315,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - eventstreams.ibm.com
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
       - isc.ibm.com
     resources:
       - cp4sthreatmanagements
