@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: ibm-eventstreams-instance
   annotations:
-    argocd.argoproj.io/sync-wave: "240"
+    argocd.argoproj.io/sync-wave: "280"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   labels:
@@ -65,14 +65,14 @@ spec:
                   storage:
                     type: persistent-claim
                     size: 4Gi
-                    class: ibmc-block-gold
+                    class: managed-nfs-storage
                 zookeeper:
                   replicas: 3
                   metrics: {}
                   storage:
                     type: persistent-claim
                     size: 2Gi
-                    class: ibmc-block-gold
+                    class: managed-nfs-storage
               requestIbmServices:
                 iam: true
                 monitoring: true
