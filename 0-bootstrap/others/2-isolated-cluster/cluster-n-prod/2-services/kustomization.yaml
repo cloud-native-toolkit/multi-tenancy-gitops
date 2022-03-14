@@ -33,6 +33,8 @@ resources:
 #- argocd/instances/ibm-cpd-ws-instance.yaml
 #- argocd/operators/ibm-cpd-wkc-operator.yaml
 #- argocd/instances/ibm-cpd-wkc-instance.yaml
+#- argocd/operators/ibm-cpd-ds-operator.yaml
+#- argocd/instances/ibm-cpd-ds-instance.yaml
 
 ## Cloud Pak for Security
 #- argocd/operators/ibm-cp4s-operator.yaml

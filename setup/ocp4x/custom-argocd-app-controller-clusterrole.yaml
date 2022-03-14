@@ -360,3 +360,9 @@ rules:
       - policy
     resources:
       - podsecuritypolicies
+  - verbs:
+      - '*'
+    apiGroups:
+      - ds.cpd.ibm.com
+    resources:
+      - datastages
