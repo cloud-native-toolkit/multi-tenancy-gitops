@@ -40,6 +40,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: spp
     server: https://kubernetes.default.svc
+  - namespace: knative-serving
+    server: https://kubernetes.default.svc
   - namespace: spp-velero
     server: https://kubernetes.default.svc
   - namespace: baas
