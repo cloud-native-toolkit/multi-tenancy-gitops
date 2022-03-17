@@ -366,3 +366,9 @@ rules:
       - ds.cpd.ibm.com
     resources:
       - datastages
+  - verbs:
+      - '*'
+    apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
