@@ -6,6 +6,10 @@
     - argocd/consolenotification.yaml
     - argocd/namespace-ibm-common-services.yaml
     - argocd/namespace-tools.yaml
+    - argocd/namespace-openshift-serverless.yaml
+    - argocd/namespace-knative-eventing.yaml
+    - argocd/namespace-knative-serving.yaml
+    - argocd/namespace-knative-serving-ingress.yaml
     ```
 ### Services - Kustomization.yaml
 1. Edit the **CP4SThreatManagement**s custom resource instance and specify a block or file storage class `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-cp4sthreatmanagements-instance.yaml`.  The default is set to `managed-nfs-storage`.
@@ -24,6 +28,8 @@
     - argocd/instances/ibm-foundational-services-instance.yaml
     - argocd/operators/ibm-automation-foundation-core-operator.yaml
     - argocd/operators/ibm-catalogs.yaml
+    - argocd/operators/openshift-serverless.yaml
+    - argocd/instances/openshift-serverless-knative-serving-instance.yaml
     ```
 
 ### Validation

@@ -79,6 +79,10 @@ resources:
 # In OCP 4.7+ we need to install openshift-pipelines and possibly privileged scc to the pipeline serviceaccount
 #- argocd/operators/openshift-pipelines.yaml
 
+# Serverless
+#- argocd/operators/openshift-serverless.yaml
+#- argocd/instances/openshift-serverless-knative-serving-instance.yaml
+
 # Service Mesh
 #- argocd/operators/elasticsearch.yaml
 #- argocd/operators/jaeger.yaml
