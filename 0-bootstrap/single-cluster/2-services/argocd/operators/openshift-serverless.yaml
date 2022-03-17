@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-cp4s-operator
+  name: openshift-serverless
   annotations:
-    argocd.argoproj.io/sync-wave: "230"
+    argocd.argoproj.io/sync-wave: "200"
   labels:
-    gitops.tier.group: ibm-cloudpak
+    gitops.tier.group: serverless
     gitops.tier.layer: services
     gitops.tier.source: helm
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: tools
+    namespace: openshift-serverless
     server: 'https://kubernetes.default.svc'
   project: services
   syncPolicy:
@@ -26,22 +26,14 @@ spec:
     helm:
       parameters:
       - name: metadata.name
-        value: ibm-cp-security-operator
+        value: serverless-operator
       - name: spec.channel
-        value: v1.9
+        value: stable
       - name: spec.installPlanApproval
         value: Automatic
       - name: spec.name
-        value: ibm-cp-security-operator
+        value: serverless-operator
       - name: spec.source
-        value: ibm-operator-catalog
+        value: redhat-operators
       - name: spec.sourceNamespace
         value: openshift-marketplace
-      - name: spec.config.resources.limits.cpu
-        value: 200m
-      - name: spec.config.resources.limits.memory
-        value: 300Mi
-      - name: spec.config.resources.requests.cpu
-        value: 150m
-      - name: spec.config.resources.requests.memory
-        value: 200Mi

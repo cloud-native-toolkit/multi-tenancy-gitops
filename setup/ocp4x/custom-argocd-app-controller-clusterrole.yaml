@@ -372,3 +372,9 @@ rules:
       - monitoring.coreos.com
     resources:
       - servicemonitors
+  - verbs:
+      - '*'
+    apiGroups:
+      - operator.knative.dev
+    resources:
+      - knativeservings
