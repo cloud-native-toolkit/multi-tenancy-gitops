@@ -110,10 +110,10 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+      value: https://github.com/sfg-senario-apply/multi-tenancy-gitops-services.git
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_GITOPS_SERVICES_BRANCH}
+      value: master
 - target:
     group: argoproj.io
     kind: Application
@@ -121,10 +121,10 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+      value: https://github.com/sfg-senario-apply/multi-tenancy-gitops-apps.git
     - op: add
       path: /spec/source/targetRevision
-      value: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+      value: master
 - target:
     group: argoproj.io
     kind: Application
@@ -132,7 +132,7 @@ patches:
   patch: |-
     - op: add
       path: /spec/source/repoURL
-      value: ${HELM_REPOURL}
+      value: https://charts.cloudnativetoolkit.dev
 - target:
     name: ibm-automation-foundation-operator
   patch: |-
