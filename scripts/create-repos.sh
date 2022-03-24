@@ -109,7 +109,8 @@ create_repos () {
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
       echo "Repository ${GIT_GITOPS_NAME} not found, creating from template and cloning"
-      gh repo create ${GIT_ORG}/multi-tenancy-gitops --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops --clone
+      gh repo create ${GIT_ORG}/multi-tenancy-gitops --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops ${LOCAL_FOLDER_0}
       fi
@@ -126,7 +127,8 @@ create_repos () {
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
       echo "Repository not found for ${GIT_GITOPS_INFRA_NAME}; creating from template and cloning"
-      gh repo create ${GIT_ORG}/multi-tenancy-gitops-infra --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra --clone
+      gh repo create ${GIT_ORG}/multi-tenancy-gitops-infra --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops-infra ${LOCAL_FOLDER_1}
       fi
@@ -143,7 +145,8 @@ create_repos () {
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
       echo "Repository ${GIT_GITOPS_SERVICES_NAME} not found, creating from template and cloning"
-      gh repo create ${GIT_ORG}/multi-tenancy-gitops-services --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services --clone
+      gh repo create ${GIT_ORG}/multi-tenancy-gitops-services --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services
+      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops-services ${LOCAL_FOLDER_2}
       fi
@@ -163,7 +166,8 @@ create_repos () {
       GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-apps -q .name || true)
       if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
         echo "Repository ${GIT_GITOPS_APPLICATIONS_NAME} not found, creating from template and cloning"
-        gh repo create ${GIT_ORG}/multi-tenancy-gitops-apps --public --template https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps --clone
+        gh repo create ${GIT_ORG}/multi-tenancy-gitops-apps --public --template https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps
+        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps
         if [ ! -z ${NEW_FOLDERS} ]; then
           mv multi-tenancy-gitops-apps ${LOCAL_FOLDER_3}
         fi
@@ -181,7 +185,8 @@ create_repos () {
         GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
         if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
           echo "Repository not found for ${GIT_GITOPS_ACE_SCENARIO_NAME}; creating from template and cloning"
-          gh repo create ${GIT_ORG}/ace-customer-details --public --template https://github.com/cloud-native-toolkit-demos/ace-customer-details --clone
+          gh repo create ${GIT_ORG}/ace-customer-details --public --template https://github.com/cloud-native-toolkit-demos/ace-customer-details
+          gh repo clone ${GIT_ORG}/ace-customer-details
           if [ ! -z ${NEW_FOLDERS} ]; then
             mv ace-customer-details ${LOCAL_FOLDER_4}
           fi
