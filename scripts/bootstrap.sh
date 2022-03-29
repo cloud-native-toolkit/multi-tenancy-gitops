@@ -208,6 +208,7 @@ patch_argocd_tls () {
 
     if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
         echo "Cluster is using a self-signed certificate."
+        popd
         return 0
     fi
 
@@ -309,9 +310,11 @@ set_git_source () {
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
+  set +e
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
+  set -e
   popd
 }
 
@@ -542,3 +545,4 @@ fi
 print_urls_passwords
 
 exit 0
+

@@ -20,6 +20,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: tools
     server: https://kubernetes.default.svc
+  - namespace: db2
+    server: https://kubernetes.default.svc
+  - namespace: mq
+    server: https://kubernetes.default.svc
   - namespace: ibm-common-services
     server: https://kubernetes.default.svc
   - namespace: cloudpak
@@ -31,6 +35,8 @@ spec:
   - namespace: instana-agent
     server: https://kubernetes.default.svc
   - namespace: openshift-gitops
+    server: https://kubernetes.default.svc
+  - namespace: openshift-serverless
     server: https://kubernetes.default.svc
   - namespace: openshift-machine-api
     server: https://kubernetes.default.svc

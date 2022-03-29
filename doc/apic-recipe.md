@@ -25,7 +25,7 @@ This IBM API Connect recipe should provide a highly available deployment of IBM 
     ```
 
 #### Storage - ibm-apic-instance.yaml
-1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`ibmc-block-gold`**, corresponds to an available **block** storage class in the cluster you are executing this recipe in.
+1. Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml` refers to a block storage class. **IMPORTANT:** IBM API Connect **requires block storage!**. By default, the storage class used for this recipe is **`ibmc-block-gold`**. If you are using this recipe and the GitOps Framework that executes this recipe on another environment, make sure you select the appropriate storage class.
 
 #### High Availability - ibm-apic-instance.yaml
 1. Make sure the `profile` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-apic-instance.yaml`, which defaults to the **`n3xc14.m48`**, corresponds to the desired profile: development vs production.

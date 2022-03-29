@@ -315,6 +315,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - eventstreams.ibm.com
+    resources:
+      - '*'
+  - verbs:
+      - '*'
+    apiGroups:
       - isc.ibm.com
     resources:
       - cp4sthreatmanagements
@@ -354,3 +360,21 @@ rules:
       - policy
     resources:
       - podsecuritypolicies
+  - verbs:
+      - '*'
+    apiGroups:
+      - ds.cpd.ibm.com
+    resources:
+      - datastages
+  - verbs:
+      - '*'
+    apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+  - verbs:
+      - '*'
+    apiGroups:
+      - operator.knative.dev
+    resources:
+      - knativeservings

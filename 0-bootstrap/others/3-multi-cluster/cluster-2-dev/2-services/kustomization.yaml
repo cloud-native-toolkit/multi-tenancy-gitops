@@ -12,6 +12,7 @@ resources:
 #- argocd/operators/ibm-cp4i-operators.yaml
 #- argocd/operators/ibm-datapower-operator.yaml
 #- argocd/operators/ibm-eventstreams-operator.yaml
+#- argocd/instances/ibm-eventstreams-instance.yaml
 #- argocd/operators/ibm-mq-operator.yaml
 #- argocd/operators/ibm-opsdashboard-operator.yaml
 #- argocd/operators/ibm-platform-navigator.yaml
@@ -32,6 +33,8 @@ resources:
 #- argocd/instances/ibm-cpd-ws-instance.yaml
 #- argocd/operators/ibm-cpd-wkc-operator.yaml
 #- argocd/instances/ibm-cpd-wkc-instance.yaml
+#- argocd/operators/ibm-cpd-ds-operator.yaml
+#- argocd/instances/ibm-cpd-ds-instance.yaml
 
 ## Cloud Pak for Security
 #- argocd/operators/ibm-cp4s-operator.yaml
@@ -48,6 +51,11 @@ resources:
 ## IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
 
+# B2BI
+#- argocd/instances/ibm-sfg-db2.yaml
+#- argocd/instances/ibm-sfg-mq.yaml
+#- argocd/instances/ibm-sfg-b2bi-setup.yaml
+#- argocd/instances/ibm-sfg-b2bi.yaml
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
@@ -70,6 +78,10 @@ resources:
 #- argocd/instances/pact-broker.yaml
 # In OCP 4.7+ we need to install openshift-pipelines and possibly privileged scc to the pipeline serviceaccount
 #- argocd/operators/openshift-pipelines.yaml
+
+# Serverless
+#- argocd/operators/openshift-serverless.yaml
+#- argocd/instances/openshift-serverless-knative-serving-instance.yaml
 
 # Service Mesh
 #- argocd/operators/elasticsearch.yaml
