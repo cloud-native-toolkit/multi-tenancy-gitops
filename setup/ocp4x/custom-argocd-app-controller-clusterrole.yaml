@@ -357,15 +357,25 @@ rules:
   - verbs:
       - '*'
     apiGroups:
-      - policy
-    resources:
-      - podsecuritypolicies
-  - verbs:
-      - '*'
-    apiGroups:
       - ds.cpd.ibm.com
     resources:
       - datastages
+  - verbs:
+      - '*'
+    apiGroups:
+      - ae.cpd.ibm.com
+    resources:
+      - analyticsengines
+  - verbs:
+      - '*'
+    apiGroups:
+      - ae.cpd.ibm.com
+    resources:
+      - '*'
+    apiGroups:
+      - policy
+    resources:
+      - podsecuritypolicies
   - verbs:
       - '*'
     apiGroups:
