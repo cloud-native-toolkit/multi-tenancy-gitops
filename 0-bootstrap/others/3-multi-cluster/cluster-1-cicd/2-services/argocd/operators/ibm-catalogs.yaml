@@ -60,7 +60,7 @@ spec:
                 displayName: IBM ProcessMining Operators
                 publisher: IBM
                 sourceType: grpc
-                image: icr.io/cpopen/processmining-operator-catalog:1.0.4
+                image: icr.io/cpopen/processmining-operator-catalog:1.0.6
                 updateStrategy:
                   registryPoll:
                     interval: 45m

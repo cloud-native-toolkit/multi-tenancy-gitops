@@ -15,13 +15,13 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [CLI tools](#cli-tools)
     - [IBM Entitlement Key](#ibm-entitlement-key)
   - [Setup git repositories](#setup-git-repositories)
-    - [Tasks](#tasks)
+    - [Tasks:](#tasks)
   - [Install and configure OpenShift GitOps](#install-and-configure-openshift-gitops)
-    - [Tasks](#tasks-1)
+    - [Tasks:](#tasks-1)
   - [Bootstrap the OpenShift cluster](#bootstrap-the-openshift-cluster)
-    - [Tasks](#tasks-2)
+    - [Tasks:](#tasks-2)
   - [Select resources to deploy](#select-resources-to-deploy)
-    - [Tasks](#tasks-3)
+    - [Tasks:](#tasks-3)
 
 
 ## Pre-requisites
@@ -139,6 +139,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [Cloud Pak for Data + Watson Studio](doc/cp4d-ws-recipe.md)
     - [Cloud Pak for Data + Watson Knowledge Catalog](doc/cp4d-wkc-recipe.md)
     - [Cloud Pak for Data + DataStage](doc/cp4d-ds-recipe.md)
+    - [Cloud Pak for Data + Analytics Engine Powered by Apache Spark](doc/cp4d-aespark-recipe.md)
     - [Cloud Pak for Security](doc/cp4s-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
     - [Spectrum Protect Plus](doc/spp-recipe.md)

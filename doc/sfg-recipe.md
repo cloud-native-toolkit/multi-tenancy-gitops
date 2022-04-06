@@ -1,4 +1,4 @@
-# Deploy [Sterling File Gateway](https://www.ibm.com/supply-chain/collaboration?utm_content=SRCWW&p1=Search&p4=43700068006590527&p5=p&gclid=CjwKCAiAjoeRBhAJEiwAYY3nDKkx-iT7gk0IHoCYzWN97TVVeQu_mOixEk4no6pi3I_MxnSH8GwSrhoCo8EQAvD_BwE&gclsrc=aw.ds)
+# Deploy [Sterling File Gateway](https://developer.ibm.com/components/sterling/tutorials/)
 
 
 ### Infrastructure - Kustomization.yaml

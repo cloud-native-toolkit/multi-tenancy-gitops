@@ -3,6 +3,7 @@ kind: ArgoCD
 metadata:
   name: openshift-gitops-cntk
 spec:
+  applicationInstanceLabelKey: argo.cntk/instance
   server:
     autoscale:
       enabled: false
