@@ -60,7 +60,7 @@ spec:
                 displayName: IBM ProcessMining Operators
                 publisher: IBM
                 sourceType: grpc
-                image: icr.io/cpopen/processmining-operator-catalog:1.0.6
+                image: icr.io/cpopen/processmining-operator-catalog:1.1.0
                 updateStrategy:
                   registryPoll:
                     interval: 45m
@@ -70,7 +70,7 @@ spec:
                 displayName: IBM Db2U Catalog
                 publisher: IBM
                 sourceType: grpc
-                image: ibmcom/ibm-db2uoperator-catalog@sha256:7e416ff563492b05daf270e3d8792b1edb70cf6e03bd6a1afca3bc1110f39346
+                image: icr.io/cpopen/ibm-db2uoperator-catalog@sha256:99f725098b801474ff77e880ca235023452116e4b005e49de613496a1917f719
                 updateStrategy:
                   registryPoll:
                     interval: 45m

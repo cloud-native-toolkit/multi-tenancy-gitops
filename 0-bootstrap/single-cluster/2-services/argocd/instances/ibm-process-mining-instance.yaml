@@ -31,5 +31,19 @@ spec:
               license:
                 accept: true
                 cloudPak: IBM Cloud Pak for Business Automation
-              version: 1.12.0.3
-
+              version: 1.12.0.4
+              taskmining: 
+                install: true
+                storage:
+                  database:
+                    dbtype: db2
+                    external: 
+                      credential:
+                        secretname: 'c-db2ucluster-pm-instancepassword'
+                        passwordkey: password
+                      user: 'db2inst1'
+                      database: bludb
+                      host: c-db2ucluster-pm-db2u.tools.svc
+                      port: 50000
+                      schema: 'TMUSER'
+                      ssl: false
