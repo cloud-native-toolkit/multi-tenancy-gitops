@@ -369,10 +369,6 @@ rules:
   - verbs:
       - '*'
     apiGroups:
-      - ae.cpd.ibm.com
-    resources:
-      - '*'
-    apiGroups:
       - policy
     resources:
       - podsecuritypolicies
