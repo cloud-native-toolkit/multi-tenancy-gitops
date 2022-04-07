@@ -25,14 +25,14 @@ resources:
 #- argocd/instances/ibm-process-mining-instance.yaml
 
 ## Cloud Pak for Data
-#- argocd/operators/ibm-cpd-scheduling-operator.yaml
+- argocd/operators/ibm-cpd-scheduling-operator.yaml
 #- argocd/instances/ibm-cpd-scheduling-instance.yaml
-#- argocd/operators/ibm-cpd-platform-operator.yaml
-#- argocd/instances/ibm-cpd-instance.yaml
-#- argocd/operators/ibm-cpd-ws-operator.yaml
-#- argocd/instances/ibm-cpd-ws-instance.yaml
-#- argocd/operators/ibm-cpd-wkc-operator.yaml
-#- argocd/instances/ibm-cpd-wkc-instance.yaml
+- argocd/operators/ibm-cpd-platform-operator.yaml
+- argocd/instances/ibm-cpd-instance.yaml
+- argocd/operators/ibm-cpd-ws-operator.yaml
+- argocd/instances/ibm-cpd-ws-instance.yaml
+- argocd/operators/ibm-cpd-wkc-operator.yaml
+- argocd/instances/ibm-cpd-wkc-instance.yaml
 #- argocd/operators/ibm-cpd-ds-operator.yaml
 #- argocd/instances/ibm-cpd-ds-instance.yaml
 #- argocd/operators/ibm-cpd-aespark-operator.yaml
@@ -51,7 +51,7 @@ resources:
 #- argocd/instances/ibm-license-service-instance.yaml
 
 ## IBM Catalogs
-#- argocd/operators/ibm-catalogs.yaml
+- argocd/operators/ibm-catalogs.yaml
 
 # B2BI
 #- argocd/instances/ibm-sfg-db2.yaml
@@ -66,7 +66,7 @@ resources:
 #- argocd/instances/cert-manager-instance.yaml
 
 # Sealed Secrets
-#- argocd/instances/sealed-secrets.yaml
+- argocd/instances/sealed-secrets.yaml
 
 # CICD
 #- argocd/operators/grafana-operator.yaml

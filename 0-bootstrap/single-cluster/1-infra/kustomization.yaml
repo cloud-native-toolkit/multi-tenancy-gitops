@@ -1,7 +1,7 @@
 resources:
 #- argocd/consolelink.yaml
-#- argocd/consolenotification.yaml
-#- argocd/namespace-ibm-common-services.yaml
+- argocd/consolenotification.yaml
+- argocd/namespace-ibm-common-services.yaml
 #- argocd/namespace-ci.yaml
 #- argocd/namespace-dev.yaml
 #- argocd/namespace-staging.yaml
@@ -9,8 +9,8 @@ resources:
 #- argocd/namespace-cloudpak.yaml
 #- argocd/namespace-istio-system.yaml
 #- argocd/namespace-openldap.yaml
-#- argocd/namespace-sealed-secrets.yaml
-#- argocd/namespace-tools.yaml
+- argocd/namespace-sealed-secrets.yaml
+- argocd/namespace-tools.yaml
 #- argocd/namespace-instana-agent.yaml
 #- argocd/namespace-robot-shop.yaml
 #- argocd/namespace-openshift-serverless.yaml
@@ -24,10 +24,10 @@ resources:
 #- argocd/namespace-db2.yaml
 #- argocd/namespace-mq.yaml
 #- argocd/serviceaccounts-ibm-common-services.yaml
-#- argocd/serviceaccounts-tools.yaml
+- argocd/serviceaccounts-tools.yaml
 #- argocd/serviceaccounts-db2.yaml
 #- argocd/serviceaccounts-mq.yaml
-#- argocd/scc-wkc-iis.yaml
+- argocd/scc-wkc-iis.yaml
 #- argocd/storage.yaml
 #- argocd/infraconfig.yaml
 #- argocd/machinesets.yaml
