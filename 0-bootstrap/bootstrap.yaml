@@ -10,8 +10,8 @@ spec:
   project: default
   source:
     path: 0-bootstrap/single-cluster
-    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-    targetRevision: ${GIT_GITOPS_BRANCH}
+    repoURL: https://github.com/timro-gitops/multi-tenancy-gitops.git
+    targetRevision: master
   syncPolicy:
     automated:
       prune: true
