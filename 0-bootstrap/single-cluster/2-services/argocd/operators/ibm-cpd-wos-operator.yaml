@@ -28,7 +28,7 @@ spec:
       - name: metadata.name
         value: ibm-watson-openscale-operator-subscription
       - name: spec.channel
-        value: v1
+        value: v1.5
       - name: spec.installPlanApproval
         value: Automatic
       - name: spec.name
