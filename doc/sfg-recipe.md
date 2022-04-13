@@ -62,8 +62,8 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following lines to install the pre-requisites for Sterling File Gateway, **commit** and **push** the changes and synchronize the `services` Application in the ArgoCD console.
     ```yaml
-    - argocd/instances/ibm-db2.yaml
-    - argocd/instances/ibm-mq.yaml
+    - argocd/instances/ibm-sfg-db2.yaml
+    - argocd/instances/ibm-sfg-mq.yaml
     - argocd/instances/ibm-sfg-b2bi-setup.yaml
     ```
 
