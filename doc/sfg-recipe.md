@@ -78,26 +78,11 @@ cd multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra
     ```
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, commit and push the changes and synchronize the `services` Application in the ArgoCD console:
-   
-1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart:
-    ```
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
-    ./ibm-sfg-b2bi-overrides-values.sh
-    ```
 
-1. Generate Helm Chart values.yaml for the Sterling Secure File Gateway Helm Chart:
-    
-    ```bash
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
-    ./ibm-sfg-b2bi-overrides-values.sh
-    ```
-
-1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Secure File Gateway, commit and push the changes and synchronize the `services` Application in the ArgoCD console:
-   
-1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart:
-    ```
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
-    ./ibm-sfg-b2bi-overrides-values.sh
+    ```yaml
+    - argocd/instances/ibm-sfg-db2.yaml
+    - argocd/instances/ibm-sfg-mq.yaml
+    - argocd/instances/ibm-sfg-b2bi-setup.yaml
     ```
 >  💡 **NOTE**  
 > Push the changes & sync ArgoCD. 
