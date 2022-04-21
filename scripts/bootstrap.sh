@@ -167,7 +167,7 @@ setup_github () {
         set -e
         unset IFS
     done
-
+    git config --global credential.helper '!gh auth git-credential' 
     popd
 }
 
