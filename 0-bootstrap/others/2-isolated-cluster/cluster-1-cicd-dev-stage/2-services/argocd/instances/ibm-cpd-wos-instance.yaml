@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cpd-wos-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "270"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    #gitops.tier.layer: services
+    gitops.tier.source: helm
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    chart: ibm-cpd-wos-instance
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: 0.1.0
+    helm:
+      parameters:
+      - name: metadata.name
+        value: aiopenscale
+      - name: spec.license.accept
+        value: "true"
+      - name: spec.license.license
+        value: Enterprise
+      - name: spec.version
+        value: 4.0.2
+      - name: spec.storageClass
+        value: managed-nfs-storage
+      - name: spec.scaleConfig
+        value: small
+      - name: spec.type
+        value: service
+      - name: spec.ignoreForMaintenance
+        value: "false"
