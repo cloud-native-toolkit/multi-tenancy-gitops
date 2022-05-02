@@ -68,6 +68,7 @@ GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
 GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
 GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
 GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
+GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE:-openshift-gitops}
 
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
@@ -175,26 +176,30 @@ install_pipelines () {
 install_argocd () {
     echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
     pushd ${OUTPUT_DIR}
+    oc create ns ${GIT_GITOPS_NAMESPACE} || true
     oc apply -f gitops-0-bootstrap/setup/ocp4x/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
     sleep 60
-    while ! oc wait pod --timeout=30s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null; do sleep 30; done
+    while ! oc wait pod --timeout=30s --for=condition=Ready --all -n ${GIT_GITOPS_NAMESPACE} > /dev/null; do sleep 30; done
     popd
 }
 
-delete_default_argocd_instance () {
-    echo "Delete the default ArgoCD instance"
-    pushd ${OUTPUT_DIR}
-    oc delete gitopsservice cluster -n openshift-gitops || true
-    popd
-}
+# NC: No need to remove default instance since its not created anymore
+#     Handled with DISABLE_DEFAULT_ARGOCD_INSTANCE = True in openshift-gitops-operator.yaml
+#
+# delete_default_argocd_instance () {
+#     echo "Delete the default ArgoCD instance"
+#     pushd ${OUTPUT_DIR}
+#     oc delete gitopsservice cluster -n ${GIT_GITOPS_NAMESPACE} || true
+#     popd
+# }
 
 create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
     pushd ${OUTPUT_DIR}
 
-    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n openshift-gitops
-    while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
+    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n ${GIT_GITOPS_NAMESPACE}
+    while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=${GIT_GITOPS_NAMESPACE}-cntk-server -n ${GIT_GITOPS_NAMESPACE} > /dev/null; do sleep 30; done
     popd
 }
 
@@ -213,9 +218,9 @@ patch_argocd_tls () {
     fi
 
     oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
-    oc create secret tls -n openshift-gitops openshift-gitops-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
-    oc -n openshift-gitops patch argocd/openshift-gitops-cntk --type=merge \
-    -p='{"spec":{"tls":{"ca":{"secretName":"openshift-gitops-cntk-tls"}}}}'
+    oc create secret tls -n ${GIT_GITOPS_NAMESPACE} ${GIT_GITOPS_NAMESPACE}-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
+    oc -n ${GIT_GITOPS_NAMESPACE} patch argocd/${GIT_GITOPS_NAMESPACE}-cntk --type=merge \
+    -p='{"spec":{"tls":{"ca":{"secretName":"${GIT_GITOPS_NAMESPACE}-cntk-tls"}}}}'
 
     rm tls.key tls.crt
 
@@ -245,7 +250,7 @@ popd
 patch_argocd () {
   echo "Applying argocd instance patch"
   pushd ${OUTPUT_DIR}
-  oc patch -n openshift-gitops argocd openshift-gitops --type=merge --patch-file=argocd-instance-patch.yaml
+  oc patch -n ${GIT_GITOPS_NAMESPACE} argocd ${GIT_GITOPS_NAMESPACE} --type=merge --patch-file=argocd-instance-patch.yaml
   popd
 }
 
@@ -285,17 +290,17 @@ apply_argocd_git_override_configmap () {
   echo "Applying ${OUTPUT_DIR}/argocd-git-override-configmap.yaml"
   pushd ${OUTPUT_DIR}
 
-  oc apply -n openshift-gitops -f argocd-git-override-configmap.yaml
+  oc apply -n ${GIT_GITOPS_NAMESPACE} -f argocd-git-override-configmap.yaml
 
   popd
 }
 argocd_git_override () {
   echo "Deploying argocd-git-override webhook"
-  oc apply -n openshift-gitops -f https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/deployment.yaml
+  oc apply -n ${GIT_GITOPS_NAMESPACE} -f https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/deployment.yaml
   oc apply -f https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/webhook.yaml
-  oc label ns openshift-gitops cntk=experiment --overwrite=true
+  oc label ns ${GIT_GITOPS_NAMESPACE} cntk=experiment --overwrite=true
   sleep 5
-  oc wait pod --timeout=-1s --for=condition=Ready -l '!job-name' -n openshift-gitops > /dev/null
+  oc wait pod --timeout=-1s --for=condition=Ready --all -n ${GIT_GITOPS_NAMESPACE} > /dev/null
 }
 
 set_git_source () {
@@ -306,7 +311,7 @@ set_git_source () {
     rm -r 0-bootstrap/others
   fi
 
-  GIT_ORG=${GIT_ORG} ./scripts/set-git-source.sh
+  GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
@@ -321,7 +326,7 @@ set_git_source () {
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
   pushd ${OUTPUT_DIR}
-  oc apply -n openshift-gitops -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
+  oc apply -n ${GIT_GITOPS_NAMESPACE} -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
   popd
 }
 
@@ -422,12 +427,12 @@ print_urls_passwords () {
 
     echo "# Openshift Console UI: $(oc whoami --show-console)"
     echo "# "
-    echo "# Openshift ArgoCD/GitOps UI: $(oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}')"
+    echo "# Openshift ArgoCD/GitOps UI: $(oc get route -n ${GIT_GITOPS_NAMESPACE} ${GIT_GITOPS_NAMESPACE}-cntk-server -o template --template='https://{{.spec.host}}')"
     echo "# "
     echo "# To get the ArgoCD/GitOps URL and admin password:"
     echo "# -----"
-    echo "oc get route -n openshift-gitops openshift-gitops-cntk-server -o template --template='https://{{.spec.host}}'"
-    echo "oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n openshift-gitops --to=-"
+    echo "oc get route -n ${GIT_GITOPS_NAMESPACE} ${GIT_GITOPS_NAMESPACE}-cntk-server -o template --template='https://{{.spec.host}}'"
+    echo "oc extract secrets/${GIT_GITOPS_NAMESPACE}-cntk-cluster --keys=admin.password -n ${GIT_GITOPS_NAMESPACE} --to=-"
     echo "# -----"
     echo "# The Cloud Pak console and admin password"
     echo "oc get route -n ${CP_DEFAULT_TARGET_NAMESPACE} integration-navigator-pn -o template --template='https://{{.spec.host}}'"
@@ -545,4 +550,3 @@ fi
 print_urls_passwords
 
 exit 0
-
