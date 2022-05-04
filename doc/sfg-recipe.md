@@ -13,6 +13,7 @@
     - argocd/namespace-b2bi-prod.yaml
     - argocd/namespace-sealed-secrets.yaml
     - argocd/serviceaccounts-b2bi-prod.yaml
+    - argocd/sfg-b2bi-clusterwide.yaml
     ```
 
 ### Services - Kustomization.yaml
@@ -70,7 +71,6 @@
     ```
     >  💡 **NOTE**  
     > Push the changes & sync ArgoCD
----
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console:
 
@@ -96,7 +96,6 @@
         enable: false
     dbCreateSchema: false
     ```
-___
 
 ### Validation
 
