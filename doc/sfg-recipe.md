@@ -33,7 +33,7 @@
         git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
         ```
         ```bash
-        cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-setup
+        cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod-setup
         ```
     1. Generate a Sealed Secret for the credentials.
         ```bash
@@ -67,7 +67,7 @@
 1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart:
     ```
     cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
-    ./ibm-sfg-b2bi-overrides-values.sh
+    RWX_STORAGECLASS=ocs-storagecluster-cephfs ./ibm-sfg-b2bi-overrides-values.sh
     ```
     >  💡 **NOTE**  
     > Push the changes & sync ArgoCD
@@ -87,7 +87,7 @@
 
 - Step 1:
     ```bash
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
+    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
     ```
 - Step 2:
   - Inside `values.yaml`, find & set 
