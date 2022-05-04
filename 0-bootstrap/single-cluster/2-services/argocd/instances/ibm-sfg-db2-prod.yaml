@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name:  ibm-sfg-db2
+  name:  ibm-sfg-db2-prod
   annotations:
     argocd.argoproj.io/sync-wave: "250"
   labels:
@@ -12,7 +12,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: db2
+    namespace: b2bi-prod
     server: 'https://kubernetes.default.svc'
   project: services
   source:
@@ -32,7 +32,7 @@ spec:
           image:
             repository: quay.io/hollisc/ibm-db2-sfg:1.0.4
             pullPolicy: IfNotPresent
-          storageClassName: ibmc-block-gold
+          storageClassName: ocs-storagecluster-cephfs
 
           service:
             name: db2-lb

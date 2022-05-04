@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-sfg-mq
+  name: ibm-sfg-mq-nonprod
   annotations:
     argocd.argoproj.io/sync-wave: "250"
   labels:
@@ -12,7 +12,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: mq
+    namespace: b2bi-nonprod
     server: 'https://kubernetes.default.svc'
   project: services
   source:
@@ -26,15 +26,15 @@ spec:
 
         ibm-sfg-mq:
           name: mq
+          selector:
+            type: ClusterIP
           replicaCount: 1
           serviceName: mq
           serviceAccount: mq
-          selector:
-            type: ClusterIP
           image:
             repository: ibmcom/mq
             pullPolicy: IfNotPresent
-          storageClassName: ibmc-block-gold
+          storageClassName: ocs-storagecluster-cephfs
   syncPolicy:
     automated:
       prune: true
