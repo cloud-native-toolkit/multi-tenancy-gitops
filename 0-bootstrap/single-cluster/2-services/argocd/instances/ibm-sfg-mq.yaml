@@ -29,6 +29,8 @@ spec:
           replicaCount: 1
           serviceName: mq
           serviceAccount: mq
+          selector:
+            type: ClusterIP
           image:
             repository: ibmcom/mq
             pullPolicy: IfNotPresent
