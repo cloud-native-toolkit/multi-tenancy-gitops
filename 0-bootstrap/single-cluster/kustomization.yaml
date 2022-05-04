@@ -60,3 +60,10 @@ patches:
     - op: add
       path: /spec/sourceRepos/-
       value: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+- target:
+    group: argoproj.io
+    kind: Application
+  patch: |-
+    - op: replace
+      path: /spec/destination/namespace
+      value: ${GIT_GITOPS_NAMESPACE}
