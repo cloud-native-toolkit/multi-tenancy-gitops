@@ -347,3 +347,21 @@ rules:
       - wkc.cpd.ibm.com
     resources:
       - wkc
+  - verbs:
+      - '*'
+    apiGroups:
+      - ds.cpd.ibm.com
+    resources:
+      - datastages
+  - verbs:
+      - '*'
+    apiGroups:
+      - ae.cpd.ibm.com
+    resources:
+      - analyticsengines
+  - verbs:
+      - '*'
+    apiGroups:
+      - wos.cpd.ibm.com
+    resources:
+      - woservices

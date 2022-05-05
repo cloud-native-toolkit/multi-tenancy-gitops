@@ -375,6 +375,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - wos.cpd.ibm.com
+    resources:
+      - woservices
+  - verbs:
+      - '*'
+    apiGroups:
       - policy
     resources:
       - podsecuritypolicies
