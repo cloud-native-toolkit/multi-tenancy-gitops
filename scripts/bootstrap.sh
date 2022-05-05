@@ -516,7 +516,7 @@ install_argocd
 
 #patch_argocd
 
-delete_default_argocd_instance
+#delete_default_argocd_instance
 
 create_custom_argocd_instance
 
