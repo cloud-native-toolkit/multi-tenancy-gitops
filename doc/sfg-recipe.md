@@ -1,5 +1,8 @@
 # Deploy [Sterling File Gateway](https://developer.ibm.com/components/sterling/tutorials/)
 
+This recipe is for deploying the B2BI Sterling File Gateway in a single namespace (i.e. `b2bi-prod`): 
+
+![SFG single NS](images/sfg-single-ns.png)
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
@@ -18,59 +21,79 @@
 
 ### Services - Kustomization.yaml
 
-1. This recipe is currently set to use the `ibmc-file-gold` storageclass provided by IBM Cloud by default. If you need to use a different storageclass for `ReadWriteMany` access mode - set the environment variable `RWX_STORAGECLASS`.
+1. This recipe is can be implemented using a combination of storage classes. Not all combination will work, the following table lists the storage classes that we have tested to work:
+
+    | Component | Access Mode | IBM Cloud | OCS/ODF |
+    | --- | --- | --- | --- |
+    | DB2 | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
+    | MQ | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
+    | SFG | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
     ```yaml
     - argocd/instances/sealed-secrets.yaml
-
     ```
-1. Generate Sealed Secrets resources required by Sterling File Gateway. 
 
-    1. Open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
+    >  💡 **NOTE**  
+    > Commit and Push the changes for `multi-tenancy-gitops` & sync ArgoCD. 
+
+1. Clone the services repo for GitOps, open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
         
         ```bash
         git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
         ```
+
+2. Modify the B2BI pre-requisites components which includes the secrets and PVCs required for the B2BI helm chart.
+
+    1. Go to the `ibm-sfg-b2bi-prod-setup` directory:
+
         ```bash
         cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod-setup
         ```
+
     1. Generate a Sealed Secret for the credentials.
         ```bash
-        NS=b2bi-prod \
         B2B_DB_SECRET=db2inst1 \
         JMS_PASSWORD=password JMS_KEYSTORE_PASSWORD=password JMS_TRUSTSTORE_PASSWORD=password \
         B2B_SYSTEM_PASSPHRASE_SECRET=password \
         ./sfg-b2bi-secrets.sh
         ```
 
-1. Generate Persistent Volume Yamls required by Sterling File Gateway:
-    ```bash
-    RWX_STORAGECLASS=ocs-storagecluster-cephfs ./sfg-b2bi-pvc-mods.sh
-    ```
+    1. Generate Persistent Volume Yamls required by Sterling File Gateway (the default is set in RWX_STORAGECLASS environment variable to `managed-nfs-storage` - if you are installing on ODF, set `RWX_STORAGECLASS=ocs-storagecluster-cephfs`)
+
+        ```bash
+        ./sfg-b2bi-pvc-mods.sh
+        ```
 
     >  💡 **NOTE**  
-    > Push the changes & sync ArgoCD.
+    > Commit and Push the changes for `multi-tenancy-gitops-services` 
 
-1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following lines to install the pre-requisites for Sterling File Gateway, **commit** and **push** the changes and synchronize the `services` Application in the ArgoCD console.
-    ```yaml
-    - argocd/instances/ibm-sfg-db2-prod.yaml
-    - argocd/instances/ibm-sfg-mq-prod.yaml
-    - argocd/instances/ibm-sfg-b2bi-prod-setup.yaml
-    ```
+1. Enable DB2, MQ and prerequisites in the main `multi-tenancy-gitops` repository
+
+    1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following lines to install the pre-requisites for Sterling File Gateway.
+        ```yaml
+        - argocd/instances/ibm-sfg-db2-prod.yaml
+        - argocd/instances/ibm-sfg-mq-prod.yaml
+        - argocd/instances/ibm-sfg-b2bi-prod-setup.yaml
+        ```
+
+    1. **Optional** Modify the DB2 and MQ storage classes to the environment that you use, the files are in `${GITOPS_PROFILE}/2-services/argocd/instances`. Edit `ibm-sfg-db2-prod.yaml` and `ibm-sfg-mq-prod.yaml` to switch the storageClassName if necessary.
+
 
     >  💡 **NOTE**  
-    > Push the changes & sync ArgoCD. 
-
-1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, commit and push the changes and synchronize the `services` Application in the ArgoCD console:
+    > Commit and Push the changes for `multi-tenancy-gitops` 
+    > Sync the ArgoCD application `services`.
+    > Make sure that the sterling toolkit pod does not throw any error.
+    > Wait for 5 minutes until the database is fully initialized. 
    
-1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart:
+1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart in the `multi-tenancy-gitops-services` repo; note that the default storage class is using `managed-nfs-storage` - if you are installing on ODF, set `RWX_STORAGECLASS=ocs-storagecluster-cephfs`.
+
     ```
     cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
-    RWX_STORAGECLASS=ocs-storagecluster-cephfs ./ibm-sfg-b2bi-overrides-values.sh
+    ./ibm-sfg-b2bi-overrides-values.sh
     ```
     >  💡 **NOTE**  
-    > Push the changes & sync ArgoCD
+    > Commit and Push the changes for `multi-tenancy-gitops-services` 
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console:
 
@@ -79,11 +102,14 @@
     ```
 
     >  💡 **NOTE**  
-    > Push the changes & sync ArgoCD this will take around 1.5 hr.
+    > Commit and Push the changes for `multi-tenancy-gitops` 
+    > Sync ArgoCD application `services` this will take around 1.5 hr for the database setup.
+
 ---
+
 > **⚠️** Warning:  
 > If you decided to scale the pods or upgrade the verison you should do the following steps:
->> **This is to avoid going through the job again**
+>> **This is to avoid going through the database setup job again**
 
 - Step 1:
     ```bash
@@ -96,6 +122,8 @@
         enable: false
     dbCreateSchema: false
     ```
+- Commit and push the changes for the `multi-tenancy-gitops-services` repo.
+---
 
 ### Validation
 
