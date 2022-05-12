@@ -57,6 +57,7 @@ spec:
       ignoreDifferences: |
         jsonPointers:
         - /metadata/annotations/olm.providedAPIs
+        - /status/lastUpdated
     argoproj.io/Application:
       health.lua: |
         hs = {}
@@ -550,6 +551,76 @@ spec:
           end
         end
         hs.status = "Progressing"
+        return hs
+    operator.open-cluster-management.io/MultiClusterHub:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Running" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    machine.openshift.io/obj.sta:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          hs.message = "Not Ready"
+          if obj.status.replicas == 0 then
+            hs.status = "Healthy"
+            return hs
+          end
+          if obj.status.replicas == obj.status.availableReplicas then
+            hs.status = "Healthy"
+          else
+            hs.status = "Progressing"
+          end
+          return hs
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
+    hive.openshift.io/ClusterDeployment:
+      health.lua: |
+        hs = {}
+        generation = obj.metadata.generation
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Hibernating" and condition.status == "False" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        return hs
+    ocs.openshift.io/StorageCluster:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Ready" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
         return hs
   applicationSet:
     resources:

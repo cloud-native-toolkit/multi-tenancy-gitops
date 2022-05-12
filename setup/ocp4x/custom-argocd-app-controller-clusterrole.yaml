@@ -238,6 +238,12 @@ rules:
       - ocs.openshift.io
     resources:
       - storageclusters
+  - apiGroups:
+      - odf.openshift.io
+    resources:
+      - storagesystems
+    verbs:
+      - '*'
   - verbs:
       - '*'
     apiGroups:

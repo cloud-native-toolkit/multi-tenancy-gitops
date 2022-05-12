@@ -93,6 +93,7 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
     cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
     ./ibm-sfg-b2bi-overrides-values.sh
     ```
+
     >  💡 **NOTE**  
     > Commit and Push the changes for `multi-tenancy-gitops-services` 
 
