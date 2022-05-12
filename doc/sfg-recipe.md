@@ -39,9 +39,9 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 
 1. Clone the services repo for GitOps, open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
         
-        ```bash
-        git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
-        ```
+    ```bash
+    git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
+    ```
 
 2. Modify the B2BI pre-requisites components which includes the secrets and PVCs required for the B2BI helm chart.
 
@@ -81,8 +81,9 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 
 
     >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` 
-    > Sync the ArgoCD application `services`.
+    > Commit and Push the changes for `multi-tenancy-gitops` and
+    > sync the ArgoCD application `services`.
+    >
     > Make sure that the sterling toolkit pod does not throw any error.
     > Wait for 5 minutes until the database is fully initialized. 
    
@@ -102,8 +103,8 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
     ```
 
     >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` 
-    > Sync ArgoCD application `services` this will take around 1.5 hr for the database setup.
+    > Commit and Push the changes for `multi-tenancy-gitops` and
+    > sync ArgoCD application `services` this will take around 1.5 hr for the database setup.
 
 ---
 
