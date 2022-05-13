@@ -150,9 +150,9 @@ if [[ "$platform" == "aws" ]]; then
 fi
 
 
-if echo $majorVer | grep -E '4.[6-8]' ]] ; then
+if echo $majorVer | grep -E '4.[6-8]' > /dev/null ; then
     storageChart="ocs-operator"
-elif echo $majorVer | grep -E '4.9|4.[1-9][0-9]|4.[1-9][0-9][0-9]' ]] ; then
+elif echo $majorVer | grep -E '4.9|4.[1-9][0-9]|4.[1-9][0-9][0-9]' > /dev/null ; then
     storageChart="odf-operator"
 fi
 
