@@ -308,7 +308,7 @@ set_git_source () {
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
-    rm -r 0-bootstrap/others
+    test -e 0-bootstrap/others && rm -r 0-bootstrap/others
   fi
 
   GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
@@ -531,8 +531,8 @@ patch_argocd_tls
 set_git_source
 
 # Set RWX storage
-get_rwx_storage_class
-set_rwx_storage_class
+# get_rwx_storage_class
+# set_rwx_storage_class
 
 deploy_bootstrap_argocd
 
