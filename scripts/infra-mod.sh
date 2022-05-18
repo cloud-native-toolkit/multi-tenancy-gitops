@@ -82,6 +82,14 @@ else
     exit 300
 fi
 
+if echo $majorVer | grep -E '4.[6-8]' > /dev/null ; then
+    storageChart="ocs-operator"
+    RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json"
+elif echo $majorVer | grep -E '4.9|4.[1-9][0-9]|4.[1-9][0-9][0-9]' > /dev/null ; then
+    storageChart="odf-operator"
+    RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/coreos/rhcos.json"
+fi
+
 if [[ "${platform}" == "vsphere" ]]; then
     vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
     VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
@@ -91,10 +99,6 @@ if [[ "${platform}" == "vsphere" ]]; then
     VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
 else
     region=$(echo "${installconfig}" | grep "region:" | cut -d":" -f2  | xargs)
-    RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json"
-    if curl -k -s $RHCOS_URL | grep -E "^404: Not Found$" > /dev/null 2>&1; then
-        RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/coreos/rhcos.json"
-    fi
     if [[ "$platform" == "aws"  ]]; then
         image=$(curl -k -s $RHCOS_URL | grep -A1 "${region}" | grep hvm | cut -d'"' -f4)
         elif [[ "$platform" == "azure"  ]]; then
@@ -151,13 +155,6 @@ if [[ "$platform" == "aws" ]]; then
     storageClass=${defsc:-"standard"}
     elif [[ "$platform" == "ibmcloud" ]]; then
     storageClass=${defsc:-"ibmc-vpc-block-10iops-tier"}
-fi
-
-
-if echo $majorVer | grep -E '4.[6-8]' > /dev/null ; then
-    storageChart="ocs-operator"
-elif echo $majorVer | grep -E '4.9|4.[1-9][0-9]|4.[1-9][0-9][0-9]' > /dev/null ; then
-    storageChart="odf-operator"
 fi
 
 sed -i.bak "s#\${STORAGE_CHART_NAME}#${storageChart}#" argocd/storage.yaml
