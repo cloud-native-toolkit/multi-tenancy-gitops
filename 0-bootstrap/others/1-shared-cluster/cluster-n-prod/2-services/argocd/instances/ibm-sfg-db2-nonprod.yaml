@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name:  ibm-sfg-db2-nonprod
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: b2bi-nonprod
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-sfg-db2
+    helm:
+      values: |
+        service-account:
+          name: db2
+          create: false
+          sccs: ["privileged"]
+
+        ibm-sfg-db2:
+          name: db2
+          replicaCount: 1
+          serviceName: db2
+          serviceAccount: db2
+          image:
+            repository: quay.io/hollisc/ibm-db2-sfg:1.0.4
+            pullPolicy: IfNotPresent
+          storageClassName: ibmc-block-gold
+          #storageClassName: ocs-storagecluster-cephfs
+
+          service:
+            name: db2-lb
+            type: ClusterIP
+            port: 50000
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

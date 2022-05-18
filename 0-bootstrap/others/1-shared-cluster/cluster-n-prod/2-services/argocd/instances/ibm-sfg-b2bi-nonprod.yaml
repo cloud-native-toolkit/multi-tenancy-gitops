@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-sfg-b2bi-nonprod
+  annotations:
+    argocd.argoproj.io/sync-wave: "280"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  ignoreDifferences:
+  - group: apps
+    kind: StatefulSet
+    name: ibm-sfg-b2bi-sfg-ac-server
+    jsonPointers:
+    - /spec/replicas
+  - group: apps
+    kind: StatefulSet
+    name: ibm-sfg-b2bi-sfg-asi-server
+    jsonPointers:
+    - /spec/replicas
+  destination:
+    namespace: b2bi-nonprod
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-sfg-b2bi-nonprod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

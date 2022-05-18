@@ -23,10 +23,15 @@ resources:
 #- argocd/namespace-baas.yaml
 #- argocd/namespace-db2.yaml
 #- argocd/namespace-mq.yaml
+#- argocd/namespace-b2bi-prod.yaml
+#- argocd/namespace-b2bi-nonprod.yaml
 #- argocd/serviceaccounts-ibm-common-services.yaml
 #- argocd/serviceaccounts-tools.yaml
 #- argocd/serviceaccounts-db2.yaml
 #- argocd/serviceaccounts-mq.yaml
+#- argocd/serviceaccounts-b2bi-prod.yaml
+#- argocd/serviceaccounts-b2bi-nonprod.yaml
+#- argocd/sfg-b2bi-clusterwide.yaml
 #- argocd/scc-wkc-iis.yaml
 #- argocd/storage.yaml
 #- argocd/infraconfig.yaml

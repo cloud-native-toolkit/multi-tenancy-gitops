@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-sfg-mq-nonprod
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: b2bi-nonprod
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-sfg-mq
+    helm:
+      values: |
+        service-account:
+          name: mq
+          create: false
+          sccs: ["privileged"]
+
+        ibm-sfg-mq:
+          name: mq
+          selector:
+            type: ClusterIP
+          replicaCount: 1
+          serviceName: mq
+          serviceAccount: mq
+          image:
+            repository: ibmcom/mq
+            pullPolicy: IfNotPresent
+          storageClassName: ibmc-block-gold
+          #storageClassName: ocs-storagecluster-cephfs
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

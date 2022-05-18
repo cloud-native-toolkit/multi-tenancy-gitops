@@ -54,6 +54,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: robot-shop
     server: https://kubernetes.default.svc
+  - namespace: b2bi-prod
+    server: https://kubernetes.default.svc
+  - namespace: b2bi-nonprod
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
@@ -63,6 +67,8 @@ spec:
     kind: ClusterRole
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
+  - group: policy
+    kind: PodSecurityPolicy
   - group: "console.openshift.io"
     kind: ConsoleNotification
   - group: "console.openshift.io"
