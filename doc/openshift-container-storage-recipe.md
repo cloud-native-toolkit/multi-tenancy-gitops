@@ -47,8 +47,9 @@
     `IMAGE_NAME` is the boot image for your cluster virtual machines
 
     ```bash
+    majorVer=$(oc get -o jsonpath='{.items[].spec.channel}' clusterversion | cut -d- -f2)
     RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/rhcos.json"
-    if curl -k -s $RHCOS_URL|grep "404: Not Found" > /dev/null 2>&1; then
+    if echo $majorVer | grep -E '4.[1-9][0-9]' > /dev/null ; then
         RHCOS_URL="https://raw.githubusercontent.com/openshift/installer/release-${majorVer}/data/data/coreos/rhcos.json"
     fi
     if [[ "$PLATFORM" == "aws"  ]]; then
