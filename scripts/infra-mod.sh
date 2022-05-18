@@ -136,6 +136,7 @@ sed -i.bak '/namespace-openshift-storage.yaml/s/^#//g' kustomization.yaml
 sed -i.bak '/storage.yaml/s/^#//g' kustomization.yaml
 rm kustomization.yaml.bak
 # edit argocd/storage.yaml
+
 newChannel="stable-${majorVer}"
 defsc=$(oc get sc | grep default | awk '{print $1}')
 if [[ "$platform" == "aws" ]]; then
@@ -148,6 +149,14 @@ if [[ "$platform" == "aws" ]]; then
     storageClass=${defsc:-"ibmc-vpc-block-10iops-tier"}
 fi
 
+
+if echo $majorVer | grep -E '4.[6-8]' > /dev/null ; then
+    storageChart="ocs-operator"
+elif echo $majorVer | grep -E '4.9|4.[1-9][0-9]|4.[1-9][0-9][0-9]' > /dev/null ; then
+    storageChart="odf-operator"
+fi
+
+sed -i.bak "s#\${STORAGE_CHART_NAME}#${storageChart}#" argocd/storage.yaml
 sed -i.bak "s#\${CHANNEL}#${newChannel}#" argocd/storage.yaml
 sed -i.bak "s#\${STORCLASS}#${storageClass}#" argocd/storage.yaml
 rm argocd/storage.yaml.bak
@@ -157,12 +166,10 @@ popd
 
 pushd "${SCRIPTDIR}/.."
 
-${SCRIPTDIR}/sync-manifests.sh
+source ${SCRIPTDIR}/sync-manifests.sh
 
-git add .
-
-git commit -m "Editing infrastructure definitions"
-
-git push origin
+# git add .
+# git commit -m "Editing infrastructure definitions"
+# git push origin
 
 popd

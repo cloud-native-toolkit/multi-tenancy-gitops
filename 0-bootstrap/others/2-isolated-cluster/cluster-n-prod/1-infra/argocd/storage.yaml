@@ -17,12 +17,12 @@ spec:
     path: storage
     helm:
       values: |
-        odf-operator:
+        ${STORAGE_CHART_NAME}:
           channel: ${CHANNEL}
           sizeGiB: 512
           storageClass: ${STORCLASS}
           argo:
-            namespace: openshift-gitops
+            namespace: ${GIT_GITOPS_NAMESPACE}
             serviceAccount: openshift-gitops-cntk-argocd-application-controller
   syncPolicy:
     automated:
