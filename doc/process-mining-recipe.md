@@ -13,6 +13,5 @@
     - argocd/instances/ibm-process-mining-instance.yaml
     - argocd/operators/ibm-db2u-operator.yaml
     - argocd/operators/ibm-foundations.yaml
-    - argocd/operators/ibm-automation-foundation-core-operator.yaml
     - argocd/operators/ibm-catalogs.yaml
     ```
