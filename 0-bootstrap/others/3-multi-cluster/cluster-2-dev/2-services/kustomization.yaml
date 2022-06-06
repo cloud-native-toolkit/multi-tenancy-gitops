@@ -30,7 +30,9 @@ resources:
 #- argocd/operators/ibm-cpd-platform-operator.yaml
 #- argocd/instances/ibm-cpd-instance.yaml
 #- argocd/operators/ibm-cpd-ws-operator.yaml
+#- argocd/operators/ibm-cpd-wos-operator.yaml
 #- argocd/instances/ibm-cpd-ws-instance.yaml
+#- argocd/instances/ibm-cpd-wos-instance.yaml
 #- argocd/operators/ibm-cpd-wkc-operator.yaml
 #- argocd/instances/ibm-cpd-wkc-instance.yaml
 #- argocd/operators/ibm-cpd-ds-operator.yaml
