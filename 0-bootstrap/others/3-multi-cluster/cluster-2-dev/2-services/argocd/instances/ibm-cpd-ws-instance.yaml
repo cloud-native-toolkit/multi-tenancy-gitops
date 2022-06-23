@@ -30,6 +30,6 @@ spec:
       - name: spec.license.license
         value: Enterprise
       - name: spec.version
-        value: 4.0.4
+        value: 4.0.9
       - name: spec.storageClass
         value: managed-nfs-storage

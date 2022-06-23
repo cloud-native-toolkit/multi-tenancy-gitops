@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-cpd-ws-instance
+  name: ibm-cpd-dv-instance
   annotations:
     argocd.argoproj.io/sync-wave: "270"
   labels:
@@ -18,18 +18,18 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source:
-    chart: ibm-cp4d-watson-studio-instance
+    chart: ibm-cp4d-data-virtualization-instance
     repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
-    targetRevision: 0.1.2
+    targetRevision: 0.1.0
     helm:
       parameters:
       - name: metadata.name
-        value: ws-cr
+        value: dv-service
       - name: spec.license.accept
         value: "true"
       - name: spec.license.license
         value: Enterprise
       - name: spec.version
-        value: 4.0.9
-      - name: spec.storageClass
-        value: managed-nfs-storage
+        value: 1.7.8
+      - name: spec.size
+        value: small
