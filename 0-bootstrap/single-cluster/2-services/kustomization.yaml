@@ -67,6 +67,9 @@ resources:
 #- argocd/instances/ibm-sfg-b2bi-nonprod-setup.yaml
 #- argocd/instances/ibm-sfg-b2bi-nonprod.yaml
 
+# PAW
+#- argocd/instances/ibm-paw.yaml
+
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
 # Required for IBM ACE, IBM MQ
