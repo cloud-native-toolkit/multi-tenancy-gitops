@@ -365,3 +365,9 @@ rules:
       - wos.cpd.ibm.com
     resources:
       - woservices
+  - verbs:
+      - '*'
+    apiGroups:
+      - db2u.databases.ibm.com
+    resources:
+      - dvservices
