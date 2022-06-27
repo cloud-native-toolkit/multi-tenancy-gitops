@@ -67,6 +67,8 @@ spec:
     kind: RoleBinding
   - group: "rbac.authorization.k8s.io"
     kind: ClusterRole
+  - group: "rbac.authorization.k8s.io"
+    kind: ClusterRoleBinding
   - group: "security.openshift.io"
     kind: SecurityContextConstraints
   - group: policy
