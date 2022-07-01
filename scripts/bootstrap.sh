@@ -93,6 +93,61 @@ fork_repos () {
     git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
     cd ..
 
+    cd gitops-0-bootstrap
+    cd 0-bootstrap
+    cd single-cluster  
+    cd 1-infra  
+    find . -name 'kustomization.yaml' -print0 |
+      while IFS= read -r -d '' File; do
+        if grep -q "argocd/namespace-ibm-common-services.yaml" "$File"; then
+          #echo "$File"
+          sed -i'.bak' -e "s/#- argocd\/namespace-ibm-common-services.yaml/\- argocd\/namespace-ibm-common-services.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/namespace-tools.yaml/\- argocd\/namespace-tools.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/serviceaccounts-tools.yaml/\- argocd\/serviceaccounts-tools.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/scc-wkc-iis.yaml/\- argocd\/scc-wkc-iis.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/norootsquash.yaml/\- argocd\/norootsquash.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/daemonset-sync-global-pullsecret.yaml/\- argocd\/daemonset-sync-global-pullsecret.yaml/" $File
+          rm "${File}.bak"
+        fi
+      done
+    cd ..
+
+    cd 2-services  
+    find . -name 'kustomization.yaml' -print0 |
+      while IFS= read -r -d '' File; do
+        if grep -q "argocd/operators/ibm-cpd-scheduling-operator.yaml" "$File"; then
+          #echo "$File"
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-scheduling-operator.yaml/\- argocd\/operators\/ibm-cpd-scheduling-operator.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-platform-operator.yaml/\- argocd\/operators\/ibm-cpd-platform-operator.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-instance.yaml/\- argocd\/instances\/ibm-cpd-instance.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-wkc-operator.yaml/\- argocd\/operators\/ibm-cpd-wkc-operator.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-wkc-instance.yaml/\- argocd\/instances\/ibm-cpd-wkc-instance.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-ds-operator.yaml/\- argocd\/operators\/ibm-cpd-ds-operator.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-ds-instance.yaml/\- argocd\/instances\/ibm-cpd-ds-instance.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-catalogs.yaml/\- argocd\/operators\/ibm-catalogs.yaml/" $File
+          # (OM) for CP4D DV
+          sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-dv-operator.yaml/\- argocd\/operators\/ibm-cpd-dv-operator.yaml/" $File
+          sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-dv-instance.yaml/\- argocd\/instances\/ibm-cpd-dv-instance.yaml/" $File
+          rm "${File}.bak"
+        fi
+      done
+    echo "done replacing variables in kustomization.yaml files"
+    echo "git commit and push changes now"
+  
+    if [[ ${GIT_TOKEN} ]]; then
+      git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+    fi
+    set +e
+    git add .
+    git commit -m "Updating git source for cp4d to ${GIT_ORG}"
+    git push origin
+    set -e
+    cd ..
+    cd ..
+    cd ..
+    cd ..
+
+
     GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
       echo "Fork not found, creating fork and cloning"
@@ -593,7 +648,7 @@ patch_argocd_tls
 set_git_source
 
 # (OM) Add infra and servives for CP4D
-set_git_source_cp4d
+# set_git_source_cp4d
 
 # Set RWX storage
 # get_rwx_storage_class
