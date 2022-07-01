@@ -324,29 +324,30 @@ set_git_source () {
 }
 
 set_git_source_cp4d () {
-  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
+  pushd ${OUTPUT_DIR}
 
   # (OM) ToDo: Move the sed's commands to the following scripts
   # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
+
+  cd gitops-0-bootstrap
   cd 0-bootstrap
   cd single-cluster  
   cd 1-infra  
   find . -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "argocd/namespace-ibm-common-services.yaml" "$File"; then
-        # (OM) for CP4D catalogs  
+        #echo "$File"
         sed -i'.bak' -e "s/#- argocd\/namespace-ibm-common-services.yaml/\- argocd\/namespace-ibm-common-services.yaml/" $File
         sed -i'.bak' -e "s/#- argocd\/namespace-tools.yaml/\- argocd\/namespace-tools.yaml/" $File
         sed -i'.bak' -e "s/#- argocd\/serviceaccounts-tools.yaml/\- argocd\/serviceaccounts-tools.yaml/" $File
         sed -i'.bak' -e "s/#- argocd\/scc-wkc-iis.yaml/\- argocd\/scc-wkc-iis.yaml/" $File
-        # (OM) for CP4D DV
-        # sed -i'.bak' -e "s/#- argocd\/scc-wkc-iis.yaml/\- argocd\/scc-wkc-iis.yaml/" $File
         sed -i'.bak' -e "s/#- argocd\/norootsquash.yaml/\- argocd\/norootsquash.yaml/" $File
         sed -i'.bak' -e "s/#- argocd\/daemonset-sync-global-pullsecret.yaml/\- argocd\/daemonset-sync-global-pullsecret.yaml/" $File
         rm "${File}.bak"
       fi
     done
   cd ..
+
   cd 2-services  
   find . -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
