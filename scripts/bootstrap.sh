@@ -583,7 +583,7 @@ patch_argocd_tls
 set_git_source
 
 # (OM) Add infra and servives for CP4D
-# set_git_source_cp4d
+set_git_source_cp4d
 
 # Set RWX storage
 # get_rwx_storage_class
