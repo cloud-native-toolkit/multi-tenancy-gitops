@@ -331,47 +331,30 @@ set_git_source_cp4d () {
   # --------------------------------------------------  Start refactor - move to a script   --------------------------------------
   # (OM) ToDo: Move the sed's commands to the following scripts
   # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
-  pwd >> pwd1.txt
-  cd 0-bootstrap
-  cd single-cluster
-  pwd >> pwd2.txt
-  find . -name 'kustomization.yaml' -print0 |
+  # cd 0-bootstrap
+  # cd single-cluster
+  # find . -name 'kustomization.yaml' -print0 |
+  find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "namespace-ibm-common-services.yaml" "$File"; then
-      # sed -i'.bak' -e "s/#- argocd\/namespace-ibm-common-services.yaml/\- argocd\/namespace-ibm-common-services.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/namespace-ibm-common-services.yaml_- argocd/namespace-ibm-common-services.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/namespace-tools.yaml/\- argocd\/namespace-tools.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/namespace-tools.yaml_- argocd/namespace-tools.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/serviceaccounts-tools.yaml/\- argocd\/serviceaccounts-tools.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/serviceaccounts-tools.yaml_- argocd/serviceaccounts-tools.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/scc-wkc-iis.yaml/\- argocd\/scc-wkc-iis.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/scc-wkc-iis.yaml_- argocd/scc-wkc-iis.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/norootsquash.yaml/\- argocd\/norootsquash.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/norootsquash.yaml_- argocd/norootsquash.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/daemonset-sync-global-pullsecret.yaml/\- argocd\/daemonset-sync-global-pullsecret.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/daemonset-sync-global-pullsecret.yaml_- argocd/daemonset-sync-global-pullsecret.yaml_" $File
         rm "${File}.bak"
       fi
       if grep -q "ibm-cpd-scheduling-operator.yaml" "$File"; then
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-scheduling-operator.yaml/\- argocd\/operators\/ibm-cpd-scheduling-operator.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-scheduling-operator.yaml_- argocd/operators/ibm-cpd-scheduling-operator.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-platform-operator.yaml/\- argocd\/operators\/ibm-cpd-platform-operator.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-platform-operator.yaml_- argocd/operators/ibm-cpd-platform-operator.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-instance.yaml/\- argocd\/instances\/ibm-cpd-instance.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-instance.yaml_- argocd/instances/ibm-cpd-instance.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-wkc-operator.yaml/\- argocd\/operators\/ibm-cpd-wkc-operator.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-wkc-operator.yaml_- argocd/operators/ibm-cpd-wkc-operator.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-wkc-instance.yaml/\- argocd\/instances\/ibm-cpd-wkc-instance.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-wkc-instance.yaml_- argocd/instances/ibm-cpd-wkc-instance.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-ds-operator.yaml/\- argocd\/operators\/ibm-cpd-ds-operator.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-ds-operator.yaml_- argocd/operators/ibm-cpd-ds-operator.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-ds-instance.yaml/\- argocd\/instances\/ibm-cpd-ds-instance.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-ds-instance.yaml_- argocd/instances/ibm-cpd-ds-instance.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-catalogs.yaml/\- argocd\/operators\/ibm-catalogs.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-catalogs.yaml_- argocd/operators/ibm-catalogs.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/operators\/ibm-cpd-dv-operator.yaml/\- argocd\/operators\/ibm-cpd-dv-operator.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-dv-operator.yaml_- argocd/operators/ibm-cpd-dv-operator.yaml_" $File
-      # sed -i'.bak' -e "s/#- argocd\/instances\/ibm-cpd-dv-instance.yaml/\- argocd\/instances\/ibm-cpd-dv-instance.yaml/" $File
         sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-dv-instance.yaml_- argocd/instances/ibm-cpd-dv-instance.yaml_" $File
         rm "${File}.bak"
       fi
@@ -392,8 +375,8 @@ set_git_source_cp4d () {
 
   set -e
 
-  ce ..
-  cd ..
+  # cd ..
+  # cd ..
   popd
 }
 
