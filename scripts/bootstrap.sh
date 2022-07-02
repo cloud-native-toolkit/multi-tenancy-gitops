@@ -326,12 +326,13 @@ set_git_source () {
 
 set_git_source_cp4d () {
   echo setting git source instead of git override
-  pushd ${OUTPUT_DIR}
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
   # (OM) ToDo: Move the sed's commands to the following scripts
   # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
-
-  find ${SCRIPTDIR}/${OUTPUT_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
+  cd 0-bootstrap
+  cd single-cluster
+  find . -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "namespace-ibm-common-services.yaml" "$File"; then
         sed -i'.bak' -e "s/#- argocd\/namespace-ibm-common-services.yaml/\- argocd\/namespace-ibm-common-services.yaml/" $File
@@ -369,6 +370,8 @@ set_git_source_cp4d () {
 
   set -e
 
+  ce ..
+  cd ..
   popd
 }
 
