@@ -331,9 +331,6 @@ set_git_source_cp4d () {
   # --------------------------------------------------  Start refactor - move to a script   --------------------------------------
   # (OM) ToDo: Move the sed's commands to the following scripts
   # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
-  # cd 0-bootstrap
-  # cd single-cluster
-  # find . -name 'kustomization.yaml' -print0 |
   find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "namespace-ibm-common-services.yaml" "$File"; then
@@ -375,8 +372,6 @@ set_git_source_cp4d () {
 
   set -e
 
-  # cd ..
-  # cd ..
   popd
 }
 
