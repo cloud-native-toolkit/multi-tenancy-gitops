@@ -311,6 +311,8 @@ set_git_source () {
 
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     test -e 0-bootstrap/others && rm -r 0-bootstrap/others
+    echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >>  0-bootstrap/single-cluster/variable-enviada0.txt
+    echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> 0-bootstrap/single-cluster/variable-recibida0.txt
   fi
 
   GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
@@ -365,8 +367,8 @@ set_git_source_cp4d () {
 
   set +e
 
-  echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >> variable-enviada.txt
-  echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> variable-recibida.txt
+  echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >>  0-bootstrap/single-cluster/variable-enviada.txt
+  echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> 0-bootstrap/single-cluster/variable-recibida.txt
   git add .
 
   git commit -m "Updating git source for cp4d to ${GIT_ORG}"
@@ -586,7 +588,12 @@ patch_argocd_tls
 set_git_source
 
 # (OM) Add infra and servives for CP4D
-set_git_source_cp4d
+USE_CP4D_HEALTHCARE_PATTERN=${CP4D_HCARE_PATTERN}
+
+if [[ "${USE_CP4D_HEALTHCARE_PATTERN}" == "true" ]]; then
+  set_git_source_cp4d
+fi
+# set_git_source_cp4d
 
 # Set RWX storage
 # get_rwx_storage_class
