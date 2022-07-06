@@ -54,6 +54,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: mq
     server: https://kubernetes.default.svc
+  - namespace: pem
+    server: https://kubernetes.default.svc
   - namespace: b2bi-prod
     server: https://kubernetes.default.svc
   - namespace: b2bi-nonprod
