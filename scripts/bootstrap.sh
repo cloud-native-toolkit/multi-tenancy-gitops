@@ -2,6 +2,7 @@
 
 set -eo pipefail
 
+USE_CP4D_HEALTHCARE_PATTERN=${CP4D_HCARE_PATTERN}
 USE_GITEA=${USE_GITEA:-false}
 
 if [[ "${USE_GITEA}" == "true" ]]; then
@@ -364,6 +365,8 @@ set_git_source_cp4d () {
 
   set +e
 
+  echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >> variable-enviada.txt
+  echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> variable-recibida.txt
   git add .
 
   git commit -m "Updating git source for cp4d to ${GIT_ORG}"
