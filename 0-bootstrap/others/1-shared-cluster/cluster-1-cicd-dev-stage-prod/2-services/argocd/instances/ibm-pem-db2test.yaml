@@ -32,8 +32,8 @@ spec:
           image:
             repository: quay.io/vbudi/db2-pem:1.0.1
             pullPolicy: IfNotPresent
-          #storageClassName: ibmc-block-gold
-          storageClassName: ocs-storagecluster-cephfs
+          storageClassName: ibmc-block-gold
+          #storageClassName: ocs-storagecluster-cephfs
           
           service:
             name: pemtest

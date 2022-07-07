@@ -48,7 +48,7 @@ This guide assumes that you already deploys and verifies the 2 instances of the 
         B2BI_PROD_DB_PASSWORD=db2inst1 \
         B2BI_NONPROD_PASSWORD=password \
         B2BI_NONPROD_DB_PASSWORD=db2inst1 \
-        RWX_STORAGECLASS=ibmc-block-gold \
+        RWX_STORAGECLASS=managed-nfs-storage \
         ./pem-prereqs.sh
         ```
 
