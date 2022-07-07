@@ -31,7 +31,6 @@ if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
   echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
 fi
 
-
 if [[ -z ${GIT_ORG} ]]; then
   echo "We recommend to create a new github organization for all your gitops repos"
   echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
@@ -228,7 +227,6 @@ patch_argocd_tls () {
     popd
 }
 
-
 gen_argocd_patch () {
 echo "Generating argocd instance patch for resourceCustomizations"
 pushd ${OUTPUT_DIR}
@@ -311,8 +309,6 @@ set_git_source () {
 
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     test -e 0-bootstrap/others && rm -r 0-bootstrap/others
-    echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >>  0-bootstrap/single-cluster/variable-enviada0.txt
-    echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> 0-bootstrap/single-cluster/variable-recibida0.txt
   fi
 
   GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
@@ -334,6 +330,9 @@ set_git_source_cp4d () {
   # --------------------------------------------------  Start refactor - move to a script   --------------------------------------
   # (OM) ToDo: Move the sed's commands to the following scripts
   # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
+  # if [[ ${GIT_TOKEN} ]]; then
+  #   git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  # fi
   find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "namespace-ibm-common-services.yaml" "$File"; then
@@ -367,8 +366,6 @@ set_git_source_cp4d () {
 
   set +e
 
-  echo "CP4D_HCARE_PATTERN=${CP4D_HCARE_PATTERN}" >>  0-bootstrap/single-cluster/variable-enviada.txt
-  echo "USE_CP4D_HEALTHCARE_PATTERN=${USE_CP4D_HEALTHCARE_PATTERN}" >> 0-bootstrap/single-cluster/variable-recibida.txt
   git add .
 
   git commit -m "Updating git source for cp4d to ${GIT_ORG}"
