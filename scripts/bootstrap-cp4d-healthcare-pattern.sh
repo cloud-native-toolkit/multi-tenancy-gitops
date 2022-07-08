@@ -2,6 +2,7 @@
 
 set -eo pipefail
 
+USE_CP4D_HEALTHCARE_PATTERN=${CP4D_HCARE_PATTERN}
 USE_GITEA=${USE_GITEA:-false}
 
 if [[ "${USE_GITEA}" == "true" ]]; then
@@ -29,7 +30,6 @@ set -e
 if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
   echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
 fi
-
 
 if [[ -z ${GIT_ORG} ]]; then
   echo "We recommend to create a new github organization for all your gitops repos"
@@ -227,7 +227,6 @@ patch_argocd_tls () {
     popd
 }
 
-
 gen_argocd_patch () {
 echo "Generating argocd instance patch for resourceCustomizations"
 pushd ${OUTPUT_DIR}
@@ -294,6 +293,7 @@ apply_argocd_git_override_configmap () {
 
   popd
 }
+
 argocd_git_override () {
   echo "Deploying argocd-git-override webhook"
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/deployment.yaml
@@ -319,16 +319,61 @@ set_git_source () {
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
-  # add CP4D to kustomization.yaml
-  GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source-cp4d-healthcare-pattern.sh 
+  set -e
+  popd
+}
+
+set-git-cp4d-healthcare-pattern () {
+  echo setting git source instead of git override
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap
+
+  # --------------------------------------------------  Start refactor - move to a script   --------------------------------------
+  # (OM) ToDo: Move the sed's commands to the following scripts
+  # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-cp4d-healthcare-pattern.sh
+  # if [[ ${GIT_TOKEN} ]]; then
+  #   git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  # fi
+  find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
+    while IFS= read -r -d '' File; do
+      if grep -q "namespace-ibm-common-services.yaml" "$File"; then
+        sed -i'.bak' -e "s_#- argocd/namespace-ibm-common-services.yaml_- argocd/namespace-ibm-common-services.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/namespace-tools.yaml_- argocd/namespace-tools.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/serviceaccounts-tools.yaml_- argocd/serviceaccounts-tools.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/scc-wkc-iis.yaml_- argocd/scc-wkc-iis.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/norootsquash.yaml_- argocd/norootsquash.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/daemonset-sync-global-pullsecret.yaml_- argocd/daemonset-sync-global-pullsecret.yaml_" $File
+        rm "${File}.bak"
+      fi
+      if grep -q "ibm-cpd-scheduling-operator.yaml" "$File"; then
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-scheduling-operator.yaml_- argocd/operators/ibm-cpd-scheduling-operator.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-platform-operator.yaml_- argocd/operators/ibm-cpd-platform-operator.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-instance.yaml_- argocd/instances/ibm-cpd-instance.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-wkc-operator.yaml_- argocd/operators/ibm-cpd-wkc-operator.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-wkc-instance.yaml_- argocd/instances/ibm-cpd-wkc-instance.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-ds-operator.yaml_- argocd/operators/ibm-cpd-ds-operator.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-ds-instance.yaml_- argocd/instances/ibm-cpd-ds-instance.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-catalogs.yaml_- argocd/operators/ibm-catalogs.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-dv-operator.yaml_- argocd/operators/ibm-cpd-dv-operator.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-dv-instance.yaml_- argocd/instances/ibm-cpd-dv-instance.yaml_" $File
+        rm "${File}.bak"
+      fi
+    done
+  # --------------------------------------------------  End refactor - move to a script   --------------------------------------
+ 
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
+
   set +e
+
   git add .
-  git commit -m "Updating git source with C4PD to ${GIT_ORG}"
+
+  git commit -m "Updating git source for cp4d to ${GIT_ORG}"
+
   git push origin
+
   set -e
+
   popd
 }
 
@@ -538,6 +583,14 @@ patch_argocd_tls
 #argocd_git_override
 
 set_git_source
+
+# (OM) Add infra and servives for CP4D
+USE_CP4D_HEALTHCARE_PATTERN=${CP4D_HCARE_PATTERN}
+
+if [[ "${USE_CP4D_HEALTHCARE_PATTERN}" == "true" ]]; then
+  set-git-cp4d-healthcare-pattern
+fi
+# set_git_source_cp4d
 
 # Set RWX storage
 # get_rwx_storage_class
