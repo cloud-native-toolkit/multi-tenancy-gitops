@@ -1,0 +1,290 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-paw
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    #gitops.tier.layer: services
+    gitops.tier.source: helm
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: dev
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    repoURL: ""
+    chart: paw
+    targetRevision: 1.0.0
+    helm:
+      values: |
+        arch: amd64
+        asyncService:
+          configKeyspaceEvents: true
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 512M
+          memoryRequestLimit: 50M
+          replicas: 2
+        atlas:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 2048M
+          memoryRequestLimit: 1024M
+          replicas: 2
+        bss:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1532M
+          memoryRequestLimit: 766M
+          replicas: 2
+        bssInit:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          enableEditMdxView: false
+          enableIntentBar: true
+          enablePAA: true
+          enablePasteSpecial: false
+          memoryLimit: 200M
+          memoryRequestLimit: 100M
+        cdn:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        common:
+          appName: paw
+          cpuLimit: 200m
+          cpuRequestLimit: 100m
+          ibmCognosServlet: https://cognos.ibmpeppa.com/p2pd/servlet/dispatch
+          internalDomainName: svc.cluster.local
+          memoryLimit: 100M
+          memoryRequestLimit: 50M
+          proxyTimeoutSeconds: 120
+          secureSessionCookie: false
+          tm1APIPort: 
+          tm1ApplicationsLocation: http://tm1-spreadsheetservices.papoc.internal:9510/tm1web/
+          tm1Location: http://tm1data.papoc.internal:5895
+        couchdb:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 400M
+          memoryRequestLimit: 200M
+        docker_registry_prefix: image-registry.openshift-image-registry.svc:5000/dev
+        gateway:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          emptyDirMedium: Memory
+          emptyDirSizeLimit: 16384
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        glass:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        ingress:
+          host: paw.ibmpeppa.com
+          namespaceLabel: ""
+        mongo:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          emptyDirMedium: Memory
+          emptyDirSizeLimit: 16384
+          memoryLimit: 2048M
+          memoryRequestLimit: 1024M
+          options: --oplogSize 990 --wiredTigerCacheSizeGB 0.5
+        monitor:
+          adminAgentAPIKey: 
+          AdminAgentTimeout: 5
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1532M
+          memoryRequestLimit: 766M
+          replicas: 2
+        mysqlCluster:
+          maxConnectErrors: 100
+        mysqlData:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 2048M
+          memoryRequestLimit: 1024M
+        mysqlDataStunnel:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+        mysqlMgmt:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          emptyDirMedium: 
+          emptyDirSizeLimit: 1Gi
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+        mysqlMgmtStunnel:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+        mysqlServer:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+        mysqlServerStunnel:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+        instanceIdWithinNamespace: 
+        neoIdviz:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        neoProvision:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 2048M
+          memoryRequestLimit: 1024M
+          replicas: 2
+        paContent:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 500M
+          memoryRequestLimit: 250M
+          replicas: 2
+        palmService:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        paPredict:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1532M
+          memoryRequestLimit: 766M
+          replicas: 2
+        pawUiApi:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 300M
+          memoryRequestLimit: 150M
+          replicas: 2
+        persistence:
+          class: managed-premium
+          podScheduler: default-scheduler
+          size: 2Gi
+          useDynamicProvisioning: true
+        planService:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1532M
+          memoryRequestLimit: 766M
+          replicas: 2
+        prismApp:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 300M
+          memoryRequestLimit: 150M
+          replicas: 2
+        prismPlatform:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 3072M
+          memoryRequestLimit: 1536M
+          jvmArgs: -Xmx4096m -Xms512m
+          replicas: 2
+        prismProxy:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        redis:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 100M
+          memoryRequestLimit: 50M
+        secrets:
+          cacertVersion: MjAyMl8wNV8xN18xNF8yN181MgoZ
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          ingressCertExternal: false
+          ingressCertSecretName: pa-ingress-cert
+          ingressCertVersion: 
+          javaTruststoreVersion: MjAyMl8wNV8xN18xNF8yN181MwoZ
+          memoryLimit: 500M
+          memoryRequestLimit: 250M
+          pawSecretVersion:
+          tlsCaCertName: ca.crt
+          tlsCertExternal: false
+          tlsCertSecretName: pa-tls-cert
+          tlsCertVersion: MjAyMl8wNV8xN18xNF8yN181MAoZ
+          tlsEmptyDirMedium: Memory
+          tlsEmptyDirSizeLimit: 131072
+        sentinel:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 100M
+          memoryRequestLimit: 50M
+        shareApp:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 500M
+          memoryRequestLimit: 250M
+          replicas: 2
+        sharePlatform:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 2048M
+          memoryRequestLimit: 1024M
+          replicas: 2
+        shareProxy:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 1024M
+          memoryRequestLimit: 512M
+          replicas: 2
+        tm1proxy:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 100M
+          memoryRequestLimit: 50M
+          replicas: 2
+        userAdmin:
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          memoryLimit: 512M
+          memoryRequestLimit: 256M
+          replicas: 2
+        waProxy:
+          apiAllowOrigins: 
+          camLoginNamespace: appid
+          cpuLimit: 1000m
+          cpuRequestLimit: 250m
+          cspFrameAncestors: "'self'"
+          emptyDirMedium: Memory
+          emptyDirSizeLimit: 16384
+          enableUserImport: true
+          enableViewExchange: false
+          ibmCognosGatewayUrl: https://cognos.ibmpeppa.com/bi/v1/disp
+          memoryLimit: 3072M
+          memoryRequestLimit: 1536M
+          paLoginMode: cam
+          replicas: 2
+          sessionTimeout: 60m
+          tm1LoginUrl: http://tm1data.centralus.cloudapp.azure.com:52670/
+          xFrameOptions: sameorigin    
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

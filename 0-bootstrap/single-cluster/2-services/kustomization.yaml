@@ -57,6 +57,9 @@ resources:
 ## IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
 
+# PAW
+#- argocd/instances/ibm-paw.yaml
+
 # B2BI
 #- argocd/instances/ibm-sfg-db2-prod.yaml
 #- argocd/instances/ibm-sfg-mq-prod.yaml
