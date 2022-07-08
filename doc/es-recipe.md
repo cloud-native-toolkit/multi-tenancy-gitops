@@ -26,7 +26,7 @@ This IBM Event Streams recipe should provide a highly available deployment of IB
 #### Storage - ibm-eventstreams-instance.yaml
 Make sure the `storageClassName` specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-eventstreams-instance.yaml` suits your needs. By default, the storage class used for this recipe, which should be the storage class requested unless the use case or specific requirements dictate otherwise, is **`managed-nfs-storage`** since the IBM Technology Zone environments this recipe is meant for mount NFS storage. If you are using this recipe and the GitOps Framework that executes this recipe on another environment, make sure you select the appropriate storage class. Bear in mind that IBM Event Streams requires **block storage**.
 
-#### High Availability - ibm-apic-instance.yaml
+#### High Availability - ibm-eventstreams-instance.yaml
 Make sure the high availability specified in `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-eventstreams-instance.yaml` for each of the IBM Event Streams components suit your needs.
 
    * The Kafka and Zookeeper components are already set up highly available as you can see within `spec.strimziOverrides.kafka.replicas` and `spec.strimziOverrides.zookeeper.replicas` respectively.
@@ -54,13 +54,13 @@ NAME             STATUS
 es-inst          Ready
 ```
 
-You can now access your IBM API Connect Cloud Manager
+You can now access your IBM Event Streams
 
 ```
 oc get EventStreams es-inst -n tools -o=jsonpath='{.status.endpoints[?(@.name=="ui")].uri}'
 ```
 
-The credentials for logging into the IBM API Connect Cloud Manager are `admin/<password>` where password is stored in a secret.
+The credentials for logging into the IBM Event Streams are `admin/<password>` where password is stored in a secret.
 
 ```
 oc get secret platform-auth-idp-credentials -n ibm-common-services -o=jsonpath='{.data.admin_password}' | base64 -D
