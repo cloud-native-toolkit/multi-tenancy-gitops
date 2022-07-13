@@ -132,7 +132,7 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 1.  Retrieve the Sterling File Gateway console URL.
 
     ```bash
-    oc get route -n tools ibm-sfg-b2bi-sfg-asi-internal-route-dashboard -o template --template='https://{{.spec.host}}'
+    oc get route -n b2bi-prod ibm-sfg-b2bi-sfg-asi-internal-route-dashboard -o template --template='https://{{.spec.host}}'
     ```
 
 2. Log in with the default credentials:  username:`fg_sysadmin` password: `password` 

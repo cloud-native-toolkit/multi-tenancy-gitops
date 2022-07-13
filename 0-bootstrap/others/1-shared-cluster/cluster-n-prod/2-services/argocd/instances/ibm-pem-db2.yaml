@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name:  ibm-pem-db2
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: pem
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-sfg-db2
+    helm:
+      values: |
+        service-account:
+          name: pemdb
+          create: true
+          sccs: ["privileged"]
+
+        ibm-sfg-db2:
+          name: pemdb
+          replicaCount: 1
+          serviceName: pemdb
+          serviceAccount: pemdb
+          image:
+            repository: quay.io/vbudi/db2-pem:1.0.1
+            pullPolicy: IfNotPresent
+          storageClassName: ibmc-block-gold
+          #storageClassName: ocs-storagecluster-cephfs
+          
+          service:
+            name: pemdb
+            type: ClusterIP
+            port: 50000
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

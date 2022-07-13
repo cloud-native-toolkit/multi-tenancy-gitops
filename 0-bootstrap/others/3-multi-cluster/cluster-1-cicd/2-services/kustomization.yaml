@@ -67,6 +67,12 @@ resources:
 #- argocd/instances/ibm-sfg-b2bi-nonprod-setup.yaml
 #- argocd/instances/ibm-sfg-b2bi-nonprod.yaml
 
+# PEM
+#- argocd/instances/ibm-pem-db2.yaml
+#- argocd/instances/ibm-pem-db2test.yaml
+#- argocd/instances/ibm-pem-setup.yaml
+#- argocd/instances/ibm-pem.yaml
+
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
 # Required for IBM ACE, IBM MQ
