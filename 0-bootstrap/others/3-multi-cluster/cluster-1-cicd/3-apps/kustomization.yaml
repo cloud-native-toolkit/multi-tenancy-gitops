@@ -19,6 +19,8 @@ resources:
 #- argocd/apic/multi-cluster-app.yaml
 #- argocd/apic/multi-cluster-ops.yaml
 
+#- argocd/es/dev.yaml
+
 #- argocd/bookinfo/cicd.yaml
 #- argocd/bookinfo/dev.yaml
 #- argocd/bookinfo/stage.yaml
