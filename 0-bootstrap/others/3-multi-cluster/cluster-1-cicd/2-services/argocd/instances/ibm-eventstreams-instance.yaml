@@ -92,5 +92,5 @@ spec:
                     size: 2Gi
                     class: managed-nfs-storage
               requestIbmServices:
-                iam: false
-                monitoring: false
+                iam: true
+                monitoring: true
