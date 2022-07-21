@@ -3,10 +3,10 @@
 set -eo pipefail
 
 USE_CP4D_HEALTHCARE_PATTERN=${CP4D_HCARE_PATTERN}
-USE_GITEA=${USE_GITEA:-false}
+USE_GITEA=${USE_GITEA:-true}
 
 if [[ "${USE_GITEA}" == "true" ]]; then
-  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
+  exec $(dirname "${BASH_SOURCE}")/bootstrap-healthcare-gitea.sh
 fi
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -329,37 +329,33 @@ set-git-cp4d-healthcare-pattern () {
 
   # --------------------------------------------------  Start refactor - move to a script   --------------------------------------
   # (OM) ToDo: Move the sed's commands to the following scripts
-  # GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-cp4d-healthcare-pattern.sh
-  # if [[ ${GIT_TOKEN} ]]; then
-  #   git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
-  # fi
-  find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
-    while IFS= read -r -d '' File; do
-      if grep -q "namespace-ibm-common-services.yaml" "$File"; then
-        sed -i'.bak' -e "s_#- argocd/namespace-ibm-common-services.yaml_- argocd/namespace-ibm-common-services.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/namespace-tools.yaml_- argocd/namespace-tools.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/serviceaccounts-tools.yaml_- argocd/serviceaccounts-tools.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/scc-wkc-iis.yaml_- argocd/scc-wkc-iis.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/norootsquash.yaml_- argocd/norootsquash.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/daemonset-sync-global-pullsecret.yaml_- argocd/daemonset-sync-global-pullsecret.yaml_" $File
-        rm "${File}.bak"
-      fi
-      if grep -q "ibm-cpd-scheduling-operator.yaml" "$File"; then
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-scheduling-operator.yaml_- argocd/operators/ibm-cpd-scheduling-operator.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-platform-operator.yaml_- argocd/operators/ibm-cpd-platform-operator.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-instance.yaml_- argocd/instances/ibm-cpd-instance.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-wkc-operator.yaml_- argocd/operators/ibm-cpd-wkc-operator.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-wkc-instance.yaml_- argocd/instances/ibm-cpd-wkc-instance.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-ds-operator.yaml_- argocd/operators/ibm-cpd-ds-operator.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-ds-instance.yaml_- argocd/instances/ibm-cpd-ds-instance.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-catalogs.yaml_- argocd/operators/ibm-catalogs.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-dv-operator.yaml_- argocd/operators/ibm-cpd-dv-operator.yaml_" $File
-        sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-dv-instance.yaml_- argocd/instances/ibm-cpd-dv-instance.yaml_" $File
-        rm "${File}.bak"
-      fi
-    done
+  # find 0-bootstrap/single-cluster -name 'kustomization.yaml' -print0 |
+  #   while IFS= read -r -d '' File; do
+  #     if grep -q "namespace-ibm-common-services.yaml" "$File"; then
+  #       sed -i'.bak' -e "s_#- argocd/namespace-ibm-common-services.yaml_- argocd/namespace-ibm-common-services.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/namespace-tools.yaml_- argocd/namespace-tools.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/serviceaccounts-tools.yaml_- argocd/serviceaccounts-tools.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/scc-wkc-iis.yaml_- argocd/scc-wkc-iis.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/norootsquash.yaml_- argocd/norootsquash.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/daemonset-sync-global-pullsecret.yaml_- argocd/daemonset-sync-global-pullsecret.yaml_" $File
+  #       rm "${File}.bak"
+  #     fi
+  #     if grep -q "ibm-cpd-scheduling-operator.yaml" "$File"; then
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-scheduling-operator.yaml_- argocd/operators/ibm-cpd-scheduling-operator.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-platform-operator.yaml_- argocd/operators/ibm-cpd-platform-operator.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-instance.yaml_- argocd/instances/ibm-cpd-instance.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-wkc-operator.yaml_- argocd/operators/ibm-cpd-wkc-operator.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-wkc-instance.yaml_- argocd/instances/ibm-cpd-wkc-instance.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-ds-operator.yaml_- argocd/operators/ibm-cpd-ds-operator.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-ds-instance.yaml_- argocd/instances/ibm-cpd-ds-instance.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-catalogs.yaml_- argocd/operators/ibm-catalogs.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-dv-operator.yaml_- argocd/operators/ibm-cpd-dv-operator.yaml_" $File
+  #       sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-dv-instance.yaml_- argocd/instances/ibm-cpd-dv-instance.yaml_" $File
+  #       rm "${File}.bak"
+  #     fi
+  #   done
   # --------------------------------------------------  End refactor - move to a script   --------------------------------------
- 
+  GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-cp4d-healthcare-pattern.sh
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
