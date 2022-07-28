@@ -62,10 +62,6 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: kube-system
     server: https://kubernetes.default.svc
-  - namespace: ssp
-    server: https://kubernetes.default.svc
-  - namespace: openshift-image-registry
-    server: https://kubernetes.default.svc
   - namespace: sccm
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:

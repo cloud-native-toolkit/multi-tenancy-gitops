@@ -86,6 +86,11 @@ resources:
 #- argocd/instances/ibm-pem-setup.yaml
 #- argocd/instances/ibm-pem.yaml
 
+# SCCM
+#- argocd/instances/ibm-sccm-db2.yaml
+#- argocd/instances/ibm-sccm-setup.yaml
+#- argocd/instances/ibm-sccm.yaml
+
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml
 # Required for IBM ACE, IBM MQ
