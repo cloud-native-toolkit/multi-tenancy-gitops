@@ -17,6 +17,7 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
     - argocd/namespace-sealed-secrets.yaml
     - argocd/serviceaccounts-b2bi-prod.yaml
     - argocd/sfg-b2bi-clusterwide.yaml
+    - argocd/daemonset-sync-global-pullsecret.yaml
     ```
 
 ### Services - Kustomization.yaml
