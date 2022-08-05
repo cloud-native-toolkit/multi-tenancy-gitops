@@ -119,11 +119,14 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
     ```
 - Step 2:
   - Inside `values.yaml`, find & set 
-  - ```bash
-    datasetup:
-        enable: false
-    dbCreateSchema: false
-    ```
+        ```bash
+        . . .
+        datasetup:
+          enabled: false
+        . . .
+        dbCreateSchema: false
+        . . .
+        ```
 - Commit and push the changes for the `multi-tenancy-gitops-services` repo.
 ---
 
@@ -132,7 +135,7 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 1.  Retrieve the Sterling File Gateway console URL.
 
     ```bash
-    oc get route -n b2bi-prod ibm-sfg-b2bi-sfg-asi-internal-route-dashboard -o template --template='https://{{.spec.host}}'
+    oc get route -n b2bi-prod ibm-sfg-b2bi-prod-sfg-asi-internal-route-dashboard -o template --template='https://{{.spec.host}}'
     ```
 
 2. Log in with the default credentials:  username:`fg_sysadmin` password: `password` 
