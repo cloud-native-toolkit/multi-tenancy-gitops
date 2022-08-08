@@ -14,6 +14,8 @@ This guide assumes that you already deploys and verifies the 2 instances of the 
     - argocd/namespace-pem.yaml
     - argocd/serviceaccounts-pem.yaml
     - argocd/pem-b2bi-clusterwide.yaml
+    - argocd/daemonset-sync-global-pullsecret.yaml
+
     ```
 
 ### Services - Kustomization.yaml
@@ -93,6 +95,7 @@ This guide assumes that you already deploys and verifies the 2 instances of the 
     >  💡 **NOTE**  
     > Commit and Push the changes for `multi-tenancy-gitops` and
     > sync ArgoCD application `services` this will take around 1 hr for the database setup.
+    > If the migrator shows SQLCODE 57019 - that means PEM is started to early - comment out the line and wait a couple of minutes before re-enabling the `ibm-pem.yaml`.
 
 ---
 
