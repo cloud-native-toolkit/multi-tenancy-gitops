@@ -142,6 +142,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [Cloud Pak for Data + Analytics Engine Powered by Apache Spark](doc/cp4d-aespark-recipe.md)
     - [Cloud Pak for Data + Watson OpenScale](doc/cp4d-wos-recipe.md)
     - [Cloud Pak for Data + Data Virtualization](doc/cp4d-dv-recipe.md)
+    - [Cloud Pak for Data + Watson Machine Learning](doc/cp4d-wml-recipe.md)
     - [Cloud Pak for Security](doc/cp4s-recipe.md)
     - [Instana Agent](doc/instana-recipe.md)
     - [Spectrum Protect Plus](doc/spp-recipe.md)

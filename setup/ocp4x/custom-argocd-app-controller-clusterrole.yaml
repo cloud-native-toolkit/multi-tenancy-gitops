@@ -402,3 +402,9 @@ rules:
       - operator.knative.dev
     resources:
       - knativeservings
+    - verbs:
+      - '*'
+    apiGroups:
+      - wml.cpd.ibm.com
+    resources:
+      - wmlbases
