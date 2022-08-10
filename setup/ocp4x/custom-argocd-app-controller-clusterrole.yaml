@@ -402,7 +402,7 @@ rules:
       - operator.knative.dev
     resources:
       - knativeservings
-    - verbs:
+  - verbs:
       - '*'
     apiGroups:
       - wml.cpd.ibm.com
