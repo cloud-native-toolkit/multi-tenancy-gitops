@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cp4d-pattern-healthcare
+  labels:
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  annotations:
+    argocd.argoproj.io/sync-wave: "400"
+spec:
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    path: instances/cp4d-pattern-healthcare
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

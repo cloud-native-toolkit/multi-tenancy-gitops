@@ -41,6 +41,11 @@ resources:
 #- argocd/instances/ibm-cpd-wos-instance.yaml
 #- argocd/operators/ibm-cpd-dv-operator.yaml
 #- argocd/instances/ibm-cpd-dv-instance.yaml
+#- argocd/operators/ibm-cpd-wml-operator.yaml
+#- argocd/instances/ibm-cpd-wml-instance.yaml
+
+## Cloud Pak for Data Demos
+# - argocd/instances/cp4d-pattern-healthcare.yaml
 
 ## Cloud Pak for Security
 #- argocd/operators/ibm-cp4s-operator.yaml
@@ -56,6 +61,9 @@ resources:
 
 ## IBM Catalogs
 #- argocd/operators/ibm-catalogs.yaml
+
+# PAW
+#- argocd/instances/ibm-paw.yaml
 
 # B2BI
 #- argocd/instances/ibm-sfg-db2-prod.yaml
