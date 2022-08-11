@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cpd-wml-instance
+  annotations:
+    argocd.argoproj.io/sync-wave: "270"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+    gitops.tier.source: helm
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: tools
+    server: https://kubernetes.default.svc
+  project: services
+  source:
+    chart: ibm-cp4d-watson-machine-learning-instance 
+    repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
+    targetRevision: 0.1.0
+    helm:
+      parameters:
+      - name: metadata.name
+        value: wml-cr
+      - name: spec.license.accept
+        value: "true"
+      - name: spec.license.license
+        value: Enterprise
+      - name: spec.version
+        value: 4.0.9
+      - name: spec.storageClass   
+        value: managed-nfs-storage
+      - name: spec.ignoreForMaintenance
+        value: "false"
+      - name: spec.scaleConfig
+        value: small

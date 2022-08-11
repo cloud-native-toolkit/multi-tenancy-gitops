@@ -355,11 +355,12 @@ set-git-cp4d-healthcare-pattern () {
         sed -i'.bak' -e "s_#- argocd/operators/ibm-catalogs.yaml_- argocd/operators/ibm-catalogs.yaml_" $File
         sed -i'.bak' -e "s_#- argocd/operators/ibm-cpd-dv-operator.yaml_- argocd/operators/ibm-cpd-dv-operator.yaml_" $File
         sed -i'.bak' -e "s_#- argocd/instances/ibm-cpd-dv-instance.yaml_- argocd/instances/ibm-cpd-dv-instance.yaml_" $File
+        sed -i'.bak' -e "s_#- argocd/instances/cp4d-pattern-healthcare.yaml_- argocd/instances/cp4d-pattern-healthcare.yaml_" $File
         rm "${File}.bak"
       fi
     done
   # --------------------------------------------------  End refactor - move to a script   --------------------------------------
- 
+
   if [[ ${GIT_TOKEN} ]]; then
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi

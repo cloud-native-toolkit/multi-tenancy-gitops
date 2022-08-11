@@ -44,6 +44,9 @@ resources:
 #- argocd/operators/ibm-cpd-wml-operator.yaml
 #- argocd/instances/ibm-cpd-wml-instance.yaml
 
+## Cloud Pak for Data Demos
+#- argocd/instances/cp4d-pattern-healthcare.yaml
+
 ## Cloud Pak for Security
 #- argocd/operators/ibm-cp4s-operator.yaml
 #- argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
