@@ -5,6 +5,7 @@
     ```yaml
     - argocd/namespace-ibm-common-services.yaml
     - argocd/namespace-tools.yaml
+    - argocd/namespace-cloudpak.yaml
     ```
 ### Services - Kustomization.yaml    
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` uncomment the following:
