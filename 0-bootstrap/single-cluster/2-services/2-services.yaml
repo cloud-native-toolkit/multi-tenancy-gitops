@@ -60,6 +60,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: b2bi-nonprod
     server: https://kubernetes.default.svc
+  - namespace: validation-flow-migration
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"

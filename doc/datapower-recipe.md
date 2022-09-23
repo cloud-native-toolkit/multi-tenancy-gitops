@@ -1,6 +1,6 @@
-# Deploy [Sterling File Gateway](https://developer.ibm.com/components/sterling/tutorials/)
+# Deploy [DataPower Gateway](https://www.ibm.com/products/datapower-gateway)
 
-This recipe is for deploying the B2BI Sterling File Gateway in a single namespace (i.e. `b2bi-prod`): 
+This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `validation-flow-migration`): 
 
 ![SFG single NS](images/sfg-single-ns.png)
 
@@ -13,11 +13,12 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 
     ```yaml
     - argocd/consolenotification.yaml
-    - argocd/namespace-b2bi-prod.yaml
+    - argocd/namespace-ibm-common-services.yaml
     - argocd/namespace-sealed-secrets.yaml
-    - argocd/serviceaccounts-b2bi-prod.yaml
-    - argocd/sfg-b2bi-clusterwide.yaml
-    - argocd/daemonset-sync-global-pullsecret.yaml
+    - argocd/namespace-tools.yaml
+    - argocd/serviceaccounts-ibm-common-services.yaml
+    - argocd/serviceaccounts-tools.yaml
+    - argocd/namespace-datapower.yaml
     ```
 
 ### Services - Kustomization.yaml
@@ -26,12 +27,19 @@ This recipe is for deploying the B2BI Sterling File Gateway in a single namespac
 
     | Component | Access Mode | IBM Cloud | OCS/ODF |
     | --- | --- | --- | --- |
-    | DB2 | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
-    | MQ | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
-    | SFG | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
+    | DataPower | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
     ```yaml
+    ## IBM Foundational Services / Common Services
+    - argocd/operators/ibm-foundations.yaml
+    - argocd/instances/ibm-foundational-services-instance.yaml
+    - argocd/operators/ibm-automation-foundation-core-operator.yaml
+
+    ## IBM Catalogs
+    - argocd/operators/ibm-catalogs.yaml
+
+    # Sealed Secrets
     - argocd/instances/sealed-secrets.yaml
     ```
 

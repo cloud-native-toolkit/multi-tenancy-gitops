@@ -26,6 +26,7 @@ resources:
 #- argocd/namespace-b2bi-prod.yaml
 #- argocd/namespace-b2bi-nonprod.yaml
 #- argocd/namespace-pem.yaml
+#- argocd/namespace-datapower.yaml
 #- argocd/serviceaccounts-ibm-common-services.yaml
 #- argocd/serviceaccounts-tools.yaml
 #- argocd/serviceaccounts-db2.yaml
