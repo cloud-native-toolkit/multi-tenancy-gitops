@@ -75,6 +75,11 @@ resources:
 #- argocd/instances/ibm-sfg-b2bi-nonprod-setup.yaml
 #- argocd/instances/ibm-sfg-b2bi-nonprod.yaml
 
+# Sterling Secure Proxy
+#- argocd/instances/sterling-secure-proxy-setup.yaml
+#- argocd/instances/sterling-secure-proxy-cm-instance.yaml
+#- argocd/instances/sterling-secure-proxy-engine-instance.yaml
+
 # PEM
 #- argocd/instances/ibm-pem-db2.yaml
 #- argocd/instances/ibm-pem-db2test.yaml
