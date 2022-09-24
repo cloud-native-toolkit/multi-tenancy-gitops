@@ -66,8 +66,8 @@ Then enable Platform Navigator Operator & Instance.
 ``` 
 
 >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
-    > Wait until everything gets deployed before moving to the next steps.
+> Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
+> Wait until everything gets deployed before moving to the next steps.
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console:
 
