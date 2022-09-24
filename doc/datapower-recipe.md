@@ -85,4 +85,4 @@ Then enable Platform Navigator Operator & Instance.
 
 ### Validation
 
-1.  Retrieve the Sterling File Gateway console URL.
+1.  Retrieve the DataPower Gateway console URL.
