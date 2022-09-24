@@ -2,8 +2,6 @@
 
 This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `validation-flow-migration`): 
 
-![SFG single NS](images/sfg-single-ns.png)
-
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
 
@@ -20,6 +18,9 @@ This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `
     - argocd/serviceaccounts-tools.yaml
     - argocd/namespace-datapower.yaml
     ```
+    >  💡 **NOTE**  
+    > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `infra` application and click refresh.
+    > Wait until everything gets deployed before moving to the next steps.
 
 ### Services - Kustomization.yaml
 
@@ -27,9 +28,10 @@ This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `
 
     | Component | Access Mode | IBM Cloud | OCS/ODF |
     | --- | --- | --- | --- |
-    | DataPower | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
+    | Platform Navigator | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
+   
     ```yaml
     ## IBM Foundational Services / Common Services
     - argocd/operators/ibm-foundations.yaml
@@ -44,72 +46,35 @@ This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `
     ```
 
     >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` & sync ArgoCD. 
+    > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
+    > Wait until everything gets deployed before moving to the next steps.
 
-1. Clone the services repo for GitOps, open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
-        
-    ```bash
-    git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
-    ```
-
-2. Modify the B2BI pre-requisites components which includes the secrets and PVCs required for the B2BI helm chart.
-
-    1. Go to the `ibm-sfg-b2bi-prod-setup` directory:
-
-        ```bash
-        cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod-setup
-        ```
-
-    1. Generate a Sealed Secret for the credentials.
-        ```bash
-        B2B_DB_SECRET=db2inst1 \
-        JMS_PASSWORD=password JMS_KEYSTORE_PASSWORD=password JMS_TRUSTSTORE_PASSWORD=password \
-        B2B_SYSTEM_PASSPHRASE_SECRET=password \
-        ./sfg-b2bi-secrets.sh
-        ```
-
-    1. Generate Persistent Volume Yamls required by Sterling File Gateway (the default is set in RWX_STORAGECLASS environment variable to `managed-nfs-storage` - if you are installing on ODF, set `RWX_STORAGECLASS=ocs-storagecluster-cephfs`)
-
-        ```bash
-        ./sfg-b2bi-pvc-mods.sh
-        ```
-
-    >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops-services` 
-
-1. Enable DB2, MQ and prerequisites in the main `multi-tenancy-gitops` repository
-
-    1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following lines to install the pre-requisites for Sterling File Gateway.
-        ```yaml
-        - argocd/instances/ibm-sfg-db2-prod.yaml
-        - argocd/instances/ibm-sfg-mq-prod.yaml
-        - argocd/instances/ibm-sfg-b2bi-prod-setup.yaml
-        ```
-
-    1. **Optional** Modify the DB2 and MQ storage classes to the environment that you use, the files are in `${GITOPS_PROFILE}/2-services/argocd/instances`. Edit `ibm-sfg-db2-prod.yaml` and `ibm-sfg-mq-prod.yaml` to switch the storageClassName if necessary.
-
-
-    >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` and
-    > sync the ArgoCD application `services`.
-    >
-    > Make sure that the sterling toolkit pod does not throw any error.
-    > Wait for 5 minutes until the database is fully initialized. 
+1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
+ 
+> **⚠️** Warning:
+>> Make sure that `${GITOPS_PROFILE}/2-services/argocd/instances/ibm-platform-navigator-instance.yaml`
    
-1. Generate Helm Chart values.yaml for the Sterling File Gateway Helm Chart in the `multi-tenancy-gitops-services` repo; note that the default storage class is using `managed-nfs-storage` - if you are installing on ODF, set `RWX_STORAGECLASS=ocs-storagecluster-cephfs`.
+```yaml
+    storage:
+      class: managed-nfs-storage
+```  
+Then enable Platform Navigator Operator & Instance.  
+```yaml
+    ## Cloud Pak for Integration
+    - argocd/operators/ibm-platform-navigator.yaml
+    - argocd/instances/ibm-platform-navigator-instance.yaml
+``` 
 
-    ```
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
-    ./ibm-sfg-b2bi-overrides-values.sh
-    ```
-
-    >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops-services` 
+>  💡 **NOTE**  
+    > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
+    > Wait until everything gets deployed before moving to the next steps.
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console:
 
     ```yaml
-    - argocd/instances/ibm-sfg-b2bi-prod.yaml
+    ## Cloud Pak for Integration
+    - argocd/operators/ibm-datapower-operator.yaml
+    - argocd/instances/ibm-datapower-instance.yaml
     ```
 
     >  💡 **NOTE**  
@@ -118,38 +83,6 @@ This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `
 
 ---
 
-> **⚠️** Warning:  
-> If you decided to scale the pods or upgrade the verison you should do the following steps:
->> **This is to avoid going through the database setup job again**
-
-- Step 1:
-    ```bash
-    cd multi-tenancy-gitops-services/instances/ibm-sfg-b2bi-prod
-    ```
-- Step 2:
-  - Inside `values.yaml`, find & set 
-        ```bash
-        . . .
-        datasetup:
-          enabled: false
-        . . .
-        dbCreateSchema: false
-        . . .
-        ```
-- Commit and push the changes for the `multi-tenancy-gitops-services` repo.
----
-
 ### Validation
 
 1.  Retrieve the Sterling File Gateway console URL.
-
-    ```bash
-    oc get route -n b2bi-prod ibm-sfg-b2bi-prod-sfg-asi-internal-route-dashboard -o template --template='https://{{.spec.host}}'
-    ```
-
-2. Log in with the default credentials:  username:`fg_sysadmin` password: `password` 
-
-
-### Additional instance of Sterling File Gateway
-
-The current setup has an additional set of customized instance of Sterling File Gateway B2BI in `b2bi-nonprod` namespace. Follow the similar proceure above to run the updates for the `b2bi-nonprod` namespace. 
