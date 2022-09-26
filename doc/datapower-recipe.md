@@ -74,7 +74,6 @@ Then enable Platform Navigator Operator & Instance.
     ```yaml
     ## Cloud Pak for Integration
     - argocd/operators/ibm-datapower-operator.yaml
-    - argocd/instances/ibm-datapower-instance.yaml
     ```
 
     >  💡 **NOTE**  
@@ -85,4 +84,4 @@ Then enable Platform Navigator Operator & Instance.
 
 ### Validation
 
-1.  Retrieve the DataPower Gateway console URL.
+![DataPower Operator](images/Datapower-operator.png)
