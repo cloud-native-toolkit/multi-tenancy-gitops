@@ -84,4 +84,4 @@ Then enable Platform Navigator Operator & Instance.
 
 ### Validation
 
-![DataPower Operator](images/Datapower-operator.png)
+![DataPower Operator](images/datapower-operator.png)
