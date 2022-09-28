@@ -117,7 +117,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source: # repoURL  and targetRevision populated by kustomize patches in 2-services/kustomization.yaml
-    path: 0-bootstrap/single-cluster/2-services
+    path: 0-bootstrap/1-shared-cluster/cluster-1-cicd-dev-stage-prod/2-services
   syncPolicy:
     automated:
       prune: true
