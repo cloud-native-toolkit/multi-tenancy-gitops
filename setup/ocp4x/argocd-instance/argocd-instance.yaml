@@ -295,6 +295,23 @@ spec:
         hs.status = "Progressing"
         hs.message = "Unknown"
         return hs
+    eventstreams.ibm.com/EventStreams:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            hs.message = obj.status.phase
+            if obj.status.phase == "Ready" then
+              hs.status = "Healthy"
+            else
+              hs.status = "Progressing"
+            end
+            return hs
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Unknown"
+        return hs
     orchestrator.aiops.ibm.com/Installation:
       health.lua: |
         hs = {}
