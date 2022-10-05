@@ -11,7 +11,6 @@ resources:
 #- argocd/operators/ibm-assetrepository-operator.yaml
 #- argocd/operators/ibm-cp4i-operators.yaml
 #- argocd/operators/ibm-datapower-operator.yaml
-#- argocd/instances/ibm-datapower-instance.yaml
 #- argocd/operators/ibm-eventstreams-operator.yaml
 #- argocd/instances/ibm-eventstreams-instance.yaml
 #- argocd/operators/ibm-mq-operator.yaml
