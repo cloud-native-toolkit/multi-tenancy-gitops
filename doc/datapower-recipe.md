@@ -1,6 +1,6 @@
 # Deploy [DataPower Gateway](https://www.ibm.com/products/datapower-gateway)
 
-This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `validation-flow-migration`): 
+This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `tools`): 
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
@@ -16,7 +16,6 @@ This recipe is for deploying the DataPower Gateway in a single namespace (i.e. `
     - argocd/namespace-tools.yaml
     - argocd/serviceaccounts-ibm-common-services.yaml
     - argocd/serviceaccounts-tools.yaml
-    - argocd/namespace-datapower.yaml
     ```
     >  💡 **NOTE**  
     > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `infra` application and click refresh.
@@ -78,7 +77,7 @@ Then enable Platform Navigator Operator & Instance.
 
     >  💡 **NOTE**  
     > Commit and Push the changes for `multi-tenancy-gitops` and
-    > sync ArgoCD application `services` this will take around 1.5 hr for the database setup.
+    > sync ArgoCD application `services` layer.
 
 ---
 
