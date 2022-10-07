@@ -82,5 +82,32 @@ Then enable Platform Navigator Operator & Instance.
 ---
 
 ### Validation
+1.  Check the status of the `CommonService`,`PlatformNavigator` & `Datapower` custom resource.
+    ```bash
+    # Verify the Common Services instance has been deployed successfully
+    oc get commonservice common-service -n ibm-common-services -o=jsonpath='{.status.phase}'
+    # Expected output = Succeeded
 
-![DataPower Operator](images/datapower-operator.png)
+    # [Optional] If selected, verify the Platform Navigator instance has been deployed successfully
+    oc get platformnavigator -n tools -o=jsonpath='{ .items[*].status.conditions[].status }'
+    # Expected output = True
+    ```
+1.  Log in to the Platform Navigator console
+    ```bash
+    # Retrieve Platform Navigator Console URL
+    oc get route -n tools integration-navigator-pn -o template --template='https://{{.spec.host}}'
+    # Retrieve admin password
+    oc extract -n ibm-common-services secrets/platform-auth-idp-credentials --keys=admin_username,admin_password --to=-
+    ```
+
+1. Validate Datapower Operator
+    ```bash
+    oc get operators datapower-operator.openshift-operators -o=jsonpath='{ .status.components.refs[12].conditions[*].type}'
+    # Expected output = Succeeded
+    ```  
+    or from the console by doing the following steps
+    ```bash
+    oc console
+    ``` 
+    Click on `Operators Tab`->`Installed operators` from the menu on the left and validate the status of datapower operator `Succeeded`
+    ![DataPower Operator](images/datapower-operator.png)
