@@ -98,8 +98,6 @@ spec:
     kind: CustomResourceDefinition
   - group: ""
     kind: PersistentVolume
-  - group: policy
-    kind: PodSecurityPolicy
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
