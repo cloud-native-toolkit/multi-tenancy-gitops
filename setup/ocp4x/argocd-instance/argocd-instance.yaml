@@ -517,8 +517,9 @@ spec:
                 end
               end
               if condition.type == "Running" and condition.status == "True" then
-                hs.status = "Progressing"
+                hs.status = "Healthy"
                 hs.message = condition.message
+                return hs
               end
             end
           end
