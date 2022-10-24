@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-cp4a
+  labels:
+    gitops.tier.layer: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+spec:
+  destination:
+    namespace: cp4a
+    server: https://kubernetes.default.svc
+  project: infra
+  source:
+    path: namespaces/cp4a
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -408,3 +408,9 @@ rules:
       - wml.cpd.ibm.com
     resources:
       - wmlbases
+  - verbs:
+      - '*'
+  apiGroups:
+      - db2u.databases.ibm.com
+  resources:
+      - db2uclusters
