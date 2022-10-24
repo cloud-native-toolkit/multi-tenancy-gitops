@@ -23,6 +23,11 @@ resources:
 #- argocd/operators/ibm-db2u-operator.yaml
 #- argocd/operators/ibm-process-mining-operator.yaml
 #- argocd/instances/ibm-process-mining-instance.yaml
+#- argocd/operators/ibm-cp4a-db2.yaml
+#- argocd/instances/ibm-cp4a-db2ucluster.yaml
+#- argocd/instances/ibm-cp4a-openldap-odm.yaml
+#- argocd/operators/ibm-cp4a-odm-operator.yaml
+#- argocd/instances/ibm-cp4a-icp4acluster.yaml
 
 ## Cloud Pak for Data
 #- argocd/operators/ibm-cpd-scheduling-operator.yaml

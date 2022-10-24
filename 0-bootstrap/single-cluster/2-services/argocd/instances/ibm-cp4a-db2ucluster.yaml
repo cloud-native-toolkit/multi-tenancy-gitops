@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cp4a-db2ucluster
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: db2
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: db2
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/cp4a-db2ucluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
