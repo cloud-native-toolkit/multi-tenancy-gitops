@@ -240,6 +240,10 @@ cd multi-tenancy-gitops-services/instances/ibm-icpacluster/post-deploy
 ```bash
 chmod +x ./console.sh
 ```
+- Define your desired `namespace` must be the same as where the operator got deployed in this example we are using cp4a
+```bash
+export NAMESPACE=cp4a
+```
 ```bash
 ./console.sh
 ```
