@@ -1,6 +1,7 @@
 # Deploy [Operational Decision Manager](https://www.ibm.com/products/operational-decision-manager)
 
-This recipe is for deploying the Operational Desision Manager in a single namespace (i.e. `tools`): 
+### Obtain an OpenShift cluster
+This document does not cover all of the intricacies of OpenShift installation or any of the requirements for the Cloud Pak for Business Automation; that stuff is all documented! This documentation is written with the assumption that you have provisioned a ROKS (Classic Infrastructure) cluster from Techzone. I typically use `16x64` & `5` nodes, depending on how many components you plan to install. I did not provision NFS storage; I will be using the IBM-provided storage classes. 
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
