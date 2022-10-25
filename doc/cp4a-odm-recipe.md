@@ -14,7 +14,6 @@ This document does not cover all of the intricacies of OpenShift installation or
 - argocd/consolelink.yaml
 - argocd/consolenotification.yaml
 - argocd/namespace-ibm-common-services.yaml
-- argocd/namespace-sealed-secrets.yaml
 - argocd/namespace-tools.yaml
 - argocd/namespace-db2.yaml
 - argocd/namespace-cp4a.yaml
@@ -201,7 +200,7 @@ for `Business Automation Navigator`, Create the database:
     SQL authorization ID   = ODMADM
     Local database alias   = ODMDB
     ```
-1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
+1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install `ODM` by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
  
     ```yaml
     - argocd/instances/ibm-cp4a-icp4acluster.yaml
