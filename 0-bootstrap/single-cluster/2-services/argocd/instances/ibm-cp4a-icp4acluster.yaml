@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-ICP4ACluster
+  name: ibm-icpacluster
   annotations:
     argocd.argoproj.io/sync-wave: "280"
   labels:
