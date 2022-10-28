@@ -1,24 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-db2-operator
+  name: ibm-cp4ba-operator
   annotations:
-    argocd.argoproj.io/sync-wave: "225"
+    argocd.argoproj.io/sync-wave: "250"
   labels:
-    gitops.tier.group: db2
+    gitops.tier.group: cp4ba
     gitops.tier.layer: services
     gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: db2
+    namespace: cp4ba
     server: https://kubernetes.default.svc
   project: services
   source:
     repoURL: "" # Populated by kustomize patches in 2-services/kustomization.yaml
     targetRevision: "" # Populated by kustomize patches in 2-services/kustomization.yaml
-    path: operators/ibm-cp4a-db2
+    path: operators/ibm-cp4ba-operator
   syncPolicy:
     automated:
       prune: true

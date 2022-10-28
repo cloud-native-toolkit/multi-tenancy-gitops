@@ -3,7 +3,7 @@ resources:
 #- argocd/consolenotification.yaml
 #- argocd/namespace-ibm-common-services.yaml
 #- argocd/namespace-ci.yaml
-#- argocd/namespace-cp4a.yaml
+#- argocd/namespace-cp4ba.yaml
 #- argocd/namespace-dev.yaml
 #- argocd/namespace-staging.yaml
 #- argocd/namespace-prod.yaml

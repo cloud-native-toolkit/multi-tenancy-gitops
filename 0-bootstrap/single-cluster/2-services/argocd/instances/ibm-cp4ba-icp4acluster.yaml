@@ -1,22 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ibm-cp4a-openldap-odm
+  name: ibm-cp4ba-icp4acluster
   annotations:
-    argocd.argoproj.io/sync-wave: "230"
+    argocd.argoproj.io/sync-wave: "280"
   labels:
-    gitops.tier.group: cntk
+    gitops.tier.group: cp4ba
     gitops.tier.layer: services
     gitops.tier.source: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: openldap
+    namespace: cp4ba
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: instances/cp4a-openldap-odm
+    path: instances/ibm-cp4ba-icp4acluster
   syncPolicy:
     automated:
       prune: true

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cp4a-db2ucluster
+  name: ibm-cp4ba-db2ucluster
   annotations:
     argocd.argoproj.io/sync-wave: "250"
   labels:
@@ -16,7 +16,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: instances/cp4a-db2ucluster
+    path: instances/ibm-cp4ba-db2ucluster
   syncPolicy:
     automated:
       prune: true
