@@ -49,9 +49,9 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     NAMESPACE=cp4ba ./console.sh
     ```
     >  💡 **NOTE**  
-    >  You should see `5` changes, make sure to `add`, `commit` & `push` the changes into git.
+    >  ***You should see `5` changes, make sure to `add`, `commit` & `push` the changes into git.***
 
-1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install db2 operator, db2 instance, openldap & CPBA operator  by uncommenting the following lines: 
+1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install db2 operator, db2 instance, openldap & CP4BA operator  by uncommenting the following lines: 
    
     ```yaml
     ## IBM DB2 operator & instance, Ldap
@@ -65,7 +65,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     - argocd/instances/ibm-cp4ba-icp4acluster-postdeploy.yaml 
     ```
   >  💡 **NOTE**  
-  > *The overall process took around 2 hours*
+  > ***The overall process took around 2 hours***
 
 ### Assign the Operational Decision Manager roles to the `cpadmin` user
 You will need to grant your users various access roles, depending on their needs. You manage permissions using the `Administration` -> `Access control page` in the `Cloud pak dashboard`.
