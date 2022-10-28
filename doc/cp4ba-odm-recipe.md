@@ -102,7 +102,7 @@ You will need to grant your users various access roles, depending on their needs
     ```bash
     oc get icp4acluster icp4adeploy -n cp4ba -o jsonpath="{.status}{'\n'}" | jq
     ```
-1. Access The URLs can be found in the `icp4adploy-cp4a-access-info` configmap in the `cp4ba` namespace. Look for the section called `odm-access-info`, which will contain content similar to this:
+1. Access The URLs can be found in the `icp4adploy-cp4ba-access-info` configmap in the `cp4ba` namespace. Look for the section called `odm-access-info`, which will contain content similar to this:
     ```yaml
     CloudPak dashboard: https://cpd-$NAMESPACE.$INGRESS_DOMAIN
     ODM Decision Center URL: https://cpd-$NAMESPACE.$INGRESS_DOMAIN/odm/decisioncenter
