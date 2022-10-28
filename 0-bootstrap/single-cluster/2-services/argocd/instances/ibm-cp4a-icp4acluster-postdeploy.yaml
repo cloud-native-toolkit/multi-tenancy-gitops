@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-icp4acluster-postdeploy
+  annotations:
+    argocd.argoproj.io/sync-wave: "285"
+  labels:
+    gitops.tier.group: cp4a
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: odm
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-icp4acluster-postdeploy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
