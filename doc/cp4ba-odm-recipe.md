@@ -40,7 +40,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-db2u-setup/setup-script.yaml
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster/odm/odm-db-secret.yaml
 
-1. Modify the console link properties with the proper CloudPak for Business Automation link in the `multi-tenancy-gitops-services` repository, make sure your `logged in into your cluster`:
+1. Modify the console link properties with the proper CloudPak for Business Automation link in the `multi-tenancy-gitops-services` repository, make sure your *`logged in into your cluster`*:
 
     ```bash
     cd multi-tenancy-gitops-servicces/instances/ibm-cp4ba-icp4acluster-postdeploy/post-deploy
@@ -64,8 +64,8 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     - argocd/instances/ibm-cp4ba-icp4acluster.yaml
     - argocd/instances/ibm-cp4ba-icp4acluster-postdeploy.yaml 
     ```
-
-    The overall process took around 2 hours
+  >  💡 **NOTE**  
+  > *The overall process took around 2 hours*
 
 ### Assign the Operational Decision Manager roles to the `cpadmin` user
 You will need to grant your users various access roles, depending on their needs. You manage permissions using the `Administration` -> `Access control page` in the `Cloud pak dashboard`.
