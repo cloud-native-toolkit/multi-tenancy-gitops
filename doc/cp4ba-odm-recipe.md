@@ -49,7 +49,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     NAMESPACE=cp4ba ./console.sh
     ```
     >  💡 **NOTE**  
-    >  Make sure to `add`, `commit` & `push` the changes into git.
+    >  You should see `5` changes, make sure to `add`, `commit` & `push` the changes into git.
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets, db2 operator, db2 instance, openldap & CPBA operator  by uncommenting the following lines: 
    
