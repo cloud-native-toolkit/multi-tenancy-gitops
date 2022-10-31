@@ -18,7 +18,6 @@ resources:
 #- argocd/namespace-knative-eventing.yaml
 #- argocd/namespace-knative-serving.yaml
 #- argocd/namespace-knative-serving-ingress.yaml
-#- argocd/namespace-kube-system.yaml
 #- argocd/namespace-odm.yaml
 #- argocd/namespace-openshift-storage.yaml
 #- argocd/namespace-spp.yaml
