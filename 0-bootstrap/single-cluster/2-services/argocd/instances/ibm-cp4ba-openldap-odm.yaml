@@ -16,7 +16,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: services
   source:
-    path: instances/cp4ba-openldap-odm
+    path: instances/ibm-cp4ba-openldap-odm
   syncPolicy:
     automated:
       prune: true
