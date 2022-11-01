@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sterling-secure-proxy-engine
+  annotations:
+    argocd.argoproj.io/sync-wave: "290"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: ssp
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/sterling-secure-proxy-engine
+    helm:
+      releaseName: ibm-ssp-engine
+      valueFiles:
+      - values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
