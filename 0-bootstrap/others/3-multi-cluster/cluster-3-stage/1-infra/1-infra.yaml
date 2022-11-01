@@ -62,6 +62,18 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: kube-system
     server: https://kubernetes.default.svc
+  - namespace: ssp
+    server: https://kubernetes.default.svc
+  - namespace: openshift-image-registry
+    server: https://kubernetes.default.svc
+  - namespace: sccm
+    server: https://kubernetes.default.svc
+  - namespace: odm
+    server: https://kubernetes.default.svc
+  - namespace: kube-system
+    server: https://kubernetes.default.svc
+  - namespace: cp4ba
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace
@@ -112,7 +124,7 @@ spec:
     server: https://kubernetes.default.svc
   project: infra
   source: # repoURL  and targetRevision populated by kustomize patches in 1-infra/kustomization.yaml
-    path: 0-bootstrap/3-multi-cluster/cluster-3-stage/1-infra
+    path: 0-bootstrap/single-cluster/1-infra
   syncPolicy:
     automated:
       prune: true

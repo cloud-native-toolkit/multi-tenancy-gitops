@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cp4ba-db2u-setup
+  annotations:
+    argocd.argoproj.io/sync-wave: "255"
+  labels:
+    gitops.tier.group: db2
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: db2
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-cp4ba-db2u-setup
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: ""
+    kind: ServiceAccount
+    jsonPointers:
+    - /imagePullSecrets
+    - /secrets

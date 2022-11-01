@@ -24,6 +24,15 @@ resources:
 #- argocd/operators/ibm-process-mining-operator.yaml
 #- argocd/instances/ibm-process-mining-instance.yaml
 
+# IBM CP4BA & ODM Instance
+#- argocd/operators/ibm-cp4ba-db2.yaml
+#- argocd/instances/ibm-cp4ba-db2ucluster.yaml
+#- argocd/instances/ibm-cp4ba-db2u-setup.yaml 
+#- argocd/instances/ibm-cp4ba-openldap-odm.yaml
+#- argocd/operators/ibm-cp4ba-operator.yaml
+#- argocd/instances/ibm-cp4ba-icp4acluster.yaml
+#- argocd/instances/ibm-cp4ba-icp4acluster-postdeploy.yaml
+
 ## Cloud Pak for Data
 #- argocd/operators/ibm-cpd-scheduling-operator.yaml
 #- argocd/instances/ibm-cpd-scheduling-instance.yaml
@@ -75,11 +84,21 @@ resources:
 #- argocd/instances/ibm-sfg-b2bi-nonprod-setup.yaml
 #- argocd/instances/ibm-sfg-b2bi-nonprod.yaml
 
+# Sterling Secure Proxy
+#- argocd/instances/sterling-secure-proxy-setup.yaml
+#- argocd/instances/sterling-secure-proxy-cm-instance.yaml
+#- argocd/instances/sterling-secure-proxy-engine-instance.yaml
+
 # PEM
 #- argocd/instances/ibm-pem-db2.yaml
 #- argocd/instances/ibm-pem-db2test.yaml
 #- argocd/instances/ibm-pem-setup.yaml
 #- argocd/instances/ibm-pem.yaml
+
+# SCCM
+#- argocd/instances/ibm-sccm-db2.yaml
+#- argocd/instances/ibm-sccm-setup.yaml
+#- argocd/instances/ibm-sccm.yaml
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml

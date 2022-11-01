@@ -60,6 +60,16 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: b2bi-nonprod
     server: https://kubernetes.default.svc
+  - namespace: ssp
+    server: https://kubernetes.default.svc
+  - namespace: sccm
+    server: https://kubernetes.default.svc
+  - namespace: kube-system
+    server: https://kubernetes.default.svc
+  - namespace: cp4ba
+    server: https://kubernetes.default.svc
+  - namespace: odm
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"
@@ -117,7 +127,7 @@ spec:
     server: https://kubernetes.default.svc
   project: services
   source: # repoURL  and targetRevision populated by kustomize patches in 2-services/kustomization.yaml
-    path: 0-bootstrap/2-isolated-cluster/cluster-1-cicd-dev-stage/2-services
+    path: 0-bootstrap/single-cluster/2-services
   syncPolicy:
     automated:
       prune: true

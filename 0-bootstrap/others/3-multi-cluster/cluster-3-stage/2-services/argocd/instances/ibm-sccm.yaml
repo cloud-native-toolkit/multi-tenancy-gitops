@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-sccm
+  annotations:
+    argocd.argoproj.io/sync-wave: "280"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  ignoreDifferences:
+  - group: apps
+    kind: StatefulSet
+    name: ibm-sccm-ibm-sccm
+    jsonPointers:
+    - /spec/replicas
+  destination:
+    namespace: sccm
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-sccm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

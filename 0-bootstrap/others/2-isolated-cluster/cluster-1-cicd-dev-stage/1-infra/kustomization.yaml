@@ -3,6 +3,7 @@ resources:
 #- argocd/consolenotification.yaml
 #- argocd/namespace-ibm-common-services.yaml
 #- argocd/namespace-ci.yaml
+#- argocd/namespace-cp4ba.yaml
 #- argocd/namespace-dev.yaml
 #- argocd/namespace-staging.yaml
 #- argocd/namespace-prod.yaml
@@ -17,6 +18,7 @@ resources:
 #- argocd/namespace-knative-eventing.yaml
 #- argocd/namespace-knative-serving.yaml
 #- argocd/namespace-knative-serving-ingress.yaml
+#- argocd/namespace-odm.yaml
 #- argocd/namespace-openshift-storage.yaml
 #- argocd/namespace-spp.yaml
 #- argocd/namespace-spp-velero.yaml
@@ -26,6 +28,8 @@ resources:
 #- argocd/namespace-b2bi-prod.yaml
 #- argocd/namespace-b2bi-nonprod.yaml
 #- argocd/namespace-pem.yaml
+#- argocd/namespace-ssp.yaml
+#- argocd/namespace-sccm.yaml
 #- argocd/serviceaccounts-ibm-common-services.yaml
 #- argocd/serviceaccounts-tools.yaml
 #- argocd/serviceaccounts-db2.yaml
@@ -33,8 +37,10 @@ resources:
 #- argocd/serviceaccounts-b2bi-prod.yaml
 #- argocd/serviceaccounts-b2bi-nonprod.yaml
 #- argocd/serviceaccounts-pem.yaml
+#- argocd/serviceaccounts-sccm.yaml
 #- argocd/sfg-b2bi-clusterwide.yaml
 #- argocd/pem-b2bi-clusterwide.yaml
+#- argocd/sccm-clusterwide.yaml
 #- argocd/scc-wkc-iis.yaml
 #- argocd/norootsquash.yaml
 #- argocd/daemonset-sync-global-pullsecret.yaml

@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-cp4ba-db2ucluster
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: db2
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: db2
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-cp4ba-db2ucluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "db2u.databases.ibm.com"
+    kind: Db2uCluster
+    jsonPointers:
+    - /spec/addOns/graph
+    - /spec/addOns/rest
+    - /spec/environment/instance/password
+    - /spec/podConfig/db2u/resource/db2u/limits/cpu
+    - /spec/podConfig/db2u/resource/db2u/requests/cpu
