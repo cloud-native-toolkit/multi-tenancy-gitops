@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: ibm-cp4ba-db2u-setup
   annotations:
-    argocd.argoproj.io/sync-wave: "250"
+    argocd.argoproj.io/sync-wave: "255"
   labels:
     gitops.tier.group: db2
     gitops.tier.layer: services
