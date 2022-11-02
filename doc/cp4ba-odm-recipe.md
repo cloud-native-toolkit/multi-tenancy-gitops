@@ -28,11 +28,14 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     | Component | Access Mode | IBM Cloud | OCS/ODF |
     | --- | --- | --- | --- |
     | DB2 | RWX | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
-    | ODM | RWX | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
+    | LDAP | RWX | ibmc-file-gold managed-nfs-storage | ocs-storagecluster-cephfs |
+    | ODM | RWX | ibmc-file-gold-gid managed-nfs-storage | ocs-storagecluster-cephfs |
+    | ODM | RWO | ibmc-block-gold managed-nfs-storage | ocs-storagecluster-ceph-rbd |
 
-    Changing the storage classes is performed in:
-    - multi-tenancy-gitops-services/instances/ibm-icp4acluster/odm/odm-deploy.yaml
+    Changing the storage classes are performed in the following files:
+    - multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster/odm/odm-deploy.yaml
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-db2ucluster/db2-instance/db2-instance.yaml
+    - multi-tenancy-gitops-services/instances/ibm-cp4ba-openldap-odm/deployment/ldap-statefulset.yaml
 
 1. These instructions are assuming that all the user created has the password of `Passw0rd`. changing this default can be performed in the following files:
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-openldap-odm/configmaps/cm-customdif-stack-ha.yaml
