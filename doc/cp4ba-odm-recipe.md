@@ -46,7 +46,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
 1. Modify the console link properties with the proper CloudPak for Business Automation link in the `multi-tenancy-gitops-services` repository, make sure that you are already **logged in** your cluster:
 
     ```bash
-    cd multi-tenancy-gitops-servicces/instances/ibm-cp4ba-icp4acluster-postdeploy/post-deploy
+    cd multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster-postdeploy/post-deploy
     ```
     ```
     NAMESPACE=cp4ba ./console.sh
