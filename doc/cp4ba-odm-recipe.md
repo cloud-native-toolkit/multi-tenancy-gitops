@@ -58,7 +58,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
    
     ```yaml
     ## IBM DB2 operator & instance, Ldap
-    - argocd/operators/ibm-cp4ba-db2.yaml
+    - argocd/operators/ibm-cp4ba-db2ucluster.yaml
     - argocd/instances/ibm-cp4ba-db2-instance.yaml
     - argocd/instances/ibm-cp4ba-db2u-setup.yaml
     - argocd/instances/ibm-cp4ba-openldap-odm.yaml
