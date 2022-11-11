@@ -21,3 +21,9 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+  - group: ""
+    kind: ServiceAccount
+    jsonPointers:
+    - /imagePullSecrets
+    - /secrets
