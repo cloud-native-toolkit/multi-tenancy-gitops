@@ -70,34 +70,6 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
   >  💡 **NOTE**  
   > ***The overall process took around 2 hours***
 
-### Assign the Operational Decision Manager roles to the `cpadmin` user
-You will need to grant your users various access roles, depending on their needs. You manage permissions using the `Administration` -> `Access control page` in the `Cloud pak dashboard`.
-
-1. When the cloud pak is successfully installed you should be able to login as the default admin user. In this case, the default admin user is `admin` and the `password` can be found in the `ibm-iam-bindinfo-platform-auth-idp-credentials` secret in the `cp4ba` namespace. 
-
-1. Click on the hamburger menu on the top left corner of the dashboard; expand the `Administration` section and click on `Access control`.
-
-1. Click on the User Groups tab, then click on `New user group`.
-
-1. Name the group `odmadmins`, and click `Next`.
-
-1. Click `Identity provider groups`, then type cpadmins in the search field. It should come back with one result: `cn=cpadmins,ou=Groups,dc=cp`. Select it and click `Next`. Click all of the `roles`:
-    ```
-    Administrator
-    Automation Administrator
-    Automation Analyst
-    Automation Developer
-    Automation Operator
-    ODM Administrator
-    ODM Business User
-    ODM Runtime administrator
-    ODM Runtime user
-    User
-    ```
-
-1. Click `Next`, then click `Create`.
-
----
 
 ### Validation
 1.  Verify the status:
