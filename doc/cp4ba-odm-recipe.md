@@ -6,7 +6,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and refresh the `infra` Application in the ArgoCD console.
 
 >  💡 **NOTE**  
->  - `norootsquash` is only needed if you are running on ROKS with ibm-file-gold-gid PVCs
+>  - `norootsquash` is only needed if you are running on ROKS with ibmc-file-gold-gid PVCs
 >  - `daemonset-sync-global-pullsecret` can work if you are working with a cluster from TechZone, otherwise you need to create the ibm-entitlement-key pull secrets on the `kube-system`, `ibm-common-services`, `db2` and `cp4ba` namespaces
 
 
@@ -28,11 +28,14 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     | Component | Access Mode | IBM Cloud | OCS/ODF |
     | --- | --- | --- | --- |
     | DB2 | RWX | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
-    | ODM | RWX | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
+    | LDAP | RWX | ibmc-file-gold <br/> managed-nfs-storage | ocs-storagecluster-cephfs |
+    | ODM | RWX | ibmc-file-gold-gid <br/> managed-nfs-storage | ocs-storagecluster-cephfs |
+    | ODM | RWO | ibmc-block-gold <br/> managed-nfs-storage | ocs-storagecluster-ceph-rbd |
 
-    Changing the storage classes is performed in:
-    - multi-tenancy-gitops-services/instances/ibm-icp4acluster/odm/odm-deploy.yaml
+    Changing the storage classes are performed in the following files:
+    - multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster/odm/odm-deploy.yaml
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-db2ucluster/db2-instance/db2-instance.yaml
+    - multi-tenancy-gitops-services/instances/ibm-cp4ba-openldap-odm/deployment/ldap-statefulset.yaml
 
 1. These instructions are assuming that all the user created has the password of `Passw0rd`. changing this default can be performed in the following files:
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-openldap-odm/configmaps/cm-customdif-stack-ha.yaml
@@ -40,10 +43,10 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-db2u-setup/setup-script.yaml
     - multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster/odm/odm-db-secret.yaml
 
-1. Modify the console link properties with the proper CloudPak for Business Automation link in the `multi-tenancy-gitops-services` repository, make sure your *`logged in into your cluster`*:
+1. Modify the console link properties with the proper CloudPak for Business Automation link in the `multi-tenancy-gitops-services` repository, make sure that you are already **logged in** your cluster:
 
     ```bash
-    cd multi-tenancy-gitops-servicces/instances/ibm-cp4ba-icp4acluster-postdeploy/post-deploy
+    cd multi-tenancy-gitops-services/instances/ibm-cp4ba-icp4acluster-postdeploy/post-deploy
     ```
     ```
     NAMESPACE=cp4ba ./console.sh
@@ -56,7 +59,7 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
     ```yaml
     ## IBM DB2 operator & instance, Ldap
     - argocd/operators/ibm-cp4ba-db2.yaml
-    - argocd/instances/cp4ba-db2-instance.yaml
+    - argocd/instances/ibm-cp4ba-db2ucluster.yaml
     - argocd/instances/ibm-cp4ba-db2u-setup.yaml
     - argocd/instances/ibm-cp4ba-openldap-odm.yaml
     ## IBM CP4BA operator
@@ -67,34 +70,6 @@ This recipe is for deploying the Operational Desision Manager in a single namesp
   >  💡 **NOTE**  
   > ***The overall process took around 2 hours***
 
-### Assign the Operational Decision Manager roles to the `cpadmin` user
-You will need to grant your users various access roles, depending on their needs. You manage permissions using the `Administration` -> `Access control page` in the `Cloud pak dashboard`.
-
-1. When the cloud pak is successfully installed you should be able to login as the default admin user. In this case, the default admin user is `admin` and the `password` can be found in the `ibm-iam-bindinfo-platform-auth-idp-credentials` secret in the `cp4ba` namespace. 
-
-1. Click on the hamburger menu on the top left corner of the dashboard; expand the `Administration` section and click on `Access control`.
-
-1. Click on the User Groups tab, then click on `New user group`.
-
-1. Name the group `odmadmins`, and click `Next`.
-
-1. Click `Identity provider groups`, then type cpadmins in the search field. It should come back with one result: `cn=cpadmins,ou=Groups,dc=cp`. Select it and click `Next`. Click all of the `roles`:
-    ```
-    Administrator
-    Automation Administrator
-    Automation Analyst
-    Automation Developer
-    Automation Operator
-    ODM Administrator
-    ODM Business User
-    ODM Runtime administrator
-    ODM Runtime user
-    User
-    ```
-
-1. Click `Next`, then click `Create`.
-
----
 
 ### Validation
 1.  Verify the status:
