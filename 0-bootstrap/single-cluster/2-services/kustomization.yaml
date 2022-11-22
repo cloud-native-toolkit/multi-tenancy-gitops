@@ -86,6 +86,7 @@ resources:
 
 # Sterling Secure Proxy
 #- argocd/instances/sterling-secure-proxy-setup.yaml
+#- argocd/instances/sterling-secure-proxy-hook.yaml
 #- argocd/instances/sterling-secure-proxy-cm-instance.yaml
 #- argocd/instances/sterling-secure-proxy-engine-instance.yaml
 
