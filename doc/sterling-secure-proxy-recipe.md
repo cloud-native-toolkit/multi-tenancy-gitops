@@ -88,4 +88,14 @@ Our example to use is ```ibmc-file-silver```
 
 ### Validation
 
-1. You should now be able to see the route for your Sterling Secure Proxy Configuration Manager in your openshift console. You can click that link and open the CM and log in using the credentials you provided in your env file
+
+1.  Retrieve the Sterling File Gateway console URL.
+
+    ```bash
+    oc get route -n ssp ibm-ssp-cm-ibm-ssp-cm -o template --template='https://{{.spec.host}}'
+    ```
+    The default credentials to login are 
+    ```bash
+    admin
+    mypasswOrd1!
+    ```
