@@ -274,8 +274,10 @@ argocd_git_override () {
 
 set_git_source () {
   echo setting git source instead of git override
+  echo ${OUTPUT_DIR}
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
+  echo ${GITOPS_PROFILE}
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     rm -r 0-bootstrap/others
   fi
