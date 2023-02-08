@@ -5,9 +5,11 @@ set -eo pipefail
 USE_CP4S_PATTERN=${CP4S_PATTERN}
 USE_GITEA=${USE_GITEA:-true}
 
-if [[ "${USE_GITEA}" == "true" ]]; then
-  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
-fi
+#if [[ "${USE_GITEA}" == "true" ]]; then
+#  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
+#fi
+
+exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
