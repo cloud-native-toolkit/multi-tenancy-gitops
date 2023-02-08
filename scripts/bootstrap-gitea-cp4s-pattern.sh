@@ -2,6 +2,13 @@
 
 set -eo pipefail
 
+USE_CP4S_PATTERN=${CP4S_PATTERN}
+USE_GITEA=${USE_GITEA:-true}
+
+if [[ "${USE_GITEA}" == "true" ]]; then
+  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
+fi
+
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
@@ -15,7 +22,8 @@ popd () {
 
 
 set +e
-oc version --client | grep '4.7\|4.8'
+#oc version --client | grep '4.7\|4.8'
+oc version --client | grep -E '4.[7-9].[0-9]|4.[1-9][0-9].[0-9]|4.[1-9][0-9][0-9].[0-9]'
 OC_VERSION_CHECK=$?
 set -e
 if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
