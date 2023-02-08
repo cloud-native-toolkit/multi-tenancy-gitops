@@ -2,6 +2,16 @@
 
 set -eo pipefail
 
+<<<<<<< HEAD
+USE_CP4S_PATTERN=${CP4S_PATTERN}
+USE_GITEA=${USE_GITEA:-true}
+
+if [[ "${USE_GITEA}" == "true" ]]; then
+  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
+fi
+
+=======
+>>>>>>> 8494fb9255d5718fc636e96a2f516deaddd7b1b4
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
@@ -15,7 +25,12 @@ popd () {
 
 
 set +e
+<<<<<<< HEAD
+#oc version --client | grep '4.7\|4.8'
+oc version --client | grep -E '4.[7-9].[0-9]|4.[1-9][0-9].[0-9]|4.[1-9][0-9][0-9].[0-9]'
+=======
 oc version --client | grep '4.7\|4.8'
+>>>>>>> 8494fb9255d5718fc636e96a2f516deaddd7b1b4
 OC_VERSION_CHECK=$?
 set -e
 if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
@@ -274,8 +289,15 @@ argocd_git_override () {
 
 set_git_source () {
   echo setting git source instead of git override
+<<<<<<< HEAD
+  echo ${OUTPUT_DIR}
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
+  echo ${GITOPS_PROFILE}
+=======
+  pushd ${OUTPUT_DIR}/gitops-0-bootstrap
+
+>>>>>>> 8494fb9255d5718fc636e96a2f516deaddd7b1b4
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     rm -r 0-bootstrap/others
   fi
