@@ -548,7 +548,12 @@ patch_argocd_tls
 
 set_git_source
 
-set-git-cp4s-pattern
+# (OM) Add infra and services for CP4S
+USE_CP4S_PATTERN=${CP4S_PATTERN}
+
+if [[ "${USE_CP4S_PATTERN}" == "true" ]]; then
+  set-git-cp4s-pattern
+fi
 
 # Set RWX storage
 # get_rwx_storage_class
