@@ -309,6 +309,7 @@ set_git_source () {
 
 set_git_cp4s_pattern () {
   echo "Kicking off CP4S Deployment recipe..."
+  
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
@@ -504,7 +505,6 @@ set_rwx_storage_class () {
 
   popd
 }
-
 
 # main code block
 install_gitea
