@@ -551,7 +551,7 @@ echo "This is where the CP4S Recipe should kick off..."
 
 set_git_cp4s_pattern
 
-echo "The CP4S Recipe should be done..."
+echo "The CP4S Recipe should be done."
 
 # (OM) Add infra and services for CP4S
 #USE_CP4S_PATTERN=${CP4S_PATTERN}
