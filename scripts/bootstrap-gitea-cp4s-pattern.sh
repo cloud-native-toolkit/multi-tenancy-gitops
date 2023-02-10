@@ -307,8 +307,9 @@ set_git_source () {
   popd
 }
 
-set-git-cp4s-pattern () {
-
+set_git_cp4s_pattern () {
+  echo "Kicking off CP4S Deployment recipe..."
+  
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
@@ -505,12 +506,10 @@ set_rwx_storage_class () {
   popd
 }
 
-
-# main
-
+# main code block
 install_gitea
 
-#give time gitea api to come up before creating org and repos
+# give time for gitea api to come up before creating org and repos
 sleep 60
 
 clone_repos
@@ -526,13 +525,7 @@ fi
 
 check_infra
 
-#install_pipelines
-
 install_argocd
-
-#gen_argocd_patch
-
-#patch_argocd
 
 delete_default_argocd_instance
 
@@ -540,24 +533,9 @@ create_custom_argocd_instance
 
 patch_argocd_tls
 
-# Either you map the GIT source using set_git_source or using argocd_git_override - but not both
-
-#create_argocd_git_override_configmap
-#apply_argocd_git_override_configmap
-#argocd_git_override
-
 set_git_source
 
-# (OM) Add infra and services for CP4S
-USE_CP4S_PATTERN=${CP4S_PATTERN}
-
-if [[ "${USE_CP4S_PATTERN}" == "true" ]]; then
-  set-git-cp4s-pattern
-fi
-
-# Set RWX storage
-# get_rwx_storage_class
-# set_rwx_storage_class
+set_git_cp4s_pattern
 
 deploy_bootstrap_argocd
 
@@ -572,4 +550,10 @@ if [[ "${ACE_SCENARIO}" == "true" ]]; then
   fi
 fi
 
+# provides credentials and links post deployment
 print_urls_passwords
+
+# TODO: Add logic for post deployent to add ingress for instance to DNS entry.
+# TODO: Add logic for post deployment to add SOAR license 
+# TODO: Add logic for post deployment to configure against IBM Verify instance for authentication.
+# TODO: Create logic to spin up apphost/edge gateway and configure it against instance.
