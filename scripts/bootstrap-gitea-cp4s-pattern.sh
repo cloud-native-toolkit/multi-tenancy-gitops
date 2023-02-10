@@ -307,8 +307,7 @@ set_git_source () {
   popd
 }
 
-set-git-cp4s-pattern () {
-
+set_git_cp4s_pattern () {
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
@@ -506,7 +505,7 @@ set_rwx_storage_class () {
 }
 
 
-# main
+# main method
 
 install_gitea
 
@@ -548,12 +547,18 @@ patch_argocd_tls
 
 set_git_source
 
-# (OM) Add infra and services for CP4S
-USE_CP4S_PATTERN=${CP4S_PATTERN}
+echo "Beginning the CP4S Pattern Recipe..."
 
-if [[ "${USE_CP4S_PATTERN}" == "true" ]]; then
-  set-git-cp4s-pattern
-fi
+set_git_cp4s_pattern
+
+echo "The CP4S Pattern Recipe is complete..."
+
+# (OM) Add infra and services for CP4S
+#USE_CP4S_PATTERN=${CP4S_PATTERN}
+
+#if [[ "${USE_CP4S_PATTERN}" == "true" ]]; then
+#  set_git_cp4s_pattern
+#fi
 
 # Set RWX storage
 # get_rwx_storage_class
