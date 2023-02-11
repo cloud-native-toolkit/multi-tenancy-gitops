@@ -19,35 +19,9 @@ popd () {
     command popd "$@" > /dev/null
 }
 
-command -v gh >/dev/null 2>&1 || { echo >&2 "The Github CLI gh but it's not installed. Download https://github.com/cli/cli "; exit 1; }
 
-set +e
-#oc version --client | grep '4.7\|4.8'
-oc version --client | grep -E '4.[7-9].[0-9]|4.[1-9][0-9].[0-9]|4.[1-9][0-9][0-9].[0-9]'
-OC_VERSION_CHECK=$?
-set -e
-if [[ ${OC_VERSION_CHECK} -ne 0 ]]; then
-  echo "Please use oc client version 4.7 or 4.8 download from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/ "
-fi
-
-
-if [[ -z ${GIT_ORG} ]]; then
-  echo "We recommend to create a new github organization for all your gitops repos"
-  echo "Setup a new organization on github https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch"
-  echo "Please set the environment variable GIT_ORG when running the script like:"
-  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
-
-  exit 1
-fi
-
-if [[ -z ${OUTPUT_DIR} ]]; then
-  echo "Please set the environment variable OUTPUT_DIR when running the script like:"
-  echo "GIT_ORG=acme-org OUTPUT_DIR=gitops-production ./scripts/bootstrap.sh"
-
-  exit 1
-fi
+GIT_ORG=${GIT_ORG:-gitops-org}
 mkdir -p "${OUTPUT_DIR}"
-
 
 CP_EXAMPLES=${CP_EXAMPLES:-false}
 ACE_SCENARIO=${ACE_SCENARIO:-false}
@@ -73,6 +47,129 @@ GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE:-openshift-gitops}
 
 IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
+
+install_gitea () {
+  echo "== install gitea"
+  TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
+  GIT_CRED_USERNAME=${GIT_CRED_USERNAME:-toolkit}
+  GIT_CRED_PASSWORD=${GIT_CRED_PASSWORD:-toolkit}
+
+  OPERATOR_NAME="gitea-operator"
+  OPERATOR_NAMESPACE="openshift-operators"
+  DEPLOYMENT="${OPERATOR_NAME}-controller-manager"
+  INSTANCE_NAME=${INSTANCE_NAME:-gitea}
+
+  echo "Install gitea operator"
+  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --validate=false -f -
+
+  # Wait for Deployment
+  count=0
+  until kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+  do
+    if [[ ${count} -eq 50 ]]; then
+      echo "Timed out waiting for deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} to start"
+      kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 
+      echo "deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} is started"
+      exit 1
+    else
+      count=$((count + 1))
+    fi
+
+    echo "${count} Waiting for deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} to start"
+    sleep 10
+  done
+
+  if kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null; then
+    kubectl rollout status deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}"
+  fi
+
+  # Wait for Pods
+  local seconds=1200s
+  echo "INFO Wait for gitea operator pods to be ready."
+  while true; do
+    if [[ $(oc get pod -l control-plane=controller-manager -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify=true | wc -l) -gt 0 ]]; then
+      oc wait pod -l control-plane=controller-manager -n "${OPERATOR_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
+        echo "WARNING: Some pods for gitea operator are not ready after ${seconds}."
+      break
+    fi
+  done
+  echo "INFO: State of all pods."
+  oc get pod -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify=true
+
+  # Create toolkit namespace if it doesn't exist
+  oc new-project ${TOOLKIT_NAMESPACE} --insecure-skip-tls-verify=true || true
+
+  status=$(oc get pods -n ${TOOLKIT_NAMESPACE} -l app=${INSTANCE_NAME} 2> /dev/null)
+  if [[ "$status" =~ "Running" ]]; then
+    echo "Gitea server already installed"
+  else
+    echo "Install Gitea server"
+    TMP_DIR=$(mktemp -d)
+    pushd "${TMP_DIR}"
+  cat > "values.yaml" <<EOF
+  global: {}
+  giteaInstance:
+    name: ${INSTANCE_NAME}
+    namespace: ${TOOLKIT_NAMESPACE}
+    giteaAdminUser: ${GIT_CRED_USERNAME}
+    giteaAdminPassword: ${GIT_CRED_PASSWORD}
+    giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
+EOF
+  
+    helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl apply --validate=false -f -
+
+    popd
+
+    local seconds=1200s
+    for label in name=postgresql-${INSTANCE_NAME} app=${INSTANCE_NAME}; do
+      echo "INFO Wait for ${label} pods to be ready."
+      while true; do
+        if [[ $(oc get pod -l ${label} -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify=true | wc -l) -gt 0 ]]; then
+          oc wait pod -l app=${label} -n "${OPERATOR_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
+            echo "WARNING: Some pods for ${label} are not ready after ${seconds}."
+          break
+        fi
+      done
+    done
+
+    echo "checking routes"
+    ROUTES="${INSTANCE_NAME}"
+    for ROUTE in ${ROUTES}; do
+      count=0
+      until kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+      do
+        if [[ ${count} -eq 50 ]]; then
+          echo "Timed out waiting for route/${ROUTE} in ${TOOLKIT_NAMESPACE} to be created"
+          kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 
+          exit 1
+        else
+          count=$((count + 1))
+        fi
+
+        echo "${count} Waiting for route/${ROUTE} in ${TOOLKIT_NAMESPACE} to be created"
+        sleep 10
+      done
+    done
+  # else Install Gitea server
+  fi 
+
+
+  echo "Checking for toolkit admin account"
+  # Create toolkit admin user if needed.
+  ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
+  if [[ ${GIT_CRED_USERNAME} == ${ADMIN_USER} ]]; then
+    echo "toolkit admin account exists"
+  else
+    echo "Creating toolkit admin account"
+    ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
+    GIT_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
+    # Add toolkit admin user
+    curl -s -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_CRED_USERNAME}\",   \"password\": \"${GIT_CRED_PASSWORD}\",   \"email\": \"${GIT_CRED_USERNAME}@cloudnativetoolkit.dev\", \"must_change_password\": false }" "https://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/api/v1/admin/users" > /dev/null
+    # Make toolkit admin user an admin
+    curl -s -X PATCH -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"login_name\": \"${GIT_CRED_USERNAME}\", \"email\": \"${GIT_CRED_USERNAME}@cloudnativetoolkit.dev\", \"active\": true, \"admin\": true, \"allow_create_organization\": true, \"allow_git_hook\": true, \"allow_import_local\": true, \"visibility\": \"public\"}" "https://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/api/v1/admin/users/${GIT_CRED_USERNAME}" > /dev/null
+
+  fi
+}
 
 fork_repos () {
     echo "Github user/org is ${GIT_ORG}"
@@ -160,12 +257,131 @@ fork_repos () {
 
 }
 
+clone_repos () {
+    echo "Github user/org is ${GIT_ORG}"
+
+    TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
+    INSTANCE_NAME=${INSTANCE_NAME:-gitea}
+    ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
+    ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
+    GITEA_BRANCH=${GITEA_BRANCH:-main}
+    GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
+    GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
+    GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
+    GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+    GITEA_GITOPS_BRANCH=${GITEA_GITOPS_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_INFRA_BRANCH=${GITEA_GITOPS_INFRA_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_SERVICES_BRANCH=${GITEA_GITOPS_SERVICES_BRANCH:-${GITEA_BRANCH}}
+    GITEA_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH:-${GITEA_BRANCH}}
+
+    GITOPS_REPOS="${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops,multi-tenancy-gitops,gitops-0-bootstrap \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-infra,multi-tenancy-gitops-infra,gitops-1-infra \
+              ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
+              
+
+    if [[ "${CP_EXAMPLES}" == "true" ]]; then
+        GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
+
+        if [[ "${ACE_SCENARIO}" == "true" ]]; then
+          GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
+        fi
+    fi
+
+    # create org
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
+    if [[ "${response}" == "200" ]]; then
+      echo "org already exists ${GIT_ORG}"
+          # CAN NOT delete org with repos and recreating doesn't complain so don't check]
+    else
+      echo "Creating org for ${GITEA_BASEURL}/api/v1/orgs ${GIT_ORG}"
+      curl -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_ORG}\", \"visibility\": \"public\", \"url\": \"\"  }" "${GITEA_BASEURL}/api/v1/orgs"
+    fi
+
+    # create repos
+    for i in ${GITOPS_REPOS}; do
+      IFS=","
+      set $i
+      echo "snapshot git repo $1 into $3"
+      response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/repos/${GIT_ORG}/$2")
+      if [[ "${response}" == "200" ]]; then
+        echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+        continue
+      fi
+
+
+      echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
+      curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+
+      git clone --depth 1 $1 $3
+      cd $3
+      rm -rf .git
+      git init -b ${GITEA_BRANCH}
+      git config --local user.email "toolkit@cloudnativetoolkit.dev"
+      git config --local user.name "IBM Cloud Native Toolkit"
+      git add .
+      git commit -m "initial commit"
+      git tag 1.0.0
+      git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+      git push downstream ${GITEA_BRANCH}
+      git push --tags downstream
+
+      cd ..
+      unset IFS
+    done
+
+
+}
+
 check_infra () {
-   if [[ "${ADD_INFRA}" == "yes" ]]; then
-     pushd ${OUTPUT_DIR}/gitops-0-bootstrap
-       source ./scripts/infra-mod.sh
-     popd
-   fi
+  echo "Applying Infrastructure updates"
+  echo "we are in ${pwd} dir"
+  if [[ -d "0-bootstrap" ]]; then
+    echo "Finding 0-bootstrap directory."
+  else
+    echo "Cannot ensure that you are in multi-tenancy-gitops or its copy"
+    exit 100
+  fi
+
+  pushd ./0-bootstrap/single-cluster/1-infra
+
+  #not ROSA or ROKS
+  managed="false"
+
+  infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
+  platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
+  installconfig=$(oc get configmap cluster-config-v1 -n kube-system -o jsonpath='{.data.install-config}')
+
+  vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
+  VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
+  VS_DATACENTER=$(echo "${vsconfig}" | grep "datacenter" | cut -d":" -f2 | xargs)
+  VS_DATASTORE=$(echo "${vsconfig}" | grep "defaultDatastore" | cut -d":" -f2 | xargs)
+  VS_CLUSTER=$(echo "${vsconfig}" | grep "cluster" | cut -d":" -f2 | xargs)
+  VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
+
+  sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+
+  sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
+
+  sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
+  sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
+
+  rm argocd/machinesets.yaml.bak
+
+  sed -i.bak '/infraconfig.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+
+  sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/infraconfig.yaml
+  sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/infraconfig.yaml
+  rm argocd/infraconfig.yaml.bak
+
+  popd
+
 }
 
 install_pipelines () {
@@ -184,15 +400,6 @@ install_argocd () {
     popd
 }
 
-# NC: No need to remove default instance since its not created anymore
-#     Handled with DISABLE_DEFAULT_ARGOCD_INSTANCE = True in openshift-gitops-operator.yaml
-#
-# delete_default_argocd_instance () {
-#     echo "Delete the default ArgoCD instance"
-#     pushd ${OUTPUT_DIR}
-#     oc delete gitopsservice cluster -n ${GIT_GITOPS_NAMESPACE} || true
-#     popd
-# }
 
 create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
@@ -494,8 +701,11 @@ set_rwx_storage_class () {
 
 
 # main
+install_gitea
 
-fork_repos
+sleep 60
+
+clone_repos
 
 if [[ -n "${IBM_ENTITLEMENT_KEY}" ]]; then
   update_pull_secret
@@ -505,6 +715,7 @@ fi
 if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
   init_sealed_secrets
 fi
+
 
 check_infra
 
