@@ -124,8 +124,8 @@ EOF
     for label in name=postgresql-${INSTANCE_NAME} app=${INSTANCE_NAME}; do
       echo "INFO Wait for ${label} pods to be ready."
       while true; do
-        if [[ $(oc get pod -l ${label} -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify=true | wc -l) -gt 0 ]]; then
-          oc wait pod -l app=${label} -n "${OPERATOR_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
+        if [[ $(oc get pod -l ${label} -n "${TOOLKIT_NAMESPACE}" --insecure-skip-tls-verify=true | wc -l) -gt 0 ]]; then
+          oc wait pod -l app=${label} -n "${TOOLKIT_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
             echo "WARNING: Some pods for ${label} are not ready after ${seconds}."
           break
         fi
