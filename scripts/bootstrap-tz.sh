@@ -125,7 +125,7 @@ EOF
       echo "INFO Wait for ${label} pods to be ready."
       while true; do
         if [[ $(oc get pod -l ${label} -n "${TOOLKIT_NAMESPACE}" --insecure-skip-tls-verify=true | wc -l) -gt 0 ]]; then
-          oc wait pod -l app=${label} -n "${TOOLKIT_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
+          oc wait pod -l ${label} -n "${TOOLKIT_NAMESPACE}" --for=condition=Ready --timeout=${seconds} --insecure-skip-tls-verify=true ||
             echo "WARNING: Some pods for ${label} are not ready after ${seconds}."
           break
         fi
@@ -317,7 +317,8 @@ clone_repos () {
       git clone --depth 1 $1 $3
       cd $3
       rm -rf .git
-      git init -b ${GITEA_BRANCH}
+      git init
+      git checkout -b ${GITEA_BRANCH}
       git config --local user.email "toolkit@cloudnativetoolkit.dev"
       git config --local user.name "IBM Cloud Native Toolkit"
       git add .
