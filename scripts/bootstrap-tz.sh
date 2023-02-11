@@ -49,7 +49,7 @@ IBM_CP_IMAGE_REGISTRY=${IBM_CP_IMAGE_REGISTRY:-cp.icr.io}
 IBM_CP_IMAGE_REGISTRY_USER=${IBM_CP_IMAGE_REGISTRY_USER:-cp}
 
 install_gitea () {
-  echo "== install gitea"
+  echo "install gitea"
   TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
   GIT_CRED_USERNAME=${GIT_CRED_USERNAME:-toolkit}
   GIT_CRED_PASSWORD=${GIT_CRED_PASSWORD:-toolkit}
@@ -172,6 +172,7 @@ EOF
 }
 
 fork_repos () {
+    echo "fork repos"
     echo "Github user/org is ${GIT_ORG}"
 
     pushd ${OUTPUT_DIR}
@@ -258,6 +259,7 @@ fork_repos () {
 }
 
 clone_repos () {
+    echo "clone repos"
     echo "Github user/org is ${GIT_ORG}"
 
     TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
@@ -511,7 +513,7 @@ argocd_git_override () {
 }
 
 set_git_source () {
-  echo setting git source instead of git override
+  echo "setting git source instead of git override"
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
@@ -539,6 +541,7 @@ deploy_bootstrap_argocd () {
 
 
 update_pull_secret () {
+  echo "update pull secret"
   # Only applicable when workers reload automatically
   if [[ -z "${IBM_ENTITLEMENT_KEY}" ]]; then
     echo "Please pass the environment variable IBM_ENTITLEMENT_KEY"
@@ -568,6 +571,7 @@ update_pull_secret () {
 }
 
 set_pull_secret () {
+  echo "set pull secret"
 
   if [[ -z "${IBM_ENTITLEMENT_KEY}" ]]; then
     echo "Please pass the environment variable IBM_ENTITLEMENT_KEY"
@@ -614,6 +618,7 @@ ace_bom_bootstrap () {
 }
 
 ace_apps_bootstrap () {
+  echo "ace bootstrap"
   echo "Github user/org is ${GIT_ORG}"
 
   if [ -z ${GIT_USER} ]; then echo "Please set GIT_USER when running script"; exit 1; fi
@@ -701,6 +706,7 @@ set_rwx_storage_class () {
 
 
 # main
+echo "install gitops"
 install_gitea
 
 sleep 60
@@ -727,7 +733,7 @@ install_argocd
 
 #patch_argocd
 
-#delete_default_argocd_instance
+delete_default_argocd_instance
 
 create_custom_argocd_instance
 
@@ -742,8 +748,8 @@ patch_argocd_tls
 set_git_source
 
 # Set RWX storage
-# get_rwx_storage_class
-# set_rwx_storage_class
+get_rwx_storage_class
+set_rwx_storage_class
 
 deploy_bootstrap_argocd
 
