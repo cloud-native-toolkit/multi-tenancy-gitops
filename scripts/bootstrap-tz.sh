@@ -337,10 +337,13 @@ clone_repos () {
 
 check_infra () {
   echo "Applying Infrastructure updates"
+  echo $PWD
 
   pushd ./gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+  echo $PWD
 
   #not ROSA or ROKS
+  echo "set infra variables"
   managed="false"
 
   infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
@@ -353,6 +356,8 @@ check_infra () {
   VS_DATASTORE=$(echo "${vsconfig}" | grep "defaultDatastore" | cut -d":" -f2 | xargs)
   VS_CLUSTER=$(echo "${vsconfig}" | grep "cluster" | cut -d":" -f2 | xargs)
   VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
+
+  echo "editing machineset files"
 
   sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
   rm kustomization.yaml.bak
@@ -369,6 +374,8 @@ check_infra () {
 
   rm argocd/machinesets.yaml.bak
 
+  echo "editing infra files"
+
   sed -i.bak '/infraconfig.yaml/s/^#//g' kustomization.yaml
   rm kustomization.yaml.bak
 
@@ -376,7 +383,33 @@ check_infra () {
   sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/infraconfig.yaml
   rm argocd/infraconfig.yaml.bak
 
+  echo "done editing files"
   popd
+  echo $PWD
+
+  echo "sync manifests"
+  pushd ./gitops-0-bootstrap
+  echo $PWD
+
+  for LAYER in 1-infra 2-services 3-apps
+  do
+
+      for CLUSTER in 1-shared-cluster/cluster-1-cicd-dev-stage-prod 1-shared-cluster/cluster-n-prod 2-isolated-cluster/cluster-1-cicd-dev-stage 2-isolated-cluster/cluster-n-prod 3-multi-cluster/cluster-1-cicd 3-multi-cluster/cluster-2-dev 3-multi-cluster/cluster-3-stage 3-multi-cluster/cluster-n-prod
+      do
+          test -e 0-bootstrap/others/${CLUSTER}/${LAYER}/argocd && {
+              rm -r 0-bootstrap/others/${CLUSTER}/${LAYER}/argocd
+          }
+          test -e 0-bootstrap/single-cluster && test -e 0-bootstrap/others && {
+              cp -a 0-bootstrap/single-cluster/${LAYER}/{argocd,${LAYER}.yaml,kustomization.yaml} 0-bootstrap/others/${CLUSTER}/${LAYER}/
+          }
+      done
+
+  done
+  popd
+  echo $PWD
+
+  echo "done with Applying Infrastructre Updates"
+
 
 }
 
