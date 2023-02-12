@@ -348,10 +348,10 @@ check_infra () {
 
   infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
   echo $infraID
-  platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
-  echo $platform
   installconfig=$(oc get configmap cluster-config-v1 -n kube-system -o jsonpath='{.data.install-config}')
   echo $installconfig
+  platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
+  echo $platform
 
   vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
   echo $vsconfig
@@ -757,7 +757,6 @@ fi
 if [[ -n "${SEALED_SECRET_KEY_FILE}" ]]; then
   init_sealed_secrets
 fi
-
 
 check_infra
 
