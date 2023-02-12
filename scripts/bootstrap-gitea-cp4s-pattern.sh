@@ -304,9 +304,10 @@ set_git_cp4s_pattern () {
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
-  if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
-    rm -r 0-bootstrap/others
-  fi
+  # This is already removed in the set_git_source () method
+  #if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
+  #  rm -r 0-bootstrap/others
+  #fi
 
   GIT_ORG=${GIT_ORG} \
   GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} \
