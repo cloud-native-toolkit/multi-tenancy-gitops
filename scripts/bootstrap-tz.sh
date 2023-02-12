@@ -337,15 +337,8 @@ clone_repos () {
 
 check_infra () {
   echo "Applying Infrastructure updates"
-  echo "we are in ${pwd} dir"
-  if [[ -d "0-bootstrap" ]]; then
-    echo "Finding 0-bootstrap directory."
-  else
-    echo "Cannot ensure that you are in multi-tenancy-gitops or its copy"
-    exit 100
-  fi
 
-  pushd ./0-bootstrap/single-cluster/1-infra
+  pushd ./gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
 
   #not ROSA or ROKS
   managed="false"
