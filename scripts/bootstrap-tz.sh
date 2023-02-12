@@ -344,17 +344,27 @@ check_infra () {
   #not ROSA or ROKS
   echo "set infra variables"
   managed="false"
+  echo $managed
 
   infraID=$(oc get -o jsonpath='{.status.infrastructureName}' infrastructure cluster)
+  echo $infraID
   platform=$(echo "${installconfig}" | grep -A1 "^platform:" | grep -v "platform:" | cut -d":" -f1 | xargs)
+  echo $platform
   installconfig=$(oc get configmap cluster-config-v1 -n kube-system -o jsonpath='{.data.install-config}')
+  echo $installconfig
 
   vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
+  echo $vsconfig
   VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
+  echo $VS_NETWORK
   VS_DATACENTER=$(echo "${vsconfig}" | grep "datacenter" | cut -d":" -f2 | xargs)
+  echo $VS_DATACENTER
   VS_DATASTORE=$(echo "${vsconfig}" | grep "defaultDatastore" | cut -d":" -f2 | xargs)
+  echo $VS_DATASTORE
   VS_CLUSTER=$(echo "${vsconfig}" | grep "cluster" | cut -d":" -f2 | xargs)
+  echo $VS_CLUSTER
   VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
+  echo $VS_SERVER
 
   echo "editing machineset files"
 
