@@ -355,7 +355,7 @@ check_infra () {
 
   vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
   echo $vsconfig
-  VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
+  VS_NETWORK=$(echo "${vsconfig}"  | grep "network" | cut -d":" -f2 | xargs)
   echo $VS_NETWORK
   VS_DATACENTER=$(echo "${vsconfig}" | grep "datacenter" | cut -d":" -f2 | xargs)
   echo $VS_DATACENTER
