@@ -2,15 +2,6 @@
 
 set -eo pipefail
 
-USE_CP4S_PATTERN=${CP4S_PATTERN}
-USE_GITEA=${USE_GITEA:-true}
-
-#if [[ "${USE_GITEA}" == "true" ]]; then
-#  exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
-#fi
-
-exec $(dirname "${BASH_SOURCE}")/bootstrap-gitea.sh
-
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
@@ -313,9 +304,10 @@ set_git_cp4s_pattern () {
   echo setting git source instead of git override
   pushd ${OUTPUT_DIR}/gitops-0-bootstrap
 
-  if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
-    rm -r 0-bootstrap/others
-  fi
+  # This is already removed in the set_git_source () function
+  #if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
+  #  rm -r 0-bootstrap/others
+  #fi
 
   GIT_ORG=${GIT_ORG} \
   GIT_BASEURL=${GITEA_PROTOCOL}://${GITEA_HOST} \
@@ -325,7 +317,8 @@ set_git_cp4s_pattern () {
   GIT_GITOPS_APPLICATIONS_BRANCH=${GITEA_GITOPS_APPLICATIONS_BRANCH} \
   ./scripts/set-git-cp4s-pattern.sh
 
-  git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+  #git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS} - the url already exists and throws an error
+  git remote set-url origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
   git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
