@@ -170,93 +170,6 @@ EOF
   #fi
 }
 
-fork_repos () {
-    echo "fork repos"
-    echo "Github user/org is ${GIT_ORG}"
-
-    pushd ${OUTPUT_DIR}
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops gitops-0-bootstrap
-    elif [[ ! -d gitops-0-bootstrap ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
-    fi
-    cd gitops-0-bootstrap
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
-    cd ..
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-infra --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-infra gitops-1-infra
-    elif [[ ! -d gitops-1-infra ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra gitops-1-infra
-    fi
-    cd gitops-1-infra
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
-    cd ..
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-services --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-services gitops-2-services
-    elif [[ ! -d gitops-2-services ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services gitops-2-services
-    fi
-    cd gitops-2-services
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
-    cd ..
-
-    if [[ "${CP_EXAMPLES}" == "true" ]]; then
-      echo "Creating repos for Cloud Pak examples"
-
-      GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-apps -q .name || true)
-      if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
-        echo "Fork not found, creating fork and cloning"
-        gh repo fork cloud-native-toolkit-demos/multi-tenancy-gitops-apps --clone --org ${GIT_ORG} --remote
-        mv multi-tenancy-gitops-apps gitops-3-apps
-      elif [[ ! -d gitops-3-apps ]]; then
-        echo "Fork found, repo not cloned, cloning repo"
-        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-3-apps
-      fi
-      cd gitops-3-apps
-      git remote set-url --push upstream no_push
-      git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
-      cd ..
-
-      if [[ "${ACE_SCENARIO}" == "true" ]]; then
-        GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
-        if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
-          echo "Fork not found, creating fork and cloning"
-          gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
-          mv ace-customer-details src-ace-app-customer-details
-        elif [[ ! -d src-ace-app-customer-details ]]; then
-          echo "Fork found, repo not cloned, cloning repo"
-          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
-        fi
-        cd src-ace-app-customer-details
-        git remote set-url --push upstream no_push
-        git checkout master || git checkout --track origin/master
-        cd ..
-      fi
-
-    fi
-
-    popd
-
-}
-
 clone_repos () {
     echo "clone repos"
     echo "Github user/org is ${GIT_ORG}"
@@ -280,13 +193,13 @@ clone_repos () {
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
               
 
-    if [[ "${CP_EXAMPLES}" == "true" ]]; then
-        GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
+    #if [[ "${CP_EXAMPLES}" == "true" ]]; then
+    #    GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
 
-        if [[ "${ACE_SCENARIO}" == "true" ]]; then
-          GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
-        fi
-    fi
+    #    if [[ "${ACE_SCENARIO}" == "true" ]]; then
+    #      GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
+    #    fi
+    #fi
 
     # create org
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
@@ -308,7 +221,6 @@ clone_repos () {
         echo "repo already exists ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
         continue
       fi
-
 
       echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
       curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
@@ -777,7 +689,7 @@ set_rwx_storage_class () {
 echo "install gitops"
 install_gitea
 
-sleep 60
+sleep 120 
 
 clone_repos
 
