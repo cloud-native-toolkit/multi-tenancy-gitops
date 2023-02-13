@@ -472,14 +472,15 @@ set_git_source () {
   fi
 
   GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
-  if [[ ${GIT_TOKEN} ]]; then
-    echo "git remote set-url origin with token"
-    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
-  else
+  if [[ "${GIT_TOKEN}" == "exampletoken" ]]; then
     echo "git remote set-url origin with user pass"
     git remote add origin ${GIT_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  else
+    echo "git remote set-url origin with token"
+    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
   
+  git push --set-upstream origin ${GIT_BRANCH}
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
