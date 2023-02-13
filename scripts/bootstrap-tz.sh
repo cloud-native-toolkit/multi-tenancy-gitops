@@ -462,7 +462,10 @@ argocd_git_override () {
 
 set_git_source () {
   echo "setting git source instead of git override"
+  echo $PWD
   pushd ./gitops-0-bootstrap
+  echo $PWD
+  git remote -v
 
   if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
     test -e 0-bootstrap/others && rm -r 0-bootstrap/others
@@ -470,15 +473,20 @@ set_git_source () {
 
   GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
   if [[ ${GIT_TOKEN} ]]; then
-    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+    echo "git remote set-url origin with token"
+    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+  else
+    echo "git remote set-url origin with user pass"
+    git remote add origin ${GIT_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
-  set +e
-  git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
+  
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
-  set -e
+
+  echo $PWD
   popd
+  echo $PWD
 }
 
 deploy_bootstrap_argocd () {
