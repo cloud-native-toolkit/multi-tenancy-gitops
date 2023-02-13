@@ -473,6 +473,7 @@ set_git_source () {
     git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
   set +e
+  git push --set-upstream origin ${GITEA_GITOPS_BRANCH}
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
@@ -482,9 +483,7 @@ set_git_source () {
 
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
-  pushd ${OUTPUT_DIR}
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
-  popd
 }
 
 
