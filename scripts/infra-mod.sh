@@ -84,7 +84,7 @@ fi
 
 if [[ "${platform}" == "vsphere" ]]; then
     vsconfig=$(echo "${installconfig}" | grep -A12 "^platform:" | grep "^    " | grep -v "  vsphere:")
-    VS_NETWORK=$(echo "${vsconfig}"  | grep "network " | cut -d":" -f2 | xargs)
+    VS_NETWORK=$(echo "${vsconfig}"  | grep "network" | cut -d":" -f2 | xargs)
     VS_DATACENTER=$(echo "${vsconfig}" | grep "datacenter" | cut -d":" -f2 | xargs)
     VS_DATASTORE=$(echo "${vsconfig}" | grep "defaultDatastore" | cut -d":" -f2 | xargs)
     VS_CLUSTER=$(echo "${vsconfig}" | grep "cluster" | cut -d":" -f2 | xargs)
