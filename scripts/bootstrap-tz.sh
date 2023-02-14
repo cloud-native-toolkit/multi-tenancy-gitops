@@ -492,7 +492,7 @@ set_git_source () {
     while IFS= read -r -d '' File; do
       if grep -q "kind: Application\|kind: AppProject" "$File"; then
         echo "$File"
-        sed -i'.bak' -e "s#\${GITOPS_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}#" $File
         sed -i'.bak' -e "s#\${GIT_GITOPS_BRANCH}#${GIT_GITOPS_BRANCH}#" $File
         sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}#" $File
         sed -i'.bak' -e "s#\${GIT_GITOPS_INFRA_BRANCH}#${GIT_GITOPS_INFRA_BRANCH}#" $File
