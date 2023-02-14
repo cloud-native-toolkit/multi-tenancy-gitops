@@ -489,7 +489,7 @@ set_git_source () {
   echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES} on branch ${GIT_GITOPS_SERVICES_BRANCH}"
   echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS} on branch ${GIT_GITOPS_APPLICATIONS_BRANCH}"
 
-  find ${SCRIPTDIR}/../0-bootstrap -name '*.yaml' -print0 |
+  find ./0-bootstrap -name '*.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "kind: Application\|kind: AppProject" "$File"; then
         #echo "$File"
