@@ -236,12 +236,14 @@ clone_repos () {
       git commit -m "initial commit"
       git tag 1.0.0
       git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+      test -e 0-bootstrap/others && rm -r 0-bootstrap/others
       git push downstream ${GITEA_BRANCH}
       git push --tags downstream
 
       cd ..
       unset IFS
     done
+
 
 
 }
@@ -471,7 +473,42 @@ set_git_source () {
     test -e 0-bootstrap/others && rm -r 0-bootstrap/others
   fi
 
-  GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
+  GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+  GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
+  GIT_GITOPS_INFRA_BRANCH=${GIT_GITOPS_INFRA_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
+  GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
+  GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE:-openshift-gitops}
+  HELM_REPOURL=${HELM_REPOURL:-https://charts.cloudnativetoolkit.dev}
+
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS} on branch ${GIT_GITOPS_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA} on branch ${GIT_GITOPS_INFRA_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES} on branch ${GIT_GITOPS_SERVICES_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS} on branch ${GIT_GITOPS_APPLICATIONS_BRANCH}"
+
+  find ${SCRIPTDIR}/../0-bootstrap -name '*.yaml' -print0 |
+    while IFS= read -r -d '' File; do
+      if grep -q "kind: Application\|kind: AppProject" "$File"; then
+        #echo "$File"
+        sed -i'.bak' -e "s#\${GITOPS_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_BRANCH}#${GIT_GITOPS_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_INFRA_BRANCH}#${GIT_GITOPS_INFRA_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_SERVICES_BRANCH}#${GIT_GITOPS_SERVICES_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_APPLICATIONS_BRANCH}#${GIT_GITOPS_APPLICATIONS_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_NAMESPACE}#${GIT_GITOPS_NAMESPACE}#" $File
+        sed -i'.bak' -e "s#\${HELM_REPOURL}#${HELM_REPOURL}#" $File
+        rm "${File}.bak"
+      fi
+    done
+  echo "done replacing variables in kustomization.yaml files"
+  echo "git commit and push changes now"
+
   if [[ "${GIT_TOKEN}" == "exampletoken" ]]; then
     echo "git remote set-url origin with user pass"
     git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
