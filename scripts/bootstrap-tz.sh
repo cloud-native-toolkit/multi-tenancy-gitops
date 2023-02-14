@@ -477,7 +477,7 @@ set_git_source () {
     git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
   else
     echo "git remote set-url origin with token"
-    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GITEA_HOST}/${GITEA_BASEURL}/${GIT_GITOPS}
+    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GITEA_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
   
   git push --set-upstream origin ${GIT_BRANCH}
