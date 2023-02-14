@@ -228,6 +228,9 @@ clone_repos () {
       git clone --depth 1 $1 $3
       cd $3
       rm -rf .git
+      if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
+        test -e 0-bootstrap/others && rm -r 0-bootstrap/others
+      fi
       git init
       git checkout -b ${GITEA_BRANCH}
       git config --local user.email "toolkit@cloudnativetoolkit.dev"
@@ -243,8 +246,6 @@ clone_repos () {
       cd ..
       unset IFS
     done
-
-
 
 }
 
@@ -469,9 +470,7 @@ set_git_source () {
   echo $PWD
   git remote -v
 
-  if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
-    test -e 0-bootstrap/others && rm -r 0-bootstrap/others
-  fi
+
 
   GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
   GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
@@ -489,10 +488,10 @@ set_git_source () {
   echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES} on branch ${GIT_GITOPS_SERVICES_BRANCH}"
   echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS} on branch ${GIT_GITOPS_APPLICATIONS_BRANCH}"
 
-  find ./0-bootstrap -name '*.yaml' -print0 |
+  find . -name '*.yaml' -print0 |
     while IFS= read -r -d '' File; do
       if grep -q "kind: Application\|kind: AppProject" "$File"; then
-        #echo "$File"
+        echo "$File"
         sed -i'.bak' -e "s#\${GITOPS_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}#" $File
         sed -i'.bak' -e "s#\${GIT_GITOPS_BRANCH}#${GIT_GITOPS_BRANCH}#" $File
         sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}#" $File
