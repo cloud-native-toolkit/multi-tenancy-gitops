@@ -178,7 +178,7 @@ clone_repos () {
     INSTANCE_NAME=${INSTANCE_NAME:-gitea}
     ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
     ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
-    GITEA_BRANCH=${GITEA_BRANCH:-main}
+    GITEA_BRANCH=${GITEA_BRANCH:-master}
     GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
     GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
     GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
@@ -340,7 +340,7 @@ install_pipelines () {
 }
 
 install_argocd () {
-    echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
+    echo "Installing OpenShift GitOps Operator for OpenShift"
     pushd ${OUTPUT_DIR}
     oc create ns ${GIT_GITOPS_NAMESPACE} || true
     oc apply -f gitops-0-bootstrap/setup/ocp4x/
@@ -693,7 +693,7 @@ set_rwx_storage_class () {
 }
 
 
-# main
+# master
 echo "install gitops"
 install_gitea
 
