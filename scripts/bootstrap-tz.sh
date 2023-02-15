@@ -281,22 +281,23 @@ check_infra () {
   VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
   echo $VS_SERVER
 
-  echo "editing machineset files"
+  #echo "editing machineset files"
 
-  sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
-  rm kustomization.yaml.bak
+  # dont activate machinesets
+  #sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
+  #rm kustomization.yaml.bak
 
-  sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
 
-  sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
 
-  rm argocd/machinesets.yaml.bak
+  #rm argocd/machinesets.yaml.bak
 
   echo "editing infra files"
 
