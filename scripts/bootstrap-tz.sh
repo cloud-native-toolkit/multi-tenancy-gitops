@@ -170,93 +170,6 @@ EOF
   #fi
 }
 
-fork_repos () {
-    echo "fork repos"
-    echo "Github user/org is ${GIT_ORG}"
-
-    pushd ${OUTPUT_DIR}
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops gitops-0-bootstrap
-    elif [[ ! -d gitops-0-bootstrap ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops gitops-0-bootstrap
-    fi
-    cd gitops-0-bootstrap
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_BRANCH} || git checkout --track origin/${GIT_GITOPS_BRANCH}
-    cd ..
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-infra -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-infra --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-infra gitops-1-infra
-    elif [[ ! -d gitops-1-infra ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra gitops-1-infra
-    fi
-    cd gitops-1-infra
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_INFRA_BRANCH} || git checkout --track origin/${GIT_GITOPS_INFRA_BRANCH}
-    cd ..
-
-    GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-services -q .name || true)
-    if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
-      echo "Fork not found, creating fork and cloning"
-      gh repo fork cloud-native-toolkit/multi-tenancy-gitops-services --clone --org ${GIT_ORG} --remote
-      mv multi-tenancy-gitops-services gitops-2-services
-    elif [[ ! -d gitops-2-services ]]; then
-      echo "Fork found, repo not cloned, cloning repo"
-      gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services gitops-2-services
-    fi
-    cd gitops-2-services
-    git remote set-url --push upstream no_push
-    git checkout ${GIT_GITOPS_SERVICES_BRANCH} || git checkout --track origin/${GIT_GITOPS_SERVICES_BRANCH}
-    cd ..
-
-    if [[ "${CP_EXAMPLES}" == "true" ]]; then
-      echo "Creating repos for Cloud Pak examples"
-
-      GHREPONAME=$(gh api /repos/${GIT_ORG}/multi-tenancy-gitops-apps -q .name || true)
-      if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
-        echo "Fork not found, creating fork and cloning"
-        gh repo fork cloud-native-toolkit-demos/multi-tenancy-gitops-apps --clone --org ${GIT_ORG} --remote
-        mv multi-tenancy-gitops-apps gitops-3-apps
-      elif [[ ! -d gitops-3-apps ]]; then
-        echo "Fork found, repo not cloned, cloning repo"
-        gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps gitops-3-apps
-      fi
-      cd gitops-3-apps
-      git remote set-url --push upstream no_push
-      git checkout ${GIT_GITOPS_APPLICATIONS_BRANCH} || git checkout --track origin/${GIT_GITOPS_APPLICATIONS_BRANCH}
-      cd ..
-
-      if [[ "${ACE_SCENARIO}" == "true" ]]; then
-        GHREPONAME=$(gh api /repos/${GIT_ORG}/ace-customer-details -q .name || true)
-        if [[ ! ${GHREPONAME} = "ace-customer-details" ]]; then
-          echo "Fork not found, creating fork and cloning"
-          gh repo fork cloud-native-toolkit-demos/ace-customer-details --clone --org ${GIT_ORG} --remote
-          mv ace-customer-details src-ace-app-customer-details
-        elif [[ ! -d src-ace-app-customer-details ]]; then
-          echo "Fork found, repo not cloned, cloning repo"
-          gh repo clone ${GIT_ORG}/ace-customer-details src-ace-app-customer-details
-        fi
-        cd src-ace-app-customer-details
-        git remote set-url --push upstream no_push
-        git checkout master || git checkout --track origin/master
-        cd ..
-      fi
-
-    fi
-
-    popd
-
-}
-
 clone_repos () {
     echo "clone repos"
     echo "Github user/org is ${GIT_ORG}"
@@ -265,7 +178,7 @@ clone_repos () {
     INSTANCE_NAME=${INSTANCE_NAME:-gitea}
     ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
     ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
-    GITEA_BRANCH=${GITEA_BRANCH:-main}
+    GITEA_BRANCH=${GITEA_BRANCH:-master}
     GITEA_PROTOCOL=${GITEA_PROTOCOL:-https}
     GITEA_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
     GITEA_BASEURL=${GITEA_BASEURL:-${GITEA_PROTOCOL}://${ADMIN_USER}:${ADMIN_PASSWORD}@${GITEA_HOST}}
@@ -280,13 +193,13 @@ clone_repos () {
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
               
 
-    if [[ "${CP_EXAMPLES}" == "true" ]]; then
-        GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
+    #if [[ "${CP_EXAMPLES}" == "true" ]]; then
+    #    GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
 
-        if [[ "${ACE_SCENARIO}" == "true" ]]; then
-          GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
-        fi
-    fi
+    #    if [[ "${ACE_SCENARIO}" == "true" ]]; then
+    #      GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
+    #    fi
+    #fi
 
     # create org
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
@@ -309,13 +222,15 @@ clone_repos () {
         continue
       fi
 
-
       echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
       curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
 
       git clone --depth 1 $1 $3
       cd $3
       rm -rf .git
+      if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
+        test -e 0-bootstrap/others && rm -r 0-bootstrap/others
+      fi
       git init
       git checkout -b ${GITEA_BRANCH}
       git config --local user.email "toolkit@cloudnativetoolkit.dev"
@@ -324,13 +239,13 @@ clone_repos () {
       git commit -m "initial commit"
       git tag 1.0.0
       git remote add downstream ${GITEA_BASEURL}/${GIT_ORG}/$2.git
+      test -e 0-bootstrap/others && rm -r 0-bootstrap/others
       git push downstream ${GITEA_BRANCH}
       git push --tags downstream
 
       cd ..
       unset IFS
     done
-
 
 }
 
@@ -366,22 +281,23 @@ check_infra () {
   VS_SERVER=$(echo "${vsconfig}" | grep "vCenter" | cut -d":" -f2 | xargs)
   echo $VS_SERVER
 
-  echo "editing machineset files"
+  #echo "editing machineset files"
 
-  sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
-  rm kustomization.yaml.bak
+  # dont activate machinesets
+  #sed -i.bak '/machinesets.yaml/s/^#//g' kustomization.yaml
+  #rm kustomization.yaml.bak
 
-  sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${PLATFORM}#${platform}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${MANAGED}#${managed}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${INFRASTRUCTURE_ID}#${infraID}#" argocd/machinesets.yaml
 
-  sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
-  sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_NETWORK}#${VS_NETWORK}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_DATACENTER}#${VS_DATACENTER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_DATASTORE}#${VS_DATASTORE}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_CLUSTER}#${VS_CLUSTER}#" argocd/machinesets.yaml
+  #sed -i'.bak' -e "s#\${VS_SERVER}#${VS_SERVER}#" argocd/machinesets.yaml
 
-  rm argocd/machinesets.yaml.bak
+  #rm argocd/machinesets.yaml.bak
 
   echo "editing infra files"
 
@@ -428,7 +344,7 @@ install_pipelines () {
 }
 
 install_argocd () {
-    echo "Installing OpenShift GitOps Operator for OpenShift v4.7"
+    echo "Installing OpenShift GitOps Operator for OpenShift"
     pushd ${OUTPUT_DIR}
     oc create ns ${GIT_GITOPS_NAMESPACE} || true
     oc apply -f gitops-0-bootstrap/setup/ocp4x/
@@ -550,29 +466,70 @@ argocd_git_override () {
 
 set_git_source () {
   echo "setting git source instead of git override"
-  pushd ${OUTPUT_DIR}/gitops-0-bootstrap
+  echo $PWD
+  pushd ./gitops-0-bootstrap
+  echo $PWD
+  git remote -v
 
-  if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
-    test -e 0-bootstrap/others && rm -r 0-bootstrap/others
-  fi
 
-  GIT_ORG=${GIT_ORG} GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE} source ./scripts/set-git-source.sh
-  if [[ ${GIT_TOKEN} ]]; then
-    git remote set-url origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GIT_HOST}/${GIT_ORG}/${GIT_GITOPS}
+
+  GIT_GITOPS=${GIT_GITOPS:-multi-tenancy-gitops.git}
+  GIT_GITOPS_BRANCH=${GIT_GITOPS_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_INFRA=${GIT_GITOPS_INFRA:-multi-tenancy-gitops-infra.git}
+  GIT_GITOPS_INFRA_BRANCH=${GIT_GITOPS_INFRA_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_SERVICES=${GIT_GITOPS_SERVICES:-multi-tenancy-gitops-services.git}
+  GIT_GITOPS_SERVICES_BRANCH=${GIT_GITOPS_SERVICES_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_APPLICATIONS=${GIT_GITOPS_APPLICATIONS:-multi-tenancy-gitops-apps.git}
+  GIT_GITOPS_APPLICATIONS_BRANCH=${GIT_GITOPS_APPLICATIONS_BRANCH:-${GIT_BRANCH}}
+  GIT_GITOPS_NAMESPACE=${GIT_GITOPS_NAMESPACE:-openshift-gitops}
+  HELM_REPOURL=${HELM_REPOURL:-https://charts.cloudnativetoolkit.dev}
+
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS} on branch ${GIT_GITOPS_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA} on branch ${GIT_GITOPS_INFRA_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES} on branch ${GIT_GITOPS_SERVICES_BRANCH}"
+  echo "Setting kustomization patches to ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS} on branch ${GIT_GITOPS_APPLICATIONS_BRANCH}"
+
+  find . -name '*.yaml' -print0 |
+    while IFS= read -r -d '' File; do
+      if grep -q "kind: Application\|kind: AppProject" "$File"; then
+        echo "$File"
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_BRANCH}#${GIT_GITOPS_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_INFRA_BRANCH}#${GIT_GITOPS_INFRA_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_SERVICES_BRANCH}#${GIT_GITOPS_SERVICES_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}#${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_APPLICATIONS_BRANCH}#${GIT_GITOPS_APPLICATIONS_BRANCH}#" $File
+        sed -i'.bak' -e "s#\${GIT_GITOPS_NAMESPACE}#${GIT_GITOPS_NAMESPACE}#" $File
+        sed -i'.bak' -e "s#\${HELM_REPOURL}#${HELM_REPOURL}#" $File
+        rm "${File}.bak"
+      fi
+    done
+  echo "done replacing variables in kustomization.yaml files"
+  echo "git commit and push changes now"
+
+  if [[ "${GIT_TOKEN}" == "exampletoken" ]]; then
+    echo "git remote set-url origin with user pass"
+    git remote add origin ${GITEA_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+  else
+    echo "git remote set-url origin with token"
+    git remote add origin ${GIT_PROTOCOL}://${GIT_TOKEN}@${GITEA_HOST}/${GIT_ORG}/${GIT_GITOPS}
   fi
-  set +e
+  
+  git push --set-upstream origin ${GIT_BRANCH}
   git add .
   git commit -m "Updating git source to ${GIT_ORG}"
   git push origin
-  set -e
+
+  echo $PWD
   popd
+  echo $PWD
 }
 
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
-  pushd ${OUTPUT_DIR}
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
-  popd
 }
 
 
@@ -671,6 +628,38 @@ ace_apps_bootstrap () {
 
 }
 
+delete_default_argocd_instance () {
+    echo "Delete the default ArgoCD instance"
+    oc delete gitopsservice cluster -n openshift-gitops || true
+}
+
+create_custom_argocd_instance () {
+    echo "Create a custom ArgoCD instance with custom checks"
+
+    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n openshift-gitops
+    while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
+}
+patch_argocd_tls () {
+    echo "Patch ArgoCD instance with TLS certificate"
+
+    INGRESS_SECRET_NAME=$(oc get ingresscontroller.operator default \
+    --namespace openshift-ingress-operator \
+    -o jsonpath='{.spec.defaultCertificate.name}')
+
+    if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
+        echo "Cluster is using a self-signed certificate."
+        return 0
+    fi
+
+    oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
+    oc create secret tls -n openshift-gitops openshift-gitops-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
+    oc -n openshift-gitops patch argocd/openshift-gitops-cntk --type=merge \
+    -p='{"spec":{"tls":{"ca":{"secretName":"openshift-gitops-cntk-tls"}}}}'
+
+    rm tls.key tls.crt
+
+}
+
 print_urls_passwords () {
 
     echo "# Openshift Console UI: $(oc whoami --show-console)"
@@ -689,36 +678,13 @@ print_urls_passwords () {
 
 }
 
-get_rwx_storage_class () {
-
+set_rwx_storage_class () {
   DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-managed-nfs-storage}
   OCS_RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
-
-  if [[ -n "${RWX_STORAGE_CLASS}" ]]; then
-    echo "RWX Storage class specified to ${RWX_STORAGE_CLASS}"
-    return 0
-  fi
-  set +e
-  oc get sc -o jsonpath='{.items[*].metadata.name}' | grep "${OCS_RWX_STORAGE_CLASS}"
-  OC_SC_OCS_CHECK=$?
-  set -e
-  if [[ ${OC_SC_OCS_CHECK} -eq 0 ]]; then
-    echo "Found OCS RWX storage class"
-    RWX_STORAGE_CLASS="${OCS_RWX_STORAGE_CLASS}"
-    return 0
-  fi
-  RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS}
-}
-
-set_rwx_storage_class () {
-
-  if [[ ${RWX_STORAGE_CLASS} = ${DEFAULT_RWX_STORAGE_CLASS} ]]; then
-    echo "Using default RWX storage managed-nfs-storage skipping override"
-    return 0
-  fi
+  RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS}
 
   echo "Replacing ${DEFAULT_RWX_STORAGE_CLASS} with ${RWX_STORAGE_CLASS} storage class "
-  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
+  pushd ./gitops-0-bootstrap/
 
   find . -name '*.yaml' -print0 |
     while IFS= read -r -d '' File; do
@@ -741,11 +707,11 @@ set_rwx_storage_class () {
 }
 
 
-# main
+# master
 echo "install gitops"
 install_gitea
 
-sleep 60
+sleep 120 
 
 clone_repos
 
@@ -783,7 +749,6 @@ patch_argocd_tls
 set_git_source
 
 # Set RWX storage
-get_rwx_storage_class
 set_rwx_storage_class
 
 deploy_bootstrap_argocd
