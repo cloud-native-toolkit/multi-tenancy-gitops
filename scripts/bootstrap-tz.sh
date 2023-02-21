@@ -13,7 +13,6 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 TMP_DIR=$(mktemp -d)
 
-
 pushd () {
     command pushd "$@" > /dev/null
 }
@@ -107,7 +106,7 @@ install_gitea () {
   else
     echo "Install Gitea server"
     pushd "${TMP_DIR}"
-    cat > "values.yaml" <<-'EOF'
+    cat > "values.yaml" <<EOF
       global: {}
       giteaInstance:
         name: ${INSTANCE_NAME}
