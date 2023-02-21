@@ -62,15 +62,15 @@ install_gitea () {
   INSTANCE_NAME=${INSTANCE_NAME:-gitea}
 
   echo "Install gitea operator"
-  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --validate=false -f -
+  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --insecure-skip-tls-verify --validate=false -f -
 
   # Wait for Deployment
   count=0
-  until kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+  until kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify 1> /dev/null 2> /dev/null ;
   do
     if [[ ${count} -eq 50 ]]; then
       echo "Timed out waiting for deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} to start"
-      kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 
+      kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify
       echo "deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} is started"
       exit 1
     else
@@ -81,8 +81,8 @@ install_gitea () {
     sleep 10
   done
 
-  if kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null; then
-    kubectl rollout status deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}"
+  if kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify 1> /dev/null 2> /dev/null; then
+    kubectl rollout status deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify
   fi
 
   # Wait for Pods
@@ -107,17 +107,19 @@ install_gitea () {
   else
     echo "Install Gitea server"
     pushd "${TMP_DIR}"
-  cat > "values.yaml" <<EOF
-  global: {}
-  giteaInstance:
-    name: ${INSTANCE_NAME}
-    namespace: ${TOOLKIT_NAMESPACE}
-    giteaAdminUser: ${GIT_CRED_USERNAME}
-    giteaAdminPassword: ${GIT_CRED_PASSWORD}
-    giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
+    cat > "values.yaml" <<-'EOF'
+      global: {}
+      giteaInstance:
+        name: ${INSTANCE_NAME}
+        namespace: ${TOOLKIT_NAMESPACE}
+        giteaAdminUser: ${GIT_CRED_USERNAME}
+        giteaAdminPassword: ${GIT_CRED_PASSWORD}
+        giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
 EOF
+
+
   
-    helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl apply --validate=false -f -
+    helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl --insecure-skip-tls-verify apply --validate=false -f -
 
     popd
 
@@ -137,11 +139,11 @@ EOF
     ROUTES="${INSTANCE_NAME}"
     for ROUTE in ${ROUTES}; do
       count=0
-      until kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+      until kubectl --insecure-skip-tls-verify get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 1> /dev/null 2> /dev/null ;
       do
         if [[ ${count} -eq 50 ]]; then
           echo "Timed out waiting for route/${ROUTE} in ${TOOLKIT_NAMESPACE} to be created"
-          kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 
+          kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" --insecure-skip-tls-verify
           exit 1
         else
           count=$((count + 1))
@@ -369,22 +371,22 @@ patch_argocd_tls () {
 
 
 gen_argocd_patch () {
-echo "Generating argocd instance patch for resourceCustomizations"
-pushd ${TMP_DIR}
-cat <<EOF >argocd-instance-patch.yaml
-spec:
-  resourceCustomizations: |
-    argoproj.io/Application:
-      ignoreDifferences: |
-        jsonPointers:
-        - /spec/source/targetRevision
-        - /spec/source/repoURL
-    argoproj.io/AppProject:
-      ignoreDifferences: |
-        jsonPointers:
-        - /spec/sourceRepos
+  echo "Generating argocd instance patch for resourceCustomizations"
+  pushd ${TMP_DIR}
+  cat <<EOF >argocd-instance-patch.yaml
+  spec:
+    resourceCustomizations: |
+      argoproj.io/Application:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/source/targetRevision
+          - /spec/source/repoURL
+      argoproj.io/AppProject:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/sourceRepos
 EOF
-popd
+  popd
 }
 
 patch_argocd () {
@@ -395,35 +397,35 @@ patch_argocd () {
 }
 
 create_argocd_git_override_configmap () {
-echo "Creating argocd-git-override configmap file ${TMP_DIR}/argocd-git-override-configmap.yaml"
-pushd ${TMP_DIR}
+  echo "Creating argocd-git-override configmap file ${TMP_DIR}/argocd-git-override-configmap.yaml"
+  pushd ${TMP_DIR}
 
-cat <<EOF >argocd-git-override-configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-git-override
-data:
-  map.yaml: |-
-    map:
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-      originBranch: ${GIT_GITOPS_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
-      originBranch: ${GIT_GITOPS_INFRA_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
-      originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+  cat <<EOF >argocd-git-override-configmap.yaml
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: argocd-git-override
+  data:
+    map.yaml: |-
+      map:
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+        originBranch: ${GIT_GITOPS_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+        originBranch: ${GIT_GITOPS_INFRA_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+        originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+        originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+      - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+        originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
-popd
+  popd
 }
 
 apply_argocd_git_override_configmap () {
