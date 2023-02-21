@@ -613,32 +613,8 @@ delete_default_argocd_instance () {
     oc delete gitopsservice cluster -n openshift-gitops || true
 }
 
-create_custom_argocd_instance () {
-    echo "Create a custom ArgoCD instance with custom checks"
 
-    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n openshift-gitops
-    while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
-}
-patch_argocd_tls () {
-    echo "Patch ArgoCD instance with TLS certificate"
 
-    INGRESS_SECRET_NAME=$(oc get ingresscontroller.operator default \
-    --namespace openshift-ingress-operator \
-    -o jsonpath='{.spec.defaultCertificate.name}')
-
-    if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
-        echo "Cluster is using a self-signed certificate."
-        return 0
-    fi
-
-    oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
-    oc create secret tls -n openshift-gitops openshift-gitops-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
-    oc -n openshift-gitops patch argocd/openshift-gitops-cntk --type=merge \
-    -p='{"spec":{"tls":{"ca":{"secretName":"openshift-gitops-cntk-tls"}}}}'
-
-    rm tls.key tls.crt
-
-}
 
 print_urls_passwords () {
 
