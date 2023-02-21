@@ -110,6 +110,7 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops" ]]; then
       echo "Repository ${GIT_GITOPS_NAME} not found, creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops
+      sleep 5
       gh repo clone ${GIT_ORG}/multi-tenancy-gitops
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops ${LOCAL_FOLDER_0}
@@ -128,6 +129,7 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-infra" ]]; then
       echo "Repository not found for ${GIT_GITOPS_INFRA_NAME}; creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops-infra --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-infra
+      sleep 5
       gh repo clone ${GIT_ORG}/multi-tenancy-gitops-infra
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops-infra ${LOCAL_FOLDER_1}
@@ -146,6 +148,7 @@ create_repos () {
     if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-services" ]]; then
       echo "Repository ${GIT_GITOPS_SERVICES_NAME} not found, creating from template and cloning"
       gh repo create ${GIT_ORG}/multi-tenancy-gitops-services --public --template https://github.com/cloud-native-toolkit/multi-tenancy-gitops-services
+      sleep 5
       gh repo clone ${GIT_ORG}/multi-tenancy-gitops-services
       if [ ! -z ${NEW_FOLDERS} ]; then
         mv multi-tenancy-gitops-services ${LOCAL_FOLDER_2}
@@ -167,6 +170,7 @@ create_repos () {
       if [[ ! ${GHREPONAME} = "multi-tenancy-gitops-apps" ]]; then
         echo "Repository ${GIT_GITOPS_APPLICATIONS_NAME} not found, creating from template and cloning"
         gh repo create ${GIT_ORG}/multi-tenancy-gitops-apps --public --template https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps
+        sleep 5
         gh repo clone ${GIT_ORG}/multi-tenancy-gitops-apps
         if [ ! -z ${NEW_FOLDERS} ]; then
           mv multi-tenancy-gitops-apps ${LOCAL_FOLDER_3}
