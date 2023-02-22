@@ -447,7 +447,7 @@ argocd_git_override () {
 set_git_source () {
   echo "setting git source instead of git override"
   echo $PWD
-  pushd ./gitops-0-bootstrap
+  pushd ${TMP_DIR}/gitops-0-bootstrap
   echo $PWD
   git remote -v
 
@@ -640,7 +640,7 @@ set_rwx_storage_class () {
   RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS}
 
   echo "Replacing ${DEFAULT_RWX_STORAGE_CLASS} with ${RWX_STORAGE_CLASS} storage class "
-  pushd ./gitops-0-bootstrap/
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
 
   find . -name '*.yaml' -print0 |
     while IFS= read -r -d '' File; do
