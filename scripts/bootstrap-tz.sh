@@ -509,7 +509,9 @@ set_git_source () {
 
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
+  pushd ${TMP_DIR}
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
+  popd
 }
 
 
