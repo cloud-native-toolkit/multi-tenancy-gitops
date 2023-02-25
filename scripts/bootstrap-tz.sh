@@ -11,6 +11,8 @@ set -eo pipefail
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 [[ -n "${DEBUG:-}" ]] && set -x
 
+TMP_DIR=$(mktemp -d)
+
 pushd () {
     command pushd "$@" > /dev/null
 }
@@ -21,7 +23,6 @@ popd () {
 
 
 GIT_ORG=${GIT_ORG:-gitops-org}
-mkdir -p "${OUTPUT_DIR}"
 
 CP_EXAMPLES=${CP_EXAMPLES:-false}
 ACE_SCENARIO=${ACE_SCENARIO:-false}
@@ -60,15 +61,15 @@ install_gitea () {
   INSTANCE_NAME=${INSTANCE_NAME:-gitea}
 
   echo "Install gitea operator"
-  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --validate=false -f -
+  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --insecure-skip-tls-verify --validate=false -f -
 
   # Wait for Deployment
   count=0
-  until kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+  until kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify 1> /dev/null 2> /dev/null ;
   do
     if [[ ${count} -eq 50 ]]; then
       echo "Timed out waiting for deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} to start"
-      kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 
+      kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify
       echo "deployment/${DEPLOYMENT} in ${OPERATOR_NAMESPACE} is started"
       exit 1
     else
@@ -79,8 +80,8 @@ install_gitea () {
     sleep 10
   done
 
-  if kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" 1> /dev/null 2> /dev/null; then
-    kubectl rollout status deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}"
+  if kubectl get deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify 1> /dev/null 2> /dev/null; then
+    kubectl rollout status deployment "${DEPLOYMENT}" -n "${OPERATOR_NAMESPACE}" --insecure-skip-tls-verify
   fi
 
   # Wait for Pods
@@ -104,19 +105,20 @@ install_gitea () {
     echo "Gitea server already installed"
   else
     echo "Install Gitea server"
-    TMP_DIR=$(mktemp -d)
     pushd "${TMP_DIR}"
-  cat > "values.yaml" <<EOF
-  global: {}
-  giteaInstance:
-    name: ${INSTANCE_NAME}
-    namespace: ${TOOLKIT_NAMESPACE}
-    giteaAdminUser: ${GIT_CRED_USERNAME}
-    giteaAdminPassword: ${GIT_CRED_PASSWORD}
-    giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
+    cat > "values.yaml" <<EOF
+      global: {}
+      giteaInstance:
+        name: ${INSTANCE_NAME}
+        namespace: ${TOOLKIT_NAMESPACE}
+        giteaAdminUser: ${GIT_CRED_USERNAME}
+        giteaAdminPassword: ${GIT_CRED_PASSWORD}
+        giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
 EOF
+
+
   
-    helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl apply --validate=false -f -
+    helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl --insecure-skip-tls-verify apply --validate=false -f -
 
     popd
 
@@ -136,11 +138,11 @@ EOF
     ROUTES="${INSTANCE_NAME}"
     for ROUTE in ${ROUTES}; do
       count=0
-      until kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 1> /dev/null 2> /dev/null ;
+      until kubectl --insecure-skip-tls-verify get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 1> /dev/null 2> /dev/null ;
       do
         if [[ ${count} -eq 50 ]]; then
           echo "Timed out waiting for route/${ROUTE} in ${TOOLKIT_NAMESPACE} to be created"
-          kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" 
+          kubectl get route "${ROUTE}" -n "${TOOLKIT_NAMESPACE}" --insecure-skip-tls-verify
           exit 1
         else
           count=$((count + 1))
@@ -152,22 +154,6 @@ EOF
     done
   # else Install Gitea server
   fi 
-
-
-  #echo "Checking for toolkit admin account"
-  # Create toolkit admin user if needed.
-  #ADMIN_USER=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.username|base64decode}}")
-  #if [[ ${GIT_CRED_USERNAME} == ${ADMIN_USER} ]]; then
-  #  echo "toolkit admin account exists"
-  #else
-  #  echo "Creating toolkit admin account"
-  #  ADMIN_PASSWORD=$(oc get secret ${INSTANCE_NAME}-access -n ${TOOLKIT_NAMESPACE} -o go-template --template="{{.data.password|base64decode}}")
-  #  GIT_HOST=$(oc get route ${INSTANCE_NAME} -n ${TOOLKIT_NAMESPACE} -o jsonpath='{.spec.host}')
-  #  # Add toolkit admin user
-  #  curl -s -X POST -H "Content-Type: application/json" -d "{ \"username\": \"${GIT_CRED_USERNAME}\",   \"password\": \"${GIT_CRED_PASSWORD}\",   \"email\": \"${GIT_CRED_USERNAME}@cloudnativetoolkit.dev\", \"must_change_password\": false }" "https://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/api/v1/admin/users" > /dev/null
-  #  # Make toolkit admin user an admin
-  #  curl -s -X PATCH -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"login_name\": \"${GIT_CRED_USERNAME}\", \"email\": \"${GIT_CRED_USERNAME}@cloudnativetoolkit.dev\", \"active\": true, \"admin\": true, \"allow_create_organization\": true, \"allow_git_hook\": true, \"allow_import_local\": true, \"visibility\": \"public\"}" "https://${ADMIN_USER}:${ADMIN_PASSWORD}@${GIT_HOST}/api/v1/admin/users/${GIT_CRED_USERNAME}" > /dev/null
-  #fi
 }
 
 clone_repos () {
@@ -191,15 +177,6 @@ clone_repos () {
     GITOPS_REPOS="${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops,multi-tenancy-gitops,gitops-0-bootstrap \
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-infra,multi-tenancy-gitops-infra,gitops-1-infra \
               ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-services,multi-tenancy-gitops-services,gitops-2-services"
-              
-
-    #if [[ "${CP_EXAMPLES}" == "true" ]]; then
-    #    GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit/multi-tenancy-gitops-apps,multi-tenancy-gitops-apps,gitops-3-apps"
-
-    #    if [[ "${ACE_SCENARIO}" == "true" ]]; then
-    #      GITOPS_REPOS=${GITOPS_REPOS}" ${GIT_BASEURL}/cloud-native-toolkit-demos/ace-customer-details,ace-customer-details,src-ace-app-customer-details"
-    #    fi
-    #fi
 
     # create org
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}")
@@ -212,6 +189,7 @@ clone_repos () {
     fi
 
     # create repos
+    pushd "${TMP_DIR}"
     for i in ${GITOPS_REPOS}; do
       IFS=","
       set $i
@@ -247,13 +225,15 @@ clone_repos () {
       unset IFS
     done
 
+    popd
+
 }
 
 check_infra () {
   echo "Applying Infrastructure updates"
   echo $PWD
 
-  pushd ./gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
   echo $PWD
 
   #not ROSA or ROKS
@@ -313,7 +293,7 @@ check_infra () {
   echo $PWD
 
   echo "sync manifests"
-  pushd ./gitops-0-bootstrap
+  pushd ${TMP_DIR}/gitops-0-bootstrap
   echo $PWD
 
   for LAYER in 1-infra 2-services 3-apps
@@ -333,7 +313,7 @@ check_infra () {
   popd
   echo $PWD
 
-  echo "done with Applying Infrastructre Updates"
+  echo "done with Applying Infrastructure Updates"
 
 
 }
@@ -345,7 +325,7 @@ install_pipelines () {
 
 install_argocd () {
     echo "Installing OpenShift GitOps Operator for OpenShift"
-    pushd ${OUTPUT_DIR}
+    pushd ${TMP_DIR}
     oc create ns ${GIT_GITOPS_NAMESPACE} || true
     oc apply -f gitops-0-bootstrap/setup/ocp4x/
     while ! oc wait crd applications.argoproj.io --timeout=-1s --for=condition=Established  2>/dev/null; do sleep 30; done
@@ -357,7 +337,7 @@ install_argocd () {
 
 create_custom_argocd_instance () {
     echo "Create a custom ArgoCD instance with custom checks"
-    pushd ${OUTPUT_DIR}
+    pushd ${TMP_DIR}
 
     oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n ${GIT_GITOPS_NAMESPACE}
     while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=${GIT_GITOPS_NAMESPACE}-cntk-server -n ${GIT_GITOPS_NAMESPACE} > /dev/null; do sleep 30; done
@@ -366,7 +346,7 @@ create_custom_argocd_instance () {
 
 patch_argocd_tls () {
     echo "Patch ArgoCD instance with TLS certificate"
-    pushd ${OUTPUT_DIR}
+    pushd ${TMP_DIR}
 
     INGRESS_SECRET_NAME=$(oc get ingresscontroller.operator default \
     --namespace openshift-ingress-operator \
@@ -390,66 +370,66 @@ patch_argocd_tls () {
 
 
 gen_argocd_patch () {
-echo "Generating argocd instance patch for resourceCustomizations"
-pushd ${OUTPUT_DIR}
-cat <<EOF >argocd-instance-patch.yaml
-spec:
-  resourceCustomizations: |
-    argoproj.io/Application:
-      ignoreDifferences: |
-        jsonPointers:
-        - /spec/source/targetRevision
-        - /spec/source/repoURL
-    argoproj.io/AppProject:
-      ignoreDifferences: |
-        jsonPointers:
-        - /spec/sourceRepos
+  echo "Generating argocd instance patch for resourceCustomizations"
+  pushd ${TMP_DIR}
+  cat <<EOF >argocd-instance-patch.yaml
+  spec:
+    resourceCustomizations: |
+      argoproj.io/Application:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/source/targetRevision
+          - /spec/source/repoURL
+      argoproj.io/AppProject:
+        ignoreDifferences: |
+          jsonPointers:
+          - /spec/sourceRepos
 EOF
-popd
+  popd
 }
 
 patch_argocd () {
   echo "Applying argocd instance patch"
-  pushd ${OUTPUT_DIR}
+  pushd ${TMP_DIR}
   oc patch -n ${GIT_GITOPS_NAMESPACE} argocd ${GIT_GITOPS_NAMESPACE} --type=merge --patch-file=argocd-instance-patch.yaml
   popd
 }
 
 create_argocd_git_override_configmap () {
-echo "Creating argocd-git-override configmap file ${OUTPUT_DIR}/argocd-git-override-configmap.yaml"
-pushd ${OUTPUT_DIR}
+  echo "Creating argocd-git-override configmap file ${TMP_DIR}/argocd-git-override-configmap.yaml"
+  pushd ${TMP_DIR}
 
-cat <<EOF >argocd-git-override-configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-git-override
-data:
-  map.yaml: |-
-    map:
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
-      originBranch: ${GIT_GITOPS_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
-      originBranch: ${GIT_GITOPS_INFRA_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
-      originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
-    - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
-    - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
-      originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
-      originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+  cat <<EOF >argocd-git-override-configmap.yaml
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: argocd-git-override
+  data:
+    map.yaml: |-
+      map:
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+        originBranch: ${GIT_GITOPS_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_INFRA}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+        originBranch: ${GIT_GITOPS_INFRA_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_SERVICES}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+        originBranch: ${GIT_GITOPS_SERVICES_BRANCH}
+      - upstreamRepoURL: \${GIT_BASEURL}/\${GIT_ORG}/\${GIT_GITOPS_APPLICATIONS}
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+        originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
+      - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+        originRepoUrL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+        originBranch: ${GIT_GITOPS_APPLICATIONS_BRANCH}
 EOF
 
-popd
+  popd
 }
 
 apply_argocd_git_override_configmap () {
-  echo "Applying ${OUTPUT_DIR}/argocd-git-override-configmap.yaml"
-  pushd ${OUTPUT_DIR}
+  echo "Applying ${TMP_DIR}/argocd-git-override-configmap.yaml"
+  pushd ${TMP_DIR}
 
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f argocd-git-override-configmap.yaml
 
@@ -467,7 +447,7 @@ argocd_git_override () {
 set_git_source () {
   echo "setting git source instead of git override"
   echo $PWD
-  pushd ./gitops-0-bootstrap
+  pushd ${TMP_DIR}/gitops-0-bootstrap
   echo $PWD
   git remote -v
 
@@ -529,7 +509,9 @@ set_git_source () {
 
 deploy_bootstrap_argocd () {
   echo "Deploying top level bootstrap ArgoCD Application for cluster profile ${GITOPS_PROFILE}"
+  pushd ${TMP_DIR}
   oc apply -n ${GIT_GITOPS_NAMESPACE} -f gitops-0-bootstrap/${GITOPS_PROFILE}/bootstrap.yaml
+  popd
 }
 
 
@@ -589,7 +571,7 @@ ace_bom_bootstrap () {
 
   echo "Applying ACE BOM"
 
-  pushd ${OUTPUT_DIR}/gitops-0-bootstrap/
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
 
   cp -a ${ACE_BOM_PATH}/1-infra/ ${GITOPS_PROFILE}/1-infra/
   cp -a ${ACE_BOM_PATH}/2-services/ ${GITOPS_PROFILE}/2-services/
@@ -620,7 +602,7 @@ ace_apps_bootstrap () {
 
   if [ -z ${GIT_ORG} ]; then echo "Please set GIT_ORG when running script"; exit 1; fi
 
-  pushd ${OUTPUT_DIR}
+  pushd ${TMP_DIR}
 
   source gitops-3-apps/scripts/ace-bootstrap.sh
 
@@ -633,32 +615,8 @@ delete_default_argocd_instance () {
     oc delete gitopsservice cluster -n openshift-gitops || true
 }
 
-create_custom_argocd_instance () {
-    echo "Create a custom ArgoCD instance with custom checks"
 
-    oc apply -f gitops-0-bootstrap/setup/ocp4x/argocd-instance/ -n openshift-gitops
-    while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
-}
-patch_argocd_tls () {
-    echo "Patch ArgoCD instance with TLS certificate"
 
-    INGRESS_SECRET_NAME=$(oc get ingresscontroller.operator default \
-    --namespace openshift-ingress-operator \
-    -o jsonpath='{.spec.defaultCertificate.name}')
-
-    if [[ -z "${INGRESS_SECRET_NAME}" ]]; then
-        echo "Cluster is using a self-signed certificate."
-        return 0
-    fi
-
-    oc extract secret/${INGRESS_SECRET_NAME} -n openshift-ingress
-    oc create secret tls -n openshift-gitops openshift-gitops-cntk-tls --cert=tls.crt --key=tls.key --dry-run=client -o yaml | oc apply -f -
-    oc -n openshift-gitops patch argocd/openshift-gitops-cntk --type=merge \
-    -p='{"spec":{"tls":{"ca":{"secretName":"openshift-gitops-cntk-tls"}}}}'
-
-    rm tls.key tls.crt
-
-}
 
 print_urls_passwords () {
 
@@ -684,7 +642,7 @@ set_rwx_storage_class () {
   RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS}
 
   echo "Replacing ${DEFAULT_RWX_STORAGE_CLASS} with ${RWX_STORAGE_CLASS} storage class "
-  pushd ./gitops-0-bootstrap/
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
 
   find . -name '*.yaml' -print0 |
     while IFS= read -r -d '' File; do
