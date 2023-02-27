@@ -499,21 +499,11 @@ set_rwx_storage_class () {
   popd
 }
 
-#TODO: Add timer that makes sense
+# Checks to wait for CP4SThreatManagement Custom Resource completes before starting post installation work
 cp4s_deployment_status_complete () {
 
   echo "Checking if CP4S Deployment is complete"
-  # needs to log into the cluster and make sure you are in the correct project first...
-  # while ! oc wait pod --timeout=-1s --for=condition=ContainersReady -l app.kubernetes.io/name=openshift-gitops-cntk-server -n openshift-gitops > /dev/null; do sleep 30; done
-  
   while ! oc wait --for=condition=Success CP4SThreatManagement threatmgmt -n tools > /dev/null; do sleep 30; done
-
-  #CP4S_STATE=$(oc get CP4SThreatManagement threatmgmt -n tools -o jsonpath='{.status.conditions}')
-  #until [[ $CP4S_STATE == *"Cloudpak for Security Deployment is successful"* ]]
-  #do
-  #  echo "Still waiting for CP4S to finish deployment..."
-  #  sleep 5
-  #done
 }
 
 # main code block
