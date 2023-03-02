@@ -670,18 +670,34 @@ set_rwx_storage_class () {
 
 
 enable_cp4d() {
-  #infra_kustomize_enable:
-  #  - argocd/consolenotification.yaml
-  #  - argocd/namespace-ibm-common-services.yaml
-  #  - argocd/namespace-sealed-secrets.yaml
-  #  - argocd/namespace-tools.yaml
-  #  - argocd/serviceaccounts-tools.yaml
-  #services_kustomize_enable:
-  #  - argocd/operators/ibm-cpd-scheduling-operator.yaml
-  #  - argocd/operators/ibm-cpd-platform-operator.yaml
-  #  - argocd/instances/ibm-cpd-instance.yaml
-  #  - argocd/operators/ibm-catalogs.yaml
-  #  - argocd/instances/sealed-secrets.yaml
+  echo "enabling cloudpak for data..."
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  sed -i.bak '/argocd\/consolenotifcation.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-ibm-common-services.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-tools.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/serviceaccounts-tools.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
+
+  sed -i.bak '/argocd\/operators\/ibm-cpd-scheduling-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-cpd-platform-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-cpd-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for data"
+  git push origin
+  popd
 }
 enable_cp4i() {
   #ace:
