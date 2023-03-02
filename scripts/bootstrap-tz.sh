@@ -637,7 +637,7 @@ print_urls_passwords () {
 }
 
 set_rwx_storage_class () {
-  DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-managed-nfs-storage}
+  DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
   OCS_RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
   RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS}
 
@@ -682,6 +682,11 @@ enable_cp4d() {
   rm kustomization.yaml.bak
   popd
 
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
+  sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-cpd-instance.yaml
+  rm ibm-cpd-instance.yaml
+  popd
+
   pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
 
   sed -i.bak '/argocd\/operators\/ibm-cpd-scheduling-operator.yaml/s/^#//g' kustomization.yaml
@@ -699,65 +704,65 @@ enable_cp4d() {
   git push origin
   popd
 }
-enable_cp4i() {
-  #ace:
-  #  friendly_name: Cloud Pak for Integration + App Connect Enterprise
-  #  type: multitenancygitops
-  #  infra_kustomize_enable:
-  #    - argocd/consolenotification.yaml
-  #    - argocd/namespace-ibm-common-services.yaml
-  #    - argocd/namespace-sealed-secrets.yaml
-  #    - argocd/namespace-tools.yaml
-  #    - argocd/namespace-ci.yaml
-  #    - argocd/namespace-dev.yaml
-  #    - argocd/namespace-staging.yaml
-  #    - argocd/namespace-prod.yaml
-  #  services_kustomize_enable:
-  #    - argocd/operators/ibm-ace-operator.yaml
-  #    - argocd/operators/ibm-platform-navigator.yaml
-  #    - argocd/instances/ibm-platform-navigator-instance.yaml
-  #    - argocd/operators/ibm-foundations.yaml
-  #    - argocd/operators/ibm-foundational-services-instance.yaml
-  #    - argocd/operators/ibm-automation-foundation-core-operator.yaml
-  #    - argocd/operators/ibm-catalogs.yaml
-  #    - argocd/instances/sealed-secrets.yaml
+# enable_cp4i() {
+#   #ace:
+#   #  friendly_name: Cloud Pak for Integration + App Connect Enterprise
+#   #  type: multitenancygitops
+#   #  infra_kustomize_enable:
+#   #    - argocd/consolenotification.yaml
+#   #    - argocd/namespace-ibm-common-services.yaml
+#   #    - argocd/namespace-sealed-secrets.yaml
+#   #    - argocd/namespace-tools.yaml
+#   #    - argocd/namespace-ci.yaml
+#   #    - argocd/namespace-dev.yaml
+#   #    - argocd/namespace-staging.yaml
+#   #    - argocd/namespace-prod.yaml
+#   #  services_kustomize_enable:
+#   #    - argocd/operators/ibm-ace-operator.yaml
+#   #    - argocd/operators/ibm-platform-navigator.yaml
+#   #    - argocd/instances/ibm-platform-navigator-instance.yaml
+#   #    - argocd/operators/ibm-foundations.yaml
+#   #    - argocd/operators/ibm-foundational-services-instance.yaml
+#   #    - argocd/operators/ibm-automation-foundation-core-operator.yaml
+#   #    - argocd/operators/ibm-catalogs.yaml
+#   #    - argocd/instances/sealed-secrets.yaml
 
   
-}
-enable_cp4s() {
+# }
+# enable_cp4s() {
 
-  #cloudpakforsecurity:
-  #friendly_name: Cloud Pak for Security
-  #type: multitenancygitops
-  #infra_kustomize_enable:
-  #  - argocd/consolenotification.yaml
-  #  - argocd/namespace-ibm-common-services.yaml
-  #  - argocd/namespace-tools.yaml
-  #  - argocd/namespace-openshift-serverless.yaml
-  #  - argocd/namespace-knative-eventing.yaml
-  #  - argocd/namespace-knative-serving.yaml
-  #  - argocd/namespace-knative-serving-ingress.yaml
-  #services_kustomize_enable:
-  #  - argocd/operators/ibm-cp4s-operator.yaml
-  #  - argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
-  #  - argocd/operators/ibm-foundations.yaml
-  #  - argocd/instances/ibm-foundational-services-instance.yaml
-  #  - argocd/operators/ibm-automation-foundation-core-operator.yaml
-  #  - argocd/operators/ibm-catalogs.yaml
-  #  - argocd/operators/openshift-serverless.yaml
-  #  - argocd/instances/openshift-serverless-knative-serving-instance.yaml
-}
-enable_cp4ba() {
-  #  infra_kustomize_enable:
-#    - argocd/namespace-ibm-common-services.yaml
-#    - argocd/namespace-tools.yaml
-#  services_kustomize_enable:
-#    - argocd/operators/ibm-process-mining-operator.yaml
-#    - argocd/instances/ibm-process-mining-instance.yaml
-#    - argocd/operators/ibm-db2u-operator.yaml
-#    - argocd/operators/ibm-foundations.yaml
-#    - argocd/operators/ibm-catalogs.yaml
-}
+#   #cloudpakforsecurity:
+#   #friendly_name: Cloud Pak for Security
+#   #type: multitenancygitops
+#   #infra_kustomize_enable:
+#   #  - argocd/consolenotification.yaml
+#   #  - argocd/namespace-ibm-common-services.yaml
+#   #  - argocd/namespace-tools.yaml
+#   #  - argocd/namespace-openshift-serverless.yaml
+#   #  - argocd/namespace-knative-eventing.yaml
+#   #  - argocd/namespace-knative-serving.yaml
+#   #  - argocd/namespace-knative-serving-ingress.yaml
+#   #services_kustomize_enable:
+#   #  - argocd/operators/ibm-cp4s-operator.yaml
+#   #  - argocd/instances/ibm-cp4sthreatmanagements-instance.yaml
+#   #  - argocd/operators/ibm-foundations.yaml
+#   #  - argocd/instances/ibm-foundational-services-instance.yaml
+#   #  - argocd/operators/ibm-automation-foundation-core-operator.yaml
+#   #  - argocd/operators/ibm-catalogs.yaml
+#   #  - argocd/operators/openshift-serverless.yaml
+#   #  - argocd/instances/openshift-serverless-knative-serving-instance.yaml
+# }
+# enable_cp4ba() {
+#   #  infra_kustomize_enable:
+# #    - argocd/namespace-ibm-common-services.yaml
+# #    - argocd/namespace-tools.yaml
+# #  services_kustomize_enable:
+# #    - argocd/operators/ibm-process-mining-operator.yaml
+# #    - argocd/instances/ibm-process-mining-instance.yaml
+# #    - argocd/operators/ibm-db2u-operator.yaml
+# #    - argocd/operators/ibm-foundations.yaml
+# #    - argocd/operators/ibm-catalogs.yaml
+# }
 
 
 patch_cloudpaks() {
@@ -772,24 +777,24 @@ patch_cloudpaks() {
     echo "Enable Cloud Pak for Data"
     enable_cp4d
     exit
-
-  else if [[ ${SELECTED_CP == "cp4i" ]]; then
-    echo "Enable Cloud Pak for Integration"
-    enable_cp4i
-    exit
-
-  else if [[ ${SELECTED_CP == "cp4s" ]]; then
-    echo "Enable Cloud Pak for Security"
-    enable_cp4s
-    exit
-  
-  else if [[ ${SELECTED_CP == "cp4ba" ]]; then
-    echo "Enable Cloud Pak for Business Automation"
-    enable_cp4ba
-    exit
   
   fi
 }
+
+  # else if [[ ${SELECTED_CP == "cp4i" ]]; then
+  #   echo "Enable Cloud Pak for Integration"
+  #   enable_cp4i
+  #   exit
+
+  # else if [[ ${SELECTED_CP == "cp4s" ]]; then
+  #   echo "Enable Cloud Pak for Security"
+  #   enable_cp4s
+  #   exit
+  
+  # else if [[ ${SELECTED_CP == "cp4ba" ]]; then
+  #   echo "Enable Cloud Pak for Business Automation"
+  #   enable_cp4ba
+  #   exit
 
 
 # master
