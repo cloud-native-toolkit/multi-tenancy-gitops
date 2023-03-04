@@ -637,7 +637,7 @@ print_urls_passwords () {
 }
 
 set_rwx_storage_class () {
-  DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
+  DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-managed-nfs-storage}
   OCS_RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
   RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS}
 
@@ -768,6 +768,7 @@ enable_cp4d() {
 patch_cloudpaks() {
   echo "enable selected cloudpaks..."
   SELECTED_CP=${SET_CLOUDPAKS:-None}
+  echo "selected cloudpaks: ${SELECTED_CP}"
 
   if [[ ${SELECTED_CP} == "None" ]]; then
     echo "No Cloud Pak selected"
