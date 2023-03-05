@@ -735,6 +735,13 @@ enable_cp4i() {
   sed -i.bak '/argocd\/instances\/sealed-secrets.yaml/s/^#//g' kustomization.yaml
   rm kustomization.yaml.bak
   popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for integration"
+  git push origin
+  popd
 }
 
 enable_cp4s() {
@@ -770,6 +777,13 @@ enable_cp4s() {
   sed -i.bak '/argocd\/instances\/openshift-serverless-knative-serving-instance.yaml/s/^#//g' kustomization.yaml
   rm kustomization.yaml.bak
   popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for security"
+  git push origin
+  popd
 }
 
 enable_cp4ba() {
@@ -791,6 +805,13 @@ enable_cp4ba() {
   sed -i.bak '/argocd\/operators\/ibm-db2u-operator.yaml/s/^#//g' kustomization.yaml
   sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
   rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for business automation"
+  git push origin
   popd
 }
 
