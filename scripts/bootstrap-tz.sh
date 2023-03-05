@@ -682,10 +682,11 @@ enable_cp4d() {
   rm kustomization.yaml.bak
   popd
 
-  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
-  sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-cpd-instance.yaml
-  rm ibm-cpd-instance.yaml.bak
-  popd
+  # #This is covered by the default storage replacement 
+  # pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
+  # sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-cpd-instance.yaml
+  # rm ibm-cpd-instance.yaml.bak
+  # popd
 
   pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
 
@@ -772,28 +773,23 @@ patch_cloudpaks() {
 
   if [[ ${SELECTED_CP} == "None" ]]; then
     echo "No Cloud Pak selected"
-    exit
   elif [[ ${SELECTED_CP} == "cp4d" ]]; then
     echo "Enable Cloud Pak for Data"
     enable_cp4d
-    exit
   fi
 }
 
 # else if [[ ${SELECTED_CP == "cp4i" ]]; then
 #   echo "Enable Cloud Pak for Integration"
-#   enable_cp4i
-#   exit
+#   enable_cp4i 
 
 # else if [[ ${SELECTED_CP == "cp4s" ]]; then
 #   echo "Enable Cloud Pak for Security"
 #   enable_cp4s
-#   exit
   
 # else if [[ ${SELECTED_CP == "cp4ba" ]]; then
 #   echo "Enable Cloud Pak for Business Automation"
 #   enable_cp4ba
-#   exit
 
 
 # master
