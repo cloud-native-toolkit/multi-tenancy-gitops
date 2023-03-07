@@ -55,7 +55,7 @@ oc create secret docker-registry ibm-entitlement-key -n ibm-common-services \
 --docker-server=cp.icr.io
 ```
 
-2. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install CP4BA operator and BAW instance and by uncommenting the following lines (uncomment cp4ba) 
+2. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install CP4BA operator and BAW instance by uncommenting the following lines:
    
     ```yaml
     ## IBM CP4BA operator
