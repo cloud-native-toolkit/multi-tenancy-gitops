@@ -135,6 +135,7 @@ The reference architecture for this GitOps workflow can be found [here](https://
     - [MQ recipe](doc/mq-recipe.md)
     - [API Connect recipe](doc/apic-recipe.md)
     - [Process Mining recipe](doc/process-mining-recipe.md)
+    - [Cloud Pak for Business Automation + Business Automation Workflow](doc/cp4ba-baw-recipe.md)
     - [Cloud Pak for Data](doc/cp4d-platform-recipe.md)
     - [Cloud Pak for Data + Watson Studio](doc/cp4d-ws-recipe.md)
     - [Cloud Pak for Data + Watson Knowledge Catalog](doc/cp4d-wkc-recipe.md)
