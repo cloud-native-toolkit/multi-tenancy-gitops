@@ -75,7 +75,7 @@ spec:
   - namespace: cp4ba
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-  - group: ""
+   - group: ""
     kind: Namespace
   - group: ""
     kind: RoleBinding
@@ -95,6 +95,8 @@ spec:
     kind: MachineSet
   - group: "machineconfiguration.openshift.io"
     kind: MachineConfigPool
+  - group: "machineconfiguration.openshift.io"
+    kind: MachineConfig
   - group: "machineconfiguration.openshift.io"
     kind: ContainerRuntimeConfig
   - group: "tuned.openshift.io"
