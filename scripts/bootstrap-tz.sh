@@ -205,6 +205,7 @@ clone_repos () {
       sleep 10
 
       git clone --depth 1 $1 $3
+      sleep 10
       cd $3
       rm -rf .git
       if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
