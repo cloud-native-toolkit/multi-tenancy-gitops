@@ -202,6 +202,7 @@ clone_repos () {
 
       echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
       curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+      sleep 10
 
       git clone --depth 1 $1 $3
       cd $3
