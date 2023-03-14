@@ -202,8 +202,10 @@ clone_repos () {
 
       echo "Creating repo for ${GITEA_BASEURL}/${GIT_ORG}/$2.git"
       curl -X POST -H "Content-Type: application/json" -d "{ \"name\": \"${2}\", \"default_branch\": \"${GITEA_BRANCH}\" }" "${GITEA_BASEURL}/api/v1/orgs/${GIT_ORG}/repos"
+      sleep 10
 
       git clone --depth 1 $1 $3
+      sleep 10
       cd $3
       rm -rf .git
       if [[ "${GITOPS_PROFILE}" == "0-bootstrap/single-cluster" ]]; then
@@ -664,6 +666,178 @@ set_rwx_storage_class () {
   popd
 }
 
+enable_cp4d() {
+  echo "enabling cloudpak for data..."
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  sed -i.bak '/argocd\/consolenotifcation.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-ibm-common-services.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-tools.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/serviceaccounts-tools.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  # #This is currently covered by the default storage replacement 
+  # pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
+  # sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-cpd-instance.yaml
+  # rm ibm-cpd-instance.yaml.bak
+  # popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
+
+  sed -i.bak '/argocd\/operators\/ibm-cpd-scheduling-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-cpd-platform-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-cpd-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for data"
+  git push origin
+  popd
+}
+
+enable_cp4i() {
+  echo "enabling cloudpak for Integration + App Connect Enterprise..."
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  sed -i.bak '/argocd\/consolenotifcation.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-ibm-common-services.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-tools.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-ci.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-dev.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-staging.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-prod.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  # #This is currently covered by the default storage replacement 
+  # pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
+  # sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-platform-navigator-instance.yaml
+  # rm ibm-cpd-instance.yaml.bak
+  # popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
+
+  sed -i.bak '/argocd\/operators\/ibm-ace-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-platform-navigator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-platform-navigator-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-foundations.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-foundational-services-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-automation-foundation-core-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/sealed-secrets.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for integration"
+  git push origin
+  popd
+}
+
+enable_cp4s() {
+  echo "enabling cloudpak for Security..."
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  sed -i.bak '/argocd\/consolenotifcation.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-ibm-common-services.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-openshift-serverless.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-tools.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-knative-eventing.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-knative-serving.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-knative-serving-ingress.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  # #This is currently covered by the default storage replacement 
+  # pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services/argocd/instances
+  # sed -i.bak 's/managed-nfs-storage/ocs-storagecluster-cephfs/g' ibm-cp4sthreatmanagements-instance.yaml
+  # rm ibm-cpd-instance.yaml.bak
+  # popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
+
+  sed -i.bak '/argocd\/operators\/ibm-cp4s-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-cp4sthreatmanagements-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-foundations.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-foundational-services-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-automation-foundation-core-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/openshift-serverless.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/openshift-serverless-knative-serving-instance.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for security"
+  git push origin
+  popd
+}
+
+enable_cp4ba() {
+  echo "enabling cloudpak for Business Automation - Process Mining..."
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
+
+  sed -i.bak '/argocd\/namespace-ibm-common-services.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-tools.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/namespace-cloudpak.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
+
+  sed -i.bak '/argocd\/operators\/ibm-process-mining-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/instances\/ibm-process-mining-instance.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-foundations.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-db2u-operator.yaml/s/^#//g' kustomization.yaml
+  sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
+  rm kustomization.yaml.bak
+  popd
+
+  pushd ${TMP_DIR}/gitops-0-bootstrap/
+  git --no-pager diff
+  git add .
+  git commit -m "enable cloudpak for business automation"
+  git push origin
+  popd
+}
+
+
+patch_cloudpaks() {
+  echo "enable selected cloudpaks..."
+  SELECTED_CP=${SET_CLOUDPAKS:-None}
+
+  if [[ ${SELECTED_CP} == "None" ]]; then
+    echo "No Cloud Pak selected"
+  elif [[ ${SELECTED_CP} == "cp4d" ]]; then
+    echo "Enable Cloud Pak for Data"
+    enable_cp4d
+  elif [[ ${SELECTED_CP} == "cp4i" ]]; then
+    echo "Enable Cloud Pak for Integration"
+    enable_cp4i
+  elif [[ ${SELECTED_CP} == "cp4s" ]]; then
+    echo "Enable Cloud Pak for Security"
+    enable_cp4s
+  elif [[ ${SELECTED_CP} == "cp4ba" ]]; then
+    echo "Enable Cloud Pak for Business Automation"
+    enable_cp4ba  
+  fi
+}
 
 # master
 echo "install gitops"
@@ -708,6 +882,8 @@ set_git_source
 
 # Set RWX storage
 set_rwx_storage_class
+
+patch_cloudpaks
 
 deploy_bootstrap_argocd
 
