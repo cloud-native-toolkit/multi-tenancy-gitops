@@ -75,7 +75,7 @@ spec:
   - namespace: cp4ba
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-   - group: ""
+  - group: ""
     kind: Namespace
   - group: ""
     kind: RoleBinding
