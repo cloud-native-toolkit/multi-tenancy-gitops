@@ -96,6 +96,8 @@ spec:
   - group: "machineconfiguration.openshift.io"
     kind: MachineConfigPool
   - group: "machineconfiguration.openshift.io"
+    kind: MachineConfig
+  - group: "machineconfiguration.openshift.io"
     kind: ContainerRuntimeConfig
   - group: "tuned.openshift.io"
     kind: Tuned
