@@ -692,7 +692,7 @@ set_rwx_storage_class () {
 cp4s_deployment_status_complete () {
 
   echo "Checking if CP4S Deployment is complete"
-  while ! oc wait --for=condition=Success CP4SThreatManagement threatmgmt -n tools > /dev/null; do sleep 30; done
+  while ! oc wait --timeout=-1s --for=condition=Success CP4SThreatManagement threatmgmt -n tools > /dev/null; do sleep 30; done
 }
 
 # main code block
@@ -740,7 +740,7 @@ if [[ "${ACE_SCENARIO}" == "true" ]]; then
 fi
 
 # Checks on the status of CP4S deployment and waits till completion 
-cp4s_deployment_status_complete
+# cp4s_deployment_status_complete
 
 print_urls_passwords
 
