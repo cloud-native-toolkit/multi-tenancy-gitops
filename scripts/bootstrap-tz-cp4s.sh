@@ -724,6 +724,8 @@ patch_argocd_tls
 
 set_git_source
 
+set_rwx_storage_class
+
 set_git_cp4s_pattern
 
 deploy_bootstrap_argocd
