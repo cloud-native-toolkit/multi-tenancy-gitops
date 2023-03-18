@@ -660,6 +660,7 @@ print_urls_passwords () {
 
 }
 
+# Note: The Openshift Storage Class needs to be set for different cloud providors coupled with CP4x System Requirements
 set_rwx_storage_class () {
   DEFAULT_RWX_STORAGE_CLASS=${DEFAULT_RWX_STORAGE_CLASS:-managed-nfs-storage}
   #OCS_RWX_STORAGE_CLASS=${OCS_RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
@@ -743,8 +744,9 @@ if [[ "${ACE_SCENARIO}" == "true" ]]; then
   fi
 fi
 
-# Checks on the status of CP4S deployment and waits till completion 
-# cp4s_deployment_status_complete
+# Checks on the status of CP4S deployment and waits till completion
+# This is used to signal the end of CP4S Operator installation allowing post installation work 
+cp4s_deployment_status_complete
 
 print_urls_passwords
 
