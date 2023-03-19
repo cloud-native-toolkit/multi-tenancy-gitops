@@ -789,7 +789,7 @@ enable_cp4s() {
 }
 
 enable_cp4ba() {
-  echo "enabling cloudpak for Business Automation - Process Mining..."
+  echo "enabling cloudpak for Business Automation - "
 
   pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/1-infra
 
@@ -802,7 +802,7 @@ enable_cp4ba() {
   pushd ${TMP_DIR}/gitops-0-bootstrap/0-bootstrap/single-cluster/2-services
 
   sed -i.bak '/argocd\/operators\/ibm-process-mining-operator.yaml/s/^#//g' kustomization.yaml
-  sed -i.bak '/argocd\/instances\/ibm-process-mining-instance.yaml/s/^#//g' kustomization.yaml
+  #sed -i.bak '/argocd\/instances\/ibm-process-mining-instance.yaml/s/^#//g' kustomization.yaml
   sed -i.bak '/argocd\/operators\/ibm-foundations.yaml/s/^#//g' kustomization.yaml
   sed -i.bak '/argocd\/operators\/ibm-db2u-operator.yaml/s/^#//g' kustomization.yaml
   sed -i.bak '/argocd\/operators\/ibm-catalogs.yaml/s/^#//g' kustomization.yaml
