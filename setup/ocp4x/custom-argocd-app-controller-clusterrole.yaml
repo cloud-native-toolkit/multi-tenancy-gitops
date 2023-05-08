@@ -217,6 +217,12 @@ rules:
   - verbs:
       - '*'
     apiGroups:
+      - machineconfiguration.openshift.io
+    resources:
+      - machineconfigs
+  - verbs:
+      - '*'
+    apiGroups:
       - tuned.openshift.io
     resources:
       - tuneds

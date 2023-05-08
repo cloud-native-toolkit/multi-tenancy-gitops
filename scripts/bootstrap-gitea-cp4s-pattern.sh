@@ -499,6 +499,13 @@ set_rwx_storage_class () {
   popd
 }
 
+# Checks to wait for CP4SThreatManagement Custom Resource completes before starting post installation work
+cp4s_deployment_status_complete () {
+
+  echo "Checking if CP4S Deployment is complete"
+  while ! oc wait --for=condition=Success CP4SThreatManagement threatmgmt -n tools > /dev/null; do sleep 30; done
+}
+
 # main code block
 install_gitea
 
@@ -543,10 +550,10 @@ if [[ "${ACE_SCENARIO}" == "true" ]]; then
   fi
 fi
 
+# Checks on the status of CP4S deployment and waits till completion 
+cp4s_deployment_status_complete
+
 # provides credentials and links post deployment
 print_urls_passwords
 
-# TODO: Add logic for post deployent to add ingress for instance to DNS entry.
-# TODO: Add logic for post deployment to add SOAR license 
-# TODO: Add logic for post deployment to configure against IBM Verify instance for authentication.
 # TODO: Create logic to spin up apphost/edge gateway and configure it against instance.
