@@ -54,6 +54,7 @@ install_gitea () {
   TOOLKIT_NAMESPACE=${TOOLKIT_NAMESPACE:-tools}
   GIT_CRED_USERNAME=${GIT_CRED_USERNAME:-toolkit}
   GIT_CRED_PASSWORD=${GIT_CRED_PASSWORD:-toolkit}
+  RWX_STORAGE_CLASS=${RWX_STORAGE_CLASS:-ocs-storagecluster-cephfs}
 
   OPERATOR_NAME="gitea-operator"
   OPERATOR_NAMESPACE="openshift-operators"
@@ -61,7 +62,7 @@ install_gitea () {
   INSTANCE_NAME=${INSTANCE_NAME:-gitea}
 
   echo "Install gitea operator"
-  helm template ${OPERATOR_NAME} gitea-operator --repo "https://lsteck.github.io/toolkit-charts" | kubectl apply --insecure-skip-tls-verify --validate=false -f -
+  helm template ${OPERATOR_NAME} gitea-operator --repo "https://charts.cloudnativetoolkit.dev" | kubectl apply --insecure-skip-tls-verify --validate=false -f -
 
   # Wait for Deployment
   count=0
@@ -114,9 +115,8 @@ install_gitea () {
         giteaAdminUser: ${GIT_CRED_USERNAME}
         giteaAdminPassword: ${GIT_CRED_PASSWORD}
         giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
+        postgresqlVolumeStorageClass: ${RWX_STORAGE_CLASS}
 EOF
-
-
   
     helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl --insecure-skip-tls-verify apply --validate=false -f -
 
