@@ -61,6 +61,10 @@ install_gitea () {
   DEPLOYMENT="${OPERATOR_NAME}-controller-manager"
   INSTANCE_NAME=${INSTANCE_NAME:-gitea}
 
+  # make a default storageclass
+  kubectl patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+
   echo "Install gitea operator"
   helm template ${OPERATOR_NAME} gitea-operator --repo "https://charts.cloudnativetoolkit.dev" | kubectl apply --insecure-skip-tls-verify --validate=false -f -
 
@@ -115,13 +119,10 @@ install_gitea () {
         giteaAdminUser: ${GIT_CRED_USERNAME}
         giteaAdminPassword: ${GIT_CRED_PASSWORD}
         giteaAdminEmail: ${GIT_CRED_USERNAME}@cloudnativetoolkit.dev
-        giteaVolumeStorageClass: ${RWX_STORAGE_CLASS}
-        postgresqlVolumeStorageClass: ${RWX_STORAGE_CLASS}
 EOF
   
     helm template ${INSTANCE_NAME} gitea-instance --repo "https://charts.cloudnativetoolkit.dev" --values "values.yaml" | kubectl --insecure-skip-tls-verify apply --validate=false -f -
 
-    popd
 
     local seconds=1200s
     for label in name=postgresql-${INSTANCE_NAME} app=${INSTANCE_NAME}; do
@@ -153,6 +154,7 @@ EOF
         sleep 10
       done
     done
+    popd
   # else Install Gitea server
   fi 
 }
