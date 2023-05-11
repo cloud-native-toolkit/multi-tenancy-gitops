@@ -62,7 +62,7 @@ install_gitea () {
   INSTANCE_NAME=${INSTANCE_NAME:-gitea}
 
   # make a default storageclass
-  kubectl patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+  kubectl patch storageclass ocs-storagecluster-ceph-rbd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 
   echo "Install gitea operator"
