@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sterling-secure-proxy-engine
+  name: ssp-engine
   annotations:
     argocd.argoproj.io/sync-wave: "290"
   labels:
@@ -18,7 +18,7 @@ spec:
   source:
     path: instances/sterling-secure-proxy-engine
     helm:
-      releaseName: ibm-ssp-engine
+      releaseName: ibm-ssp-engine-umbrella
       valueFiles:
       - values.yaml
   syncPolicy:
