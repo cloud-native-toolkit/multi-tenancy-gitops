@@ -20,9 +20,13 @@ Sterling Secure Proxy requires Read-Write-Once persistent storage available and 
 
 3. Select a name for your secret under `ibm-ssp-cm.secret.secretName` -> take note, this will change the secret on your cluster. Also take note, I have included basic base64 passwords to make demoing this gitops deployment easier, but in a production environment please replace this secret with a vault entrusted secret.
 
-4. Now perform the same operations as steps 1-3 under `instances/sterling-secure-proxy-engine` with the additional field `ibm-ssp-engine.secret.keyCertSecretName` -> Note, I recommend you keep this set to `engine-key-cert` but it is not a hard requirement.
+4. `kubectl apply -f` both files in the `ibm-ssp-cm/prereqs` folder 
 
-5. Push your changes to your git org
+5. Now perform the same operations as steps 1-3 under `instances/sterling-secure-proxy-engine` with the additional field `ibm-ssp-engine.secret.keyCertSecretName` -> Note, I recommend you keep this set to `engine-key-cert` but it is not a hard requirement.
+
+6. `kubectl apply -f` both files in the `ibm-ssp-engine/prereqs` folder
+
+7. Push your changes to your git org
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `multi-tenancy-gitops/0-bootstrap/single-cluster/1-infra/kustomization.yaml` and uncomment the following
