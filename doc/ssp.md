@@ -18,7 +18,12 @@ Sterling Secure Proxy requires Read-Write-Once persistent storage available and 
 
 2. Double check `ibm-ssp-cm.storageSecurity` settings and ensure that the fsGroup and supplementalGroups matches the configuration necessary for your cluster. If it does not match, it will not install.
 
-3. Select a name for your secret under `ibm-ssp-cm.secret.secretName` -> take note, this will change the secret on your cluster. Also take note, I have included basic base64 passwords to make demoing this gitops deployment easier, but in a production environment please replace this secret with a vault entrusted secret.
+3. Select a name for your secret under `ibm-ssp-cm.secret.secretName` -> take note, this will change the secret on your cluster. Also take note, I have included basic base64 passwords to make demoing this gitops deployment easier, but in a production environment please replace this secret with a vault entrusted secret. An example of the workflow this would entail can be previewed with kubeseal and sealed secrets which are included in these repos. You can optionally deploy sealed secrets to the cluster and perform the following steps to configure your secrets for gitops:\
+   \
+   `kubeseal < secretname.yaml > sealedsecretname.yaml`\
+   `kubectl apply -f sealedsecretname.yaml`\
+   `kubectl delete secret originalsecretname`\
+   You will now have a yaml file `sealedsecretname.yaml` that you can use for gitops as an alternative to the original secret. Push this file to your repo and remove the old secret template. Perform these steps for both the engine and the configuration manager.
 
 4. `kubectl apply -f` both files in the `ibm-ssp-cm/prereqs` folder 
 
