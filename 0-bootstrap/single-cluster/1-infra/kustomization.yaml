@@ -27,6 +27,7 @@ resources:
 #- argocd/namespace-db2.yaml
 #- argocd/namespace-mq.yaml
 #- argocd/namespace-b2bi-prod.yaml
+#- argocd/namespace-b2bi-612.yaml
 #- argocd/namespace-b2bi-nonprod.yaml
 #- argocd/namespace-pem.yaml
 #- argocd/namespace-ssp.yaml
@@ -37,6 +38,7 @@ resources:
 #- argocd/serviceaccounts-db2.yaml
 #- argocd/serviceaccounts-mq.yaml
 #- argocd/serviceaccounts-b2bi-prod.yaml
+#- argocd/serviceaccounts-b2bi-612.yaml
 #- argocd/serviceaccounts-b2bi-nonprod.yaml
 #- argocd/serviceaccounts-pem.yaml
 #- argocd/serviceaccounts-sccm.yaml

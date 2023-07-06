@@ -76,6 +76,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: minio-dev
     server: https://kubernetes.default.svc
+  - namespace: b2bi-612
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace

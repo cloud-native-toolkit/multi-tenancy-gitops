@@ -80,6 +80,8 @@ resources:
 #- argocd/instances/ibm-sfg-mq-prod.yaml
 #- argocd/instances/ibm-sfg-b2bi-prod-setup.yaml
 #- argocd/instances/ibm-sfg-b2bi-prod.yaml
+#- argocd/instances/ibm-sfg-b2bi-612-setup.yaml
+#- argocd/instances/ibm-sfg-b2bi-612.yaml
 #- argocd/instances/ibm-sfg-db2-nonprod.yaml
 #- argocd/instances/ibm-sfg-mq-nonprod.yaml
 #- argocd/instances/ibm-sfg-b2bi-nonprod-setup.yaml
