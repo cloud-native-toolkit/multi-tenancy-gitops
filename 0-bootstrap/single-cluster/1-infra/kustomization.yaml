@@ -40,6 +40,7 @@ resources:
 #- argocd/serviceaccounts-b2bi-prod.yaml
 #- argocd/serviceaccounts-b2bi-612.yaml
 #- argocd/serviceaccounts-b2bi-nonprod.yaml
+#- argocd/namespace-ssp.yaml
 #- argocd/serviceaccounts-pem.yaml
 #- argocd/serviceaccounts-sccm.yaml
 #- argocd/sfg-b2bi-clusterwide.yaml

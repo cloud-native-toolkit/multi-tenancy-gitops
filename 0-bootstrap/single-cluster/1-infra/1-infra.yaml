@@ -78,6 +78,10 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: b2bi-612
     server: https://kubernetes.default.svc
+  - namespace: scd
+    server: https://kubernetes.default.svc
+  - namespace: sccm
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: ""
     kind: Namespace

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sterling-secure-proxy-cm
+  name: ssp-cm
   annotations:
     argocd.argoproj.io/sync-wave: "235"
   labels:
@@ -18,7 +18,7 @@ spec:
   source:
     path: instances/sterling-secure-proxy-configuration-manager
     helm:
-      releaseName: ibm-ssp-cm
+      releaseName: ibm-ssp-config-manager
       valueFiles:
       - values.yaml
   syncPolicy:

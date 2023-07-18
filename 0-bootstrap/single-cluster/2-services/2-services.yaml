@@ -74,6 +74,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: b2bi-612
     server: https://kubernetes.default.svc
+  - namespace: scd
+    server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   # TODO: SCC needs to be moved to 1-infra, here for now for artifactory
   - group: "security.openshift.io"
