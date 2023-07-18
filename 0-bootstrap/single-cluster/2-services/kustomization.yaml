@@ -95,10 +95,13 @@ resources:
 #- argocd/instances/ibm-pem-setup.yaml
 #- argocd/instances/ibm-pem.yaml
 
+## Connect Direct
+#- argocd/instances/ibm-connect-direct-setup.yaml
+#- argocd/instances/ibm-connect-direct.yaml
 # SCCM
-#- argocd/instances/ibm-sccm-db2.yaml
-#- argocd/instances/ibm-sccm-setup.yaml
-#- argocd/instances/ibm-sccm.yaml
+# - argocd/instances/ibm-sccm-db2.yaml
+# - argocd/instances/ibm-sccm-setup.yaml
+# - argocd/instances/ibm-sccm.yaml
 
 # Required for IBM MQ
 #- argocd/instances/openldap.yaml

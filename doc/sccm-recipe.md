@@ -40,8 +40,15 @@ In particular, these infra resources are assumed to have already been deployed (
     ```bash
     git clone git@github.com:${GIT_ORG}/multi-tenancy-gitops-services.git
     ```
+1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
+    ```yaml
+    - argocd/instances/sealed-secrets.yaml
+    ```
 
-2. Generate the yaml files for the SCCM pre-requisite components which includes the secrets and PVCs required by the SCCM helm chart.<br/>
+    >  💡 **NOTE**  
+    > Commit and Push the changes for `multi-tenancy-gitops` & sync ArgoCD. 
+
+1. Generate the yaml files for the SCCM pre-requisite components which includes the secrets and PVCs required by the SCCM helm chart.<br/>
 **NOTE:** Make sure you are logged into your OpenShift cluster before proceeding.
 
     1. Go to the `instances/ibm-sccm-setup` directory:
@@ -112,7 +119,7 @@ In particular, these infra resources are assumed to have already been deployed (
     ```
     In order to deploy SCCM, SMTP settings are required which SCCM uses for sending emails triggered by system events based on business rules (refer: https://www.ibm.com/docs/en/control-center/6.2.1.0?topic=settings-configuring-smtp-email-messages).
 
-    ```bash
+    ```yaml
     ADMIN_EMAIL_ADDRESS=<change_me> \
     EMAIL_HOST_NAME=<change_me> \
     EMAIL_PORT=<change_me> \
@@ -125,7 +132,7 @@ In particular, these infra resources are assumed to have already been deployed (
 
     For example:
 
-    ```bash
+    ```yaml
     ADMIN_EMAIL_ADDRESS=no.reply@gmail.com \
     EMAIL_HOST_NAME=smtp.gmail.com \
     EMAIL_PORT=465 \
@@ -135,7 +142,15 @@ In particular, these infra resources are assumed to have already been deployed (
     KEY_ALIAS=self \
     ./ibm-sccm-overrides-values.sh
     ```
-
+    #### On the `values.yaml` Change image Tag to 
+    ```yaml
+        tag: "6.3.0.0_ifix01_2023-01-15"
+    ``` 
+    #### On the `Chart.yaml` Change the chart version to
+    ```yaml
+      - name: ibm-sccm
+        version: 3.0.0
+    ```
     >  💡 **NOTE**  
     > Add the generated values.yaml file to the repository, and
     > Commit and Push the changes for `multi-tenancy-gitops-services` 
