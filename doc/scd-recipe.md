@@ -23,16 +23,20 @@ In particular, these infra resources are assumed to have already been deployed (
     - argocd/serviceaccounts-connect-direct.yaml
     - argocd/sterling-cd-clusterwide.yaml
     ```
+    Run the following command to privledge your SCC.
 
+    ```bash
+    oc adm policy add-scc-to-user privileged -z cd-63-ibm-connect-direct-serviceaccount -n scd
+    ```
     >  💡 **NOTE**  
     > Commit and Push the changes for `multi-tenancy-gitops` 
 
 ### Services - instances folder (in **multi-tenancy-gitops-services** repository)
 **NOTE:** This recipe can be implemented using a combination of storage classes. Not all combination will work, but the following table lists the storage classes that have been tested successfully:
 
-    | Component | Access Mode | IBM Cloud | OCS/ODF |
-    | --- | --- | --- | --- |
-    | PVC | RWO | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
+| Component | Access Mode | IBM Cloud | OCS/ODF |
+| --- | --- | --- | --- |
+| PVC | RWO | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
 
 1. Clone the services repo for GitOps: open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
         
