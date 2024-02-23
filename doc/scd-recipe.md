@@ -1,6 +1,7 @@
 # Deploy IBM Sterling Connect Direct C:D
 
-This recipe is for deploying the IBM Sterling Connect Direct (SC:D) in the `scd` namespace. This recipe also assumes you've already deployed the [Sterling File Gateway recipe](sfg-recipe.md) - either `b2bi-nonprod` and `b2bi-prod`, or both. 
+This recipe is for deploying the IBM Sterling Connect Direct (SC:D) in the `scd` namespace. 
+This recipe also can be applied if you've already deployed the [Sterling File Gateway recipe](sfg-recipe.md) - either `b2bi-nonprod` and `b2bi-prod`, or both. "NOT REQUIRED"
 
 In particular, these infra resources are assumed to have already been deployed (aside from the B2Bi specific resources):
 
@@ -37,6 +38,8 @@ In particular, these infra resources are assumed to have already been deployed (
 | Component | Access Mode | IBM Cloud | OCS/ODF |
 | --- | --- | --- | --- |
 | PVC | RWO | ibmc-file-gold-gid | ocs-storagecluster-cephfs |
+
+You can find the PVC yaml in `multi-tenancy-gitops-services/instances/ibm-connect-direct-setup/storage`  
 
 1. Clone the services repo for GitOps: open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
         
