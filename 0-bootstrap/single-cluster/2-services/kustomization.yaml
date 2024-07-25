@@ -148,6 +148,10 @@ resources:
 #- argocd/instances/oadp-instance.yaml
 #- argocd/instances/baas-instance.yaml
 
+# lightwell
+# - argocd/instances/ibm-lw-db2.yaml
+# - argocd/instances/lightwell-framework.yaml
+
 patches:
 - target:
     group: argoproj.io
