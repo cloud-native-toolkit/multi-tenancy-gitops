@@ -74,6 +74,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: cp4ba
     server: https://kubernetes.default.svc
+  - namespace: minio-dev
+    server: https://kubernetes.default.svc
   - namespace: scd
     server: https://kubernetes.default.svc
   - namespace: sccm

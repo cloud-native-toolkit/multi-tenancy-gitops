@@ -70,6 +70,8 @@ spec:
     server: https://kubernetes.default.svc
   - namespace: odm
     server: https://kubernetes.default.svc
+  - namespace: minio-dev
+    server: https://kubernetes.default.svc
   - namespace: scd
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:

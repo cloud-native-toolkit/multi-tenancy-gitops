@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio-app
+  labels:
+    gitops.tier.layer: services
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: minio-dev
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/minio-storage
+    repoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+    targetRevision: master
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
