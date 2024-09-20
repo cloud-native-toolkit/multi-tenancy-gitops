@@ -30,10 +30,10 @@ In particular, these infra resources are assumed to have already been deployed (
 ### Services - instances folder (in **multi-tenancy-gitops-services** repository)
 **NOTE:** This recipe can be implemented using a combination of storage classes. Not all combination will work, but the following table lists the storage classes that have been tested successfully:
 
-    | Component | Access Mode | IBM Cloud | OCS/ODF |
-    | --- | --- | --- | --- |
-    | DB2 | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
-    | PEM | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
+| Component | Access Mode | IBM Cloud | OCS/ODF |
+| --- | --- | --- | --- |
+| DB2 | RWO | ibmc-block-gold | ocs-storagecluster-cephfs |
+| PEM | RWX | managed-nfs-storage | ocs-storagecluster-cephfs |
 
 1. Clone the services repo for GitOps: open a terminal window and clone the `multi-tenancy-gitops-services` repository under your Git Organization.
         

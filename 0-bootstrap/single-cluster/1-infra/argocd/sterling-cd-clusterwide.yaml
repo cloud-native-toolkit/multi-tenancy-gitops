@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespace-sccm
+  name: scd-clusterwide
   labels:
     gitops.tier.layer: infra
   annotations:
@@ -12,7 +12,7 @@ spec:
     server: https://kubernetes.default.svc
   project: infra
   source:
-    path: namespaces/sccm
+    path: scd-clusterwide
   syncPolicy:
     automated:
       prune: true
