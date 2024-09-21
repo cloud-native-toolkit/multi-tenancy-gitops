@@ -150,8 +150,6 @@ resources:
 #- argocd/instances/oadp-instance.yaml
 #- argocd/instances/baas-instance.yaml
 
-# Minio-storage
-#- argocd/instances/minio-app.yaml
 
 patches:
 - target:

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-lw-db2
+  annotations:
+    argocd.argoproj.io/sync-wave: "250"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: b2bi-prod
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-lw-db2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
