@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault-deployment
+  annotations:
+    argocd.argoproj.io/sync-wave: "235"
+  labels:
+    gitops.tier.group: cntk
+    gitops.tier.layer: services
+    gitops.tier.source: git
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: vault
+    server: 'https://kubernetes.default.svc'
+  project: services
+  source:
+    path: instances/ibm-vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

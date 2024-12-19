@@ -10,6 +10,8 @@ spec:
   destinations:
   - namespace: tools
     server: https://kubernetes.default.svc
+  - namespace: vault
+    server: https://kubernetes.default.svc
   - namespace: ibm-common-services
     server: https://kubernetes.default.svc
   - namespace: cloudpak

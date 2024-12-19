@@ -1,6 +1,11 @@
 resources:
 # IBM Software
 
+## HashiCorp Integration 
+#- argocd/operators/ibm-vault-operator.yaml
+#- argocd/instances/ibm-vault-setup.yaml
+#- argocd/instance/ibm-vault-deploy.yaml
+
 ## Cloud Pak for Integration
 #- argocd/operators/ibm-ace-operator.yaml
 #- argocd/operators/ibm-apic-operator.yaml
