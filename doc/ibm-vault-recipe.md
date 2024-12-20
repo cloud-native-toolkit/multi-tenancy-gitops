@@ -96,7 +96,7 @@ Deploy the prerequisite for vault by uncommenting the following line from this d
 
 >  💡 **NOTE**  
 > Commit and Push the changes for `multi-tenancy-gitops` and
-> sync ArgoCD application `services` layer.
+> sync Argo CD application `services` layer.
 
 ### Validation
 
@@ -113,3 +113,19 @@ Deploy the prerequisite for vault by uncommenting the following line from this d
    ![Deployment](images/vault/vault-route.png) 
 
 </details>
+
+2. After creating your first secret visit your Argo CD application and you should be able to see the following screenshot:
+
+</br>
+
+<details>
+  <summary> Argo CD Screenshot </summary>
+   
+   ![Deployment](images/vault/vault-in-argocd.png) 
+
+</details>
+
+### Thank you! 
+> Raafat Abaid (Ray)  
+> Email: Raafat@ibm.com </br>
+> Slack: @Ray
