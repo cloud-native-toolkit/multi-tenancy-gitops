@@ -38,10 +38,18 @@ i.e
     # Sealed Secrets
     - argocd/instances/sealed-secrets.yaml
     ```
+<details>
+  <summary> Operator Screenshot </summary>
 
-    >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
-    > Wait until everything gets deployed before moving to the next steps.
+   ![Operator](images/vault/vault-operator.png)
+
+</details>
+
+</br>
+
+>  💡 **NOTE**  
+> Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
+> Wait until everything gets deployed before moving to the next steps.
 
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` and install Sealed Secrets by uncommenting the following line, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console.
 
@@ -52,8 +60,16 @@ Deploy the prerequisite for vault by uncommenting the following line from this d
 ```
 
 ```yaml
-    #- argocd/instances/ibm-vault-setup.yaml
+    - argocd/instances/ibm-vault-setup.yaml
 ```  
+<details>
+  <summary> PVC Screenshot </summary>
+
+   ![PVC](images/vault/vault-pvc.png)
+   
+</details>
+
+</br>
 
 >  💡 **NOTE**  
 > Commit and Push the changes for `multi-tenancy-gitops` & go to ArgoCD, open `services` application and click refresh.
@@ -62,12 +78,25 @@ Deploy the prerequisite for vault by uncommenting the following line from this d
 1. Edit the Services layer `${GITOPS_PROFILE}/2-services/kustomization.yaml` by uncommenting the following line to install Sterling File Gateway, **commit** and **push** the changes and refresh the `services` Application in the ArgoCD console:
 
     ```yaml
-    #- argocd/instance/ibm-vault-deploy.yaml
+    - argocd/instance/ibm-vault-deploy.yaml
     ```
 
-    >  💡 **NOTE**  
-    > Commit and Push the changes for `multi-tenancy-gitops` and
-    > sync ArgoCD application `services` layer.
+<details>
+  <summary> Deployment & Statefulset Screenshots </summary>
+   
+   ![Deployment](images/vault/vault-deployment.png)
+    </br>
+   ![Statefulset](images/vault/vault-statfulset.png)
+   
+
+   
+</details>
+
+</br>
+
+>  💡 **NOTE**  
+> Commit and Push the changes for `multi-tenancy-gitops` and
+> sync ArgoCD application `services` layer.
 
 ### Validation
 
@@ -76,3 +105,11 @@ Deploy the prerequisite for vault by uncommenting the following line from this d
     ```bash
     oc get route -n vault vault-ui -o template --template='https://{{.spec.host}}'
     ```
+</br>
+
+<details>
+  <summary> Route Screenshot </summary>
+   
+   ![Deployment](images/vault/vault-route.png) 
+
+</details>
