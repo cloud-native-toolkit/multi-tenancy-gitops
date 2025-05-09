@@ -1,6 +1,6 @@
 # Deploy [IBM Vault ](https://www.vaultproject.io/)
 
-This recipe is for deploying the IBM Vault in a single namespace (i.e. `vault`) 
+This recipe is for deploying the IBM Vault in a single namespace (i.e. `vault` ) 
 
 ### Infrastructure - Kustomization.yaml
 1. Edit the Infrastructure layer `${GITOPS_PROFILE}/1-infra/kustomization.yaml`, un-comment the following lines, commit and push the changes and synchronize the `infra` Application in the ArgoCD console.
